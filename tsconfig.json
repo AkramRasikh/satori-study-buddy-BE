@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "typeRoots": ["src/language-script-helpers"],
+    "esModuleInterop": true
+  }
+}

@@ -1,8 +1,9 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
-import config from './config';
+import config from '../config';
 import chatGptTextAPI from './open-ai/chat-gpt';
 import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
+import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
 
 const app = express();
 
@@ -27,6 +28,19 @@ app.post('/chat-gpt-text', async (req: Request, res: Response) => {
   try {
     const resultContent = await chatGptTextAPI({ sentence, model, sessionKey });
     res.status(200).json(resultContent);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post('/kanji-to-hiragana', async (req: Request, res: Response) => {
+  const preHiraganaText = req.body?.sentence;
+  try {
+    const hiraganaTextSentence = await kanjiToHiragana({
+      sentence: preHiraganaText,
+    });
+
+    res.status(200).json({ sentence: hiraganaTextSentence });
   } catch (error) {
     res.status(500).json({ error });
   }
