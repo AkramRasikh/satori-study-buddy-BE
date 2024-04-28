@@ -1,10 +1,16 @@
 import OpenAI from 'openai';
 
-const chatGptTextAPI = async (
-  textContent: string,
-  model: string = 'gpt-3.5-turbo',
-  sessionKey: string,
-) => {
+interface chatGptTextAPIParams {
+  sentence: string;
+  model: string;
+  sessionKey: string;
+}
+
+const chatGptTextAPI = async ({
+  sentence,
+  model,
+  sessionKey,
+}: chatGptTextAPIParams) => {
   const openai = new OpenAI({
     apiKey: sessionKey,
   });
@@ -14,7 +20,7 @@ const chatGptTextAPI = async (
       messages: [
         {
           role: 'user',
-          content: textContent,
+          content: sentence,
         },
       ],
       model,
