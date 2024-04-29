@@ -6,16 +6,16 @@ import OpenAI from 'openai';
 interface ChatGPTTextToSpeechParams {
   sentence: string;
   id: string;
-  sessionKey: string;
+  openAIKey: string;
 }
 
 const chatGPTTextToSpeech = async ({
   id,
   sentence,
-  sessionKey,
+  openAIKey,
 }: ChatGPTTextToSpeechParams) => {
   const openai = new OpenAI({
-    apiKey: sessionKey,
+    apiKey: openAIKey,
   });
   try {
     const mp3 = await openai.audio.speech.create({

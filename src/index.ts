@@ -17,7 +17,7 @@ const port = config.port;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.post('/satori-cards-bulk', async (req: Request, res: Response) => {
   const { body } = req;
@@ -111,13 +111,13 @@ app.post('/satori-audio', async (req: Request, res: Response) => {
 
 app.post('/chat-gpt-tts', async (req: Request, res: Response) => {
   const { body } = req;
-  const sessionKey = body?.sessionKey;
+  const openAIKey = body?.openAIKey;
   const sentence = body?.sentence;
   const id = body?.id;
 
   try {
     const availableMP3Files = await chatGPTTextToSpeech({
-      sessionKey,
+      openAIKey,
       sentence,
       id,
     });
