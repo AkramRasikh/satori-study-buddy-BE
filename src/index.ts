@@ -5,6 +5,7 @@ import chatGptTextAPI from './open-ai/chat-gpt';
 import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
 import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
 import satoriFlashcard from './satori/flashcard';
+import narakeetAudio from './narakeet';
 
 const app = express();
 
@@ -81,6 +82,29 @@ app.post('/chat-gpt-tts', async (req: Request, res: Response) => {
     });
 
     return res.status(200).json(availableMP3Files);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/narakeet-audio', async (req: Request, res: Response) => {
+  const { body } = req;
+
+  const id = body?.id;
+  const apiKey = body?.apiKey;
+  const sentence = body?.sentence;
+  const voice = body?.voice;
+
+  try {
+    const availableMP3Files = await narakeetAudio({
+      id,
+      apiKey,
+      sentence,
+      voice,
+    });
+    if (availableMP3Files) {
+      return res.status(200).json(availableMP3Files);
+    }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
