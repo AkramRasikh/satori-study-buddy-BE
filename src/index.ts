@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
+import cors from 'cors';
 import config from '../config';
 import chatGptTextAPI from './open-ai/chat-gpt';
 import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
@@ -10,7 +11,7 @@ import getSatoriCardsInBulk from './satori/bulk-cards';
 
 const app = express();
 
-// Use config values
+app.use(cors());
 const port = config.port;
 
 // Middleware to parse JSON bodies
@@ -30,6 +31,7 @@ app.post('/satori-cards-bulk', async (req: Request, res: Response) => {
       res.status(401).json({ message: data.message });
     }
 
+    console.log('## /satori-cards-bulk success');
     res.status(200).json({
       message: 'Satori cards successfully retrieved',
       data: data.result,
@@ -41,13 +43,15 @@ app.post('/satori-cards-bulk', async (req: Request, res: Response) => {
 
 app.post('/chat-gpt-text', async (req: Request, res: Response) => {
   const { body } = req;
-  const sessionKey = body?.sessionKey;
+  const openAIKey = body?.openAIKey;
   const sentence = body?.sentence;
   const model = body?.model;
   try {
-    const resultContent = await chatGptTextAPI({ sentence, model, sessionKey });
+    const resultContent = await chatGptTextAPI({ sentence, model, openAIKey });
+    console.log('## /chat-gpt-text success');
     res.status(200).json(resultContent);
   } catch (error) {
+    console.log('## yooooo Errror');
     res.status(500).json({ error });
   }
 });

@@ -3,16 +3,16 @@ import OpenAI from 'openai';
 interface chatGptTextAPIParams {
   sentence: string;
   model: string;
-  sessionKey: string;
+  openAIKey: string;
 }
 
 const chatGptTextAPI = async ({
   sentence,
   model,
-  sessionKey,
+  openAIKey,
 }: chatGptTextAPIParams) => {
   const openai = new OpenAI({
-    apiKey: sessionKey,
+    apiKey: openAIKey,
   });
 
   try {
