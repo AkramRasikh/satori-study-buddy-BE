@@ -14,7 +14,10 @@ const getSatoriSentence = async ({ episode, id, sessionToken }) => {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
 
-    return response.url;
+    const responseText = await response.text();
+    const parsedResults = JSON.parse(responseText);
+
+    return parsedResults.result.url;
   } catch (error) {
     console.error('## Error fetching data:', error);
   }
