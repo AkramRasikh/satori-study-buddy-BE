@@ -6,6 +6,7 @@ import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
 import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
 import satoriFlashcard from './satori/flashcard';
 import narakeetAudio from './narakeet';
+import getSatoriCardsInBulk from './satori/bulk-cards';
 
 const app = express();
 
@@ -16,12 +17,28 @@ const port = config.port;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// POST endpoint to handle requests
-app.post('/api/endpoint', (req: Request, res: Response) => {
+app.post('/satori-cards-bulk', async (req: Request, res: Response) => {
   const { body } = req;
-  console.log('## Received body:', body.meow);
-  res.json({ message: 'Request received successfully', data: body });
+  const isPureReview = body?.isPureReview;
+  const sessionToken = body?.sessionToken;
+  try {
+    const response = await getSatoriCardsInBulk({ isPureReview, sessionToken });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      res.status(401).json({ message: data.message });
+    }
+
+    res.status(200).json({
+      message: 'Satori cards successfully retrieved',
+      data: data.result,
+    });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 });
+
 app.post('/chat-gpt-text', async (req: Request, res: Response) => {
   const { body } = req;
   const sessionKey = body?.sessionKey;
