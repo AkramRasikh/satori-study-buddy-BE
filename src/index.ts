@@ -81,7 +81,7 @@ app.post('/chat-gpt-tts', async (req: Request, res: Response) => {
       id,
     });
 
-    return res.status(200).json(availableMP3Files);
+    return res.status(200).json({ mp3FilesOnServer: availableMP3Files });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
@@ -103,7 +103,7 @@ app.post('/narakeet-audio', async (req: Request, res: Response) => {
       voice,
     });
     if (availableMP3Files) {
-      return res.status(200).json(availableMP3Files);
+      return res.status(200).json({ mp3FilesOnServer: availableMP3Files });
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
