@@ -8,6 +8,7 @@ import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
 import satoriFlashcard from './satori/flashcard';
 import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
+import getSatoriSentence from './satori/audio';
 
 const app = express();
 
@@ -83,6 +84,25 @@ app.post('/satori-flashcard', async (req: Request, res: Response) => {
     if (flashcardResponseSuccess) {
       // send text too?
       res.status(200).json({ cardId });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post('/satori-audio', async (req: Request, res: Response) => {
+  const sessionToken = req.body?.sessionToken;
+  const id = req.body?.id;
+  const episode = req.body?.episode;
+
+  try {
+    const audioUrl = await getSatoriSentence({
+      id,
+      episode,
+      sessionToken,
+    });
+    if (audioUrl) {
+      res.status(200).json({ url: audioUrl });
     }
   } catch (error) {
     res.status(500).json({ error });
