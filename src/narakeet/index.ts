@@ -6,14 +6,14 @@ import { Readable } from 'stream';
 import fetch from 'node-fetch'; // or import axios from 'axios';
 
 const japaneseVoices = [
-  // 'Ayami',
   // 'Kasumi',
+  // 'Kei',
+  // 'Ayami',
   'Yuriko',
   'Kenichi',
   'Takuya',
   'Takeshi',
   'Mariko',
-  'Kei',
   'Kaori',
   'Hideaki', // the best!
   'Akira', // nice
@@ -45,8 +45,6 @@ const narakeetAudio = async ({ sentence, apiKey, id, voice }) => {
         body: sentence,
       },
     );
-
-    console.log('## response: ', response);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch MP3: ${response.statusText}`);
