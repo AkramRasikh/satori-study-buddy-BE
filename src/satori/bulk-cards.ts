@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
-const getSatoriCardsInBulk = async ({ sessionToken, isPureReview }) => {
-  const studyModeParam = isPureReview
+const getSatoriCardsInBulk = async ({ sessionToken, isDueAndAuto }) => {
+  const studyModeParam = isDueAndAuto
     ? 'due-and-pending-auto-importable'
     : 'due';
   try {

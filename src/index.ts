@@ -21,10 +21,10 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.post('/satori-cards-bulk', async (req: Request, res: Response) => {
   const { body } = req;
-  const isPureReview = body?.isPureReview;
+  const isDueAndAuto = body?.isDueAndAuto;
   const sessionToken = body?.sessionToken;
   try {
-    const response = await getSatoriCardsInBulk({ isPureReview, sessionToken });
+    const response = await getSatoriCardsInBulk({ isDueAndAuto, sessionToken });
 
     const data = await response.json();
 
