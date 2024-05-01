@@ -27,7 +27,8 @@ const chatGptTextAPI = async ({
     });
 
     const content = completion.choices[0].message.content;
-    return content;
+
+    return JSON.parse(content);
   } catch (error) {
     console.log('## Error OpenAI: ', error);
   }
