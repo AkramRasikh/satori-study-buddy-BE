@@ -9,6 +9,7 @@ import satoriFlashcard from './satori/flashcard';
 import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
 import getSatoriSentence from './satori/audio';
+import underlineTargetWords from './language-script-helpers/underline-target-words';
 
 const app = express();
 
@@ -69,6 +70,24 @@ app.post('/kanji-to-hiragana', async (req: Request, res: Response) => {
     res.status(500).json({ error });
   }
 });
+
+app.post('/underline-target-words', async (req: Request, res: Response) => {
+  // need to check body before functions
+  const preUnderlinedSentence = req.body.sentence;
+  const wordBank = req.body.wordBank;
+  try {
+    const hiraganaTextSentence = await underlineTargetWords({
+      preUnderlinedSentence,
+      wordBank,
+    });
+    console.log('## hiraganaTextSentence: ', hiraganaTextSentence);
+
+    res.status(200).json({ underlinedText: hiraganaTextSentence });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
 app.post('/satori-flashcard', async (req: Request, res: Response) => {
   const sessionToken = req.body?.sessionToken;
   const flashCardDifficulty = req.body?.flashCardDifficulty;
