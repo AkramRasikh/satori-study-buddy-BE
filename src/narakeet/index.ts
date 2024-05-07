@@ -10,10 +10,10 @@ const japaneseVoices = [
   // 'Kei',
   // 'Ayami',
   // 'Mariko',
+  // 'Takeshi',
   'Yuriko',
   'Kenichi',
   'Takuya',
-  'Takeshi',
   'Kaori',
   'Hideaki', // the best!
   'Akira', // nice
