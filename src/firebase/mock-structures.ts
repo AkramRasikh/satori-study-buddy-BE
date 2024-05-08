@@ -9,7 +9,7 @@ const databaseStructure = {
           'I don’t explicitly call myself a socialist but I feel close to the word.',
         notes: 'Some dummy notes!',
         audioId:
-          'https://firebasestorage.googleapis.com/v0/b/language-content-storage.appspot.com/o/japanese-audio%2F1383a7de-305a-4fc4-8c4a-9d62d694ef51?alt=media&token=fb3c3e80-fb83-4fde-b196-bf3d9cc4bb26',
+          'https://firebasestorage.googleapis.com/v0/b/language-content-storage.appspot.com/o/japanese-audio%2F1383a7de-305a-4fc4-8c4a-9d62d694ef51?alt=media&token=${token}',
       },
     ],
   },
