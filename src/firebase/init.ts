@@ -4,8 +4,33 @@ import config from '../../config';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
+  databaseURL: config.firebaseDBUrl,
 });
 const bucketName = config.firebaseBucketName;
+
+const db = admin.database();
+
+const addEntry = async ({ ref, wordbankEntry }) => {
+  try {
+    await db.ref(ref).update(wordbankEntry);
+  } catch (error) {
+    console.error('## Error updating database structure:', error);
+    return error;
+  }
+};
+
+const getFirebaseContent = async ({ ref }) => {
+  const postsRef = db.ref(ref);
+  try {
+    const res = await postsRef.once('value');
+    const japaneseContent = res.val();
+    console.log('## japaneseContent: ', japaneseContent);
+    return japaneseContent;
+  } catch (error) {
+    console.error('Error retrieving posts:', error);
+    return error;
+  }
+};
 
 const uploadBufferToFirebase = async ({ buffer, filePath }) => {
   const metadata = {
@@ -24,4 +49,4 @@ const uploadBufferToFirebase = async ({ buffer, filePath }) => {
   }
 };
 
-export { uploadBufferToFirebase };
+export { uploadBufferToFirebase, getFirebaseContent, addEntry };

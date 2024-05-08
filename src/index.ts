@@ -10,6 +10,7 @@ import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
 import getSatoriSentence from './satori/audio';
 import underlineTargetWords from './language-script-helpers/underline-target-words';
+import { getFirebaseContent, addEntry } from './firebase/init';
 
 const app = express();
 
@@ -66,6 +67,29 @@ app.post('/kanji-to-hiragana', async (req: Request, res: Response) => {
     });
 
     res.status(200).json({ sentence: hiraganaTextSentence });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post('/update-wordbank', async (req: Request, res: Response) => {
+  const ref = req.body?.ref;
+  const wordbankEntry = req.body?.wordbankEntry;
+  try {
+    await addEntry({ ref, wordbankEntry });
+    res
+      .status(200)
+      .json({ message: 'Successfully updated entry', wordbankEntry });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.get('/firebase-data', async (req: Request, res: Response) => {
+  const ref = req.body?.ref;
+  try {
+    const data = await getFirebaseContent({ ref });
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error });
   }
