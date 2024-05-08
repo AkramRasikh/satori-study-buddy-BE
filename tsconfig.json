@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "typeRoots": ["src/language-script-helpers"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   }
 }

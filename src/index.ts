@@ -135,13 +135,13 @@ app.post('/chat-gpt-tts', async (req: Request, res: Response) => {
   const id = body?.id;
 
   try {
-    const availableMP3Files = await chatGPTTextToSpeech({
+    const successResIdSentence = await chatGPTTextToSpeech({
       openAIKey,
       sentence,
       id,
     });
 
-    return res.status(200).json({ mp3FilesOnServer: availableMP3Files });
+    return res.status(200).json({ mp3FilesOnServer: successResIdSentence });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }

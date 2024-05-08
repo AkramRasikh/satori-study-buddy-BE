@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import { uploadBufferToFirebase } from '../firebase/init';
 
 import OpenAI from 'openai';
 
@@ -8,6 +7,8 @@ interface ChatGPTTextToSpeechParams {
   id: string;
   openAIKey: string;
 }
+
+const folderPath = 'japanese-audio';
 
 const chatGPTTextToSpeech = async ({
   id,
@@ -26,17 +27,17 @@ const chatGPTTextToSpeech = async ({
 
     const nameToSaveUnder = id || sentence;
 
+    const fileNameWithMP3Ending = nameToSaveUnder + '.mp3';
     const buffer = Buffer.from(await mp3.arrayBuffer());
 
-    const speechFile = path.resolve('public/audio/' + nameToSaveUnder + '.mp3');
-    await fs.promises.writeFile(speechFile, buffer);
-    const audioDirectoryPath = path.join(process.cwd(), 'public', 'audio');
+    await uploadBufferToFirebase({
+      buffer,
+      filePath: folderPath + '/' + fileNameWithMP3Ending,
+    });
 
-    const availableMP3Files = await fs.promises.readdir(audioDirectoryPath);
-
-    return availableMP3Files;
+    return nameToSaveUnder;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('## chatGPTTextToSpeech:', error);
     return error;
   }
 };
