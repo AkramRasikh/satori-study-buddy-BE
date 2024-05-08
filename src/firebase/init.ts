@@ -8,7 +8,6 @@ admin.initializeApp({
 const bucketName = config.firebaseBucketName;
 
 const uploadBufferToFirebase = async ({ buffer, filePath }) => {
-  console.log('## uploadBufferToFirebase: ', { buffer, filePath });
   const metadata = {
     contentType: 'audio/mpeg',
   };
