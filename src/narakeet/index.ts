@@ -29,7 +29,7 @@ const getRandomVoice = () => {
 const narakeetAudio = async ({ sentence, apiKey, id, voice }) => {
   const nameToSaveUnder = id || sentence;
   const voiceSelected = voice || getRandomVoice();
-  const fileNameWithMP3Ending = 'nameToSaveUnder' + '.mp3';
+  const fileNameWithMP3Ending = nameToSaveUnder + '.mp3';
 
   try {
     const response = await fetch(
