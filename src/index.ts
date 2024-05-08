@@ -72,21 +72,25 @@ app.post('/kanji-to-hiragana', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/update-wordbank', async (req: Request, res: Response) => {
+app.post('/update-content', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
-  const wordbankEntry = req.body?.wordbankEntry;
+  const contentEntry = req.body?.contentEntry;
   try {
-    await addEntry({ ref, wordbankEntry });
+    await addEntry({ ref, contentEntry });
     res
       .status(200)
-      .json({ message: 'Successfully updated entry', wordbankEntry });
+      .json({ message: 'Successfully updated entry', contentEntry });
   } catch (error) {
     res.status(500).json({ error });
   }
 });
 
-app.get('/firebase-data', async (req: Request, res: Response) => {
+app.post('/firebase-data', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
+
+  if (!(ref === 'japaneseContent' || ref === 'japaneseWords')) {
+    res.status(500).json({ error: `Wrong ref added ${ref}` });
+  }
   try {
     const data = await getFirebaseContent({ ref });
     res.status(200).json(data);

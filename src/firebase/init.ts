@@ -10,9 +10,9 @@ const bucketName = config.firebaseBucketName;
 
 const db = admin.database();
 
-const addEntry = async ({ ref, wordbankEntry }) => {
+const addEntry = async ({ ref, contentEntry }) => {
   try {
-    await db.ref(ref).update(wordbankEntry);
+    await db.ref(ref).update(contentEntry);
   } catch (error) {
     console.error('## Error updating database structure:', error);
     return error;
