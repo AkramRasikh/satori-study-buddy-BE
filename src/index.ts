@@ -11,6 +11,7 @@ import getSatoriCardsInBulk from './satori/bulk-cards';
 import getSatoriSentence from './satori/audio';
 import underlineTargetWords from './language-script-helpers/underline-target-words';
 import { getFirebaseContent, addEntry } from './firebase/init';
+import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
 
 const app = express();
 
@@ -88,7 +89,9 @@ app.post('/update-content', async (req: Request, res: Response) => {
 app.post('/firebase-data', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
 
-  if (!(ref === 'japaneseContent' || ref === 'japaneseWords')) {
+  if (
+    !(ref === japaneseContent || ref === japaneseWords || ref === satoriContent)
+  ) {
     res.status(500).json({ error: `Wrong ref added ${ref}` });
   }
   try {
