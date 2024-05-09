@@ -12,6 +12,7 @@ import getSatoriSentence from './satori/audio';
 import underlineTargetWords from './language-script-helpers/underline-target-words';
 import { getFirebaseContent, addEntry, addToSatori } from './firebase/init';
 import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
+import { structureSatoriFlashcards } from './satori/structure-satori-data';
 
 const app = express();
 
@@ -97,6 +98,45 @@ app.post('/firebase-data', async (req: Request, res: Response) => {
   try {
     const data = await getFirebaseContent({ ref });
     res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post('/satori-data-with-fb', async (req: Request, res: Response) => {
+  const ref = req.body?.ref;
+  const sessionToken = req.body?.sessionToken;
+
+  try {
+    const satoriResponse = await getSatoriCardsInBulk({
+      isDueAndAuto: true,
+      sessionToken,
+    });
+
+    const data = await satoriResponse.json();
+
+    const satoriFullData = await Promise.all(
+      await structureSatoriFlashcards(data.result, sessionToken),
+    );
+
+    const satoriContentInFirebase = await getFirebaseContent({ ref });
+
+    const satoriFullDataWithFirebaseContexts = satoriFullData.map((item) => {
+      const textWithKanji = item.textWithKanji;
+
+      const itemsWithContextIds = satoriContentInFirebase?.filter(
+        (fireBaseItem) => fireBaseItem?.matchedWords.includes(textWithKanji),
+      );
+
+      return {
+        ...item,
+        contextIds:
+          itemsWithContextIds?.length > 0
+            ? itemsWithContextIds.map((item) => item.id)
+            : [],
+      };
+    });
+    res.status(200).json(satoriFullDataWithFirebaseContexts);
   } catch (error) {
     res.status(500).json({ error });
   }
