@@ -10,7 +10,7 @@ import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
 import getSatoriSentence from './satori/audio';
 import underlineTargetWords from './language-script-helpers/underline-target-words';
-import { getFirebaseContent, addEntry } from './firebase/init';
+import { getFirebaseContent, addEntry, addToSatori } from './firebase/init';
 import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
 
 const app = express();
@@ -96,6 +96,23 @@ app.post('/firebase-data', async (req: Request, res: Response) => {
   }
   try {
     const data = await getFirebaseContent({ ref });
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post('/satori-content-add', async (req: Request, res: Response) => {
+  const ref = req.body?.ref;
+  const contentEntry = req.body?.contentEntry;
+
+  if (
+    !(ref === japaneseContent || ref === japaneseWords || ref === satoriContent)
+  ) {
+    res.status(500).json({ error: `Wrong ref added ${ref}` });
+  }
+  try {
+    const data = await addToSatori({ ref, contentEntry });
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error });
