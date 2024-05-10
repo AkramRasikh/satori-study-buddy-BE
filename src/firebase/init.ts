@@ -63,7 +63,6 @@ const getFirebaseContent = async ({ ref }) => {
   try {
     const res = await postsRef.once('value');
     const japaneseContent = res.val();
-    console.log('## japaneseContent: ', japaneseContent);
     return japaneseContent;
   } catch (error) {
     console.error('Error retrieving posts:', error);
