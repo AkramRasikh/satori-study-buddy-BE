@@ -150,7 +150,7 @@ app.post('/satori-data-with-fb', async (req: Request, res: Response) => {
 
       satoriContentInFirebase?.forEach((fireBaseItem) => {
         if (
-          fireBaseItem?.matchedWords.includes(textWithKanji) &&
+          fireBaseItem?.matchedWords?.includes(textWithKanji) &&
           !contextIds.includes(fireBaseItem.id)
         ) {
           contextIds.push(fireBaseItem.id);
@@ -158,11 +158,12 @@ app.post('/satori-data-with-fb', async (req: Request, res: Response) => {
       });
     });
 
-    const contextHelperData = satoriContentInFirebase?.filter((item) =>
-      contextIds.includes(item.id),
-    );
+    const contextHelperData =
+      satoriContentInFirebase?.filter((item) =>
+        contextIds?.includes(item.id),
+      ) || [];
 
-    res.status(200).json({ satoriData: satoriData, contextHelperData });
+    res.status(200).json({ satoriData, contextHelperData });
   } catch (error) {
     res.status(500).json({ error });
   }
