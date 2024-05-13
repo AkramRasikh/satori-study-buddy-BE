@@ -1,7 +1,6 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import serviceAccount from '../google-service-account.json';
 import config from '../../config';
-import { japaneseWords } from './refs';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -11,38 +10,29 @@ const bucketName = config.firebaseBucketName;
 
 const db = admin.database();
 
-// const addJapaneseWord = async ({ newWordKey, newWordData }) => {
-const addJapaneseWord = async ({ ref }) => {
-  // try {
-  const word = '君が代';
-  const id = '123abc';
-  const newWordData = {
-    id,
-    word,
-  };
+const addJapaneseWord = async ({ ref, contentEntry }) => {
   try {
     // Fetch the existing array
     const snapshot = await db.ref(ref).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Check if the new item's ID already exists in the array
-    const entryID = newWordData.id; // Assuming each entry has a unique 'id' property
+    const entryID = contentEntry.id; // Assuming each entry has a unique 'id' property
     const isDuplicate = newArray.some((item) => item.id === entryID);
 
     if (!isDuplicate) {
       // Add the new item to the array
-      newArray.push(newWordData);
+      newArray.push(contentEntry);
 
       // Update the entire array
       await db.ref(ref).set(newArray);
-      return true;
+      return 200;
     } else {
-      console.log('## Item already exists in DB');
-      return false;
+      return 409;
     }
   } catch (error) {
-    console.error('## Error updating database structure:', error);
-    return error;
+    console.error('## Error adding item (addJapaneseWord): ', error);
+    throw new Error();
   }
 };
 
