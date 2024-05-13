@@ -12,54 +12,38 @@ const bucketName = config.firebaseBucketName;
 const db = admin.database();
 
 // const addJapaneseWord = async ({ newWordKey, newWordData }) => {
-const addJapaneseWord = async ({}) => {
+const addJapaneseWord = async ({ ref }) => {
   // try {
-  const newWordKey = '君が代';
+  const word = '君が代';
+  const id = '123abc';
   const newWordData = {
-    1: 'a',
-    2: 'b',
+    id,
+    word,
   };
   try {
-    const snapshot = await admin
-      .database()
-      .ref(japaneseWords)
-      .child(newWordKey)
-      .once('value');
-    const exists = snapshot.exists();
-    console.log('## snapshot: ', snapshot);
-    console.log('## exists: ', exists);
+    // Fetch the existing array
+    const snapshot = await db.ref(ref).once('value');
+    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
-    console.log('##########');
-    if (exists) {
-      console.log('### Word key already exists. Cannot overwrite.');
-      return;
+    // Check if the new item's ID already exists in the array
+    const entryID = newWordData.id; // Assuming each entry has a unique 'id' property
+    const isDuplicate = newArray.some((item) => item.id === entryID);
+
+    if (!isDuplicate) {
+      // Add the new item to the array
+      newArray.push(newWordData);
+
+      // Update the entire array
+      await db.ref(ref).set(newArray);
+      return true;
     } else {
-      // await dbRef.child('japaneseWords').child(newWordKey).set(newWordData);
-
-      await admin
-        .database()
-        .ref(japaneseWords)
-        .child(newWordKey)
-        .set(newWordData);
-      console.log('## New word added successfully!');
+      console.log('## Item already exists in DB');
+      return false;
     }
   } catch (error) {
-    console.error('## Error adding new word:', error);
+    console.error('## Error updating database structure:', error);
+    return error;
   }
-
-  //   const snapshot = await dbRef
-  //     .child(japaneseWords)
-  //     .child(newWordKey)
-  //     .once('value');
-  //   if (snapshot.exists()) {
-  //     console.log('Word key already exists. Cannot overwrite.');
-  //   } else {
-  //     await dbRef.child(japaneseWords).child(newWordKey).set(newWordData);
-  //     console.log('New word added successfully!');
-  //   }
-  // } catch (error) {
-  //   console.error('Error adding new word:', error);
-  // }
 };
 
 const addToSatori = async ({ ref, contentEntry }) => {

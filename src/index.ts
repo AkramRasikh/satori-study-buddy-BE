@@ -97,7 +97,15 @@ app.post('/add-word', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
   const contentEntry = req.body?.contentEntry;
   try {
-    await addJapaneseWord({ ref, contentEntry });
+    // await addJapaneseWord({ ref, contentEntry });
+    const resBool = await addJapaneseWord({ ref });
+    if (!resBool) {
+      console.log('## 1');
+      return res
+        .status(409)
+        .json({ message: 'Entry already exists', contentEntry });
+    }
+
     res
       .status(200)
       .json({ message: 'Successfully updated entry', contentEntry });
