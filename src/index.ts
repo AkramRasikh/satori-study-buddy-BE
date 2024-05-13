@@ -15,6 +15,7 @@ import {
   addEntry,
   addToSatori,
   getSpecifiedFirebaseContent,
+  addJapaneseWord,
 } from './firebase/init';
 import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
 import { structureSatoriFlashcards } from './satori/structure-satori-data';
@@ -84,6 +85,19 @@ app.post('/update-content', async (req: Request, res: Response) => {
   const contentEntry = req.body?.contentEntry;
   try {
     await addEntry({ ref, contentEntry });
+    res
+      .status(200)
+      .json({ message: 'Successfully updated entry', contentEntry });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post('/add-word', async (req: Request, res: Response) => {
+  const ref = req.body?.ref;
+  const contentEntry = req.body?.contentEntry;
+  try {
+    await addJapaneseWord({ ref, contentEntry });
     res
       .status(200)
       .json({ message: 'Successfully updated entry', contentEntry });

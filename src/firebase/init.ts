@@ -1,6 +1,7 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import serviceAccount from '../google-service-account.json';
 import config from '../../config';
+import { japaneseWords } from './refs';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -9,6 +10,57 @@ admin.initializeApp({
 const bucketName = config.firebaseBucketName;
 
 const db = admin.database();
+
+// const addJapaneseWord = async ({ newWordKey, newWordData }) => {
+const addJapaneseWord = async ({}) => {
+  // try {
+  const newWordKey = '君が代';
+  const newWordData = {
+    1: 'a',
+    2: 'b',
+  };
+  try {
+    const snapshot = await admin
+      .database()
+      .ref(japaneseWords)
+      .child(newWordKey)
+      .once('value');
+    const exists = snapshot.exists();
+    console.log('## snapshot: ', snapshot);
+    console.log('## exists: ', exists);
+
+    console.log('##########');
+    if (exists) {
+      console.log('### Word key already exists. Cannot overwrite.');
+      return;
+    } else {
+      // await dbRef.child('japaneseWords').child(newWordKey).set(newWordData);
+
+      await admin
+        .database()
+        .ref(japaneseWords)
+        .child(newWordKey)
+        .set(newWordData);
+      console.log('## New word added successfully!');
+    }
+  } catch (error) {
+    console.error('## Error adding new word:', error);
+  }
+
+  //   const snapshot = await dbRef
+  //     .child(japaneseWords)
+  //     .child(newWordKey)
+  //     .once('value');
+  //   if (snapshot.exists()) {
+  //     console.log('Word key already exists. Cannot overwrite.');
+  //   } else {
+  //     await dbRef.child(japaneseWords).child(newWordKey).set(newWordData);
+  //     console.log('New word added successfully!');
+  //   }
+  // } catch (error) {
+  //   console.error('Error adding new word:', error);
+  // }
+};
 
 const addToSatori = async ({ ref, contentEntry }) => {
   try {
@@ -93,4 +145,5 @@ export {
   getSpecifiedFirebaseContent,
   addEntry,
   addToSatori,
+  addJapaneseWord,
 };
