@@ -16,6 +16,7 @@ import {
   addToSatori,
   getSpecifiedFirebaseContent,
   addJapaneseWord,
+  updateJapaneseWord,
 } from './firebase/init';
 import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
 import { structureSatoriFlashcards } from './satori/structure-satori-data';
@@ -95,20 +96,33 @@ app.post('/update-content', async (req: Request, res: Response) => {
 
 app.post('/add-word', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
-  const contentEntry = req.body?.contentEntry;
+  const word = req.body?.word;
   try {
-    // await addJapaneseWord({ ref, contentEntry });
-    const resStatus = await addJapaneseWord({ ref, contentEntry });
+    const resStatus = await addJapaneseWord({ ref, word });
     if (resStatus === 409) {
       console.log('## 1');
-      return res
-        .status(409)
-        .json({ message: 'Entry already exists', contentEntry });
+      return res.status(409).json({ message: 'Entry already exists', word });
     }
     if (resStatus === 200) {
-      res
-        .status(200)
-        .json({ message: 'Successfully updated entry', contentEntry });
+      res.status(200).json({ message: 'Successfully added entry', word });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add item', word: req.body?.word });
+  }
+});
+
+app.post('/update-word', async (req: Request, res: Response) => {
+  const ref = req.body?.ref;
+  const word = req.body?.word;
+
+  try {
+    // for now
+    const resStatus: any = await updateJapaneseWord({ ref, word });
+    if (resStatus === 409) {
+      return res.status(409).json({ message: 'Entry already exists', word });
+    }
+    if (resStatus === 200) {
+      res.status(200).json({ message: 'Successfully updated entry', word });
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to add item', word: req.body?.word });

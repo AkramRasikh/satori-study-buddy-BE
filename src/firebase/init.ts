@@ -10,19 +10,57 @@ const bucketName = config.firebaseBucketName;
 
 const db = admin.database();
 
-const addJapaneseWord = async ({ ref, contentEntry }) => {
+const updateJapaneseWord = async ({ ref, word }) => {
+  const updatedContexts = word.contexts;
+  const entryID = word.id;
+  try {
+    // Fetch the existing array
+    const snapshot = await db.ref(ref).once('value');
+    const existingArray = snapshot.val();
+
+    if (existingArray) {
+      // Find the index of the entry with the specified entryID
+      const index = existingArray.findIndex((entry) => entry.id === entryID);
+
+      if (index !== -1) {
+        // Update the 'contexts' field of the entry at the found index
+        if (updatedContexts !== undefined) {
+          existingArray[index].contexts = updatedContexts;
+        } else {
+          // Handle the case where updatedContexts is undefined
+          // For example, throw an error or set a default value
+
+          throw new Error('updatedContexts is undefined');
+        }
+
+        // Update the array in the database
+        await db.ref(ref).set(existingArray);
+        return 200; // Successful update
+      } else {
+        return 404; // Entry not found
+      }
+    } else {
+      return 404; // Array not found or empty
+    }
+  } catch (error) {
+    console.error('## Error updating item (updateJapaneseWord): ', error);
+    throw new Error();
+  }
+};
+
+const addJapaneseWord = async ({ ref, word }) => {
   try {
     // Fetch the existing array
     const snapshot = await db.ref(ref).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Check if the new item's ID already exists in the array
-    const entryID = contentEntry.id; // Assuming each entry has a unique 'id' property
+    const entryID = word.id; // Assuming each entry has a unique 'id' property
     const isDuplicate = newArray.some((item) => item.id === entryID);
 
     if (!isDuplicate) {
       // Add the new item to the array
-      newArray.push(contentEntry);
+      newArray.push(word);
 
       // Update the entire array
       await db.ref(ref).set(newArray);
@@ -120,4 +158,5 @@ export {
   addEntry,
   addToSatori,
   addJapaneseWord,
+  updateJapaneseWord,
 };
