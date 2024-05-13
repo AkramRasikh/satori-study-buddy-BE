@@ -1,8 +1,6 @@
 import kuromoji, { Tokenizer, IpadicFeatures } from 'kuromoji';
 
 const underlineTargetWords = async ({ preUnderlinedSentence, wordBank }) => {
-  console.log('## underlineTargetWords: ', { preUnderlinedSentence, wordBank });
-
   try {
     const tokenizer: Tokenizer<IpadicFeatures> = await new Promise(
       (resolve, reject) => {
