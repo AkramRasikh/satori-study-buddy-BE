@@ -3,6 +3,7 @@ import serviceAccount from '../google-service-account.json';
 import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
+import { japaneseWords } from './refs';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -12,22 +13,20 @@ const bucketName = config.firebaseBucketName;
 
 const db = admin.database();
 
-const updateJapaneseWord = async ({ ref, word }) => {
-  const updatedContexts = word.contexts;
-  const entryID = word.id;
+const updateJapaneseContexts = async ({ id, updatedContext }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(ref).once('value');
+    const snapshot = await db.ref(japaneseWords).once('value');
     const existingArray = snapshot.val();
 
     if (existingArray) {
       // Find the index of the entry with the specified entryID
-      const index = existingArray.findIndex((entry) => entry.id === entryID);
+      const index = existingArray.findIndex((entry) => entry.id === id);
 
       if (index !== -1) {
         // Update the 'contexts' field of the entry at the found index
-        if (updatedContexts !== undefined) {
-          existingArray[index].contexts = updatedContexts;
+        if (updatedContext !== undefined) {
+          existingArray[index].contexts = updatedContext;
         } else {
           // Handle the case where updatedContexts is undefined
           // For example, throw an error or set a default value
@@ -36,7 +35,7 @@ const updateJapaneseWord = async ({ ref, word }) => {
         }
 
         // Update the array in the database
-        await db.ref(ref).set(existingArray);
+        await db.ref(japaneseWords).set(existingArray);
         return 200; // Successful update
       } else {
         return 404; // Entry not found
@@ -45,7 +44,7 @@ const updateJapaneseWord = async ({ ref, word }) => {
       return 404; // Array not found or empty
     }
   } catch (error) {
-    console.error('## Error updating item (updateJapaneseWord): ', error);
+    console.error('## Error updating item (updateJapaneseContexts): ', error);
     throw new Error();
   }
 };
@@ -191,6 +190,6 @@ export {
   addEntry,
   addToSatori,
   addJapaneseWord,
-  updateJapaneseWord,
+  updateJapaneseContexts,
   deleteJapaneseWord,
 };

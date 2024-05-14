@@ -5,7 +5,6 @@ import config from '../config';
 import chatGptTextAPI from './open-ai/chat-gpt';
 import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
 import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
-import satoriFlashcard from './satori/flashcard';
 import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
 import getSatoriSentence from './satori/audio';
@@ -16,7 +15,7 @@ import {
   addToSatori,
   getSpecifiedFirebaseContent,
   addJapaneseWord,
-  updateJapaneseWord,
+  updateJapaneseContexts,
   deleteJapaneseWord,
 } from './firebase/init';
 import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
@@ -93,23 +92,24 @@ app.post('/add-word', async (req: Request, res: Response) => {
 });
 
 app.post('/update-word', async (req: Request, res: Response) => {
-  const ref = req.body?.ref;
-  const word = req.body?.word;
+  const id = req.body?.id;
+  const updatedContext = req.body?.updatedContext;
 
   try {
-    const resStatus: any = await updateJapaneseWord({ ref, word });
+    const resStatus: any = await updateJapaneseContexts({
+      id,
+      updatedContext,
+    });
     if (resStatus === 404) {
       return res
         .status(404)
-        .json({ message: 'Entry does not exists to update', word });
+        .json({ message: 'Entry does not exists to update', id });
     }
     if (resStatus === 200) {
-      res.status(200).json({ message: 'Successfully updated entry', word });
+      res.status(200).json({ message: 'Successfully updated entry', id });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Failed to update item', word: req.body?.word });
+    res.status(500).json({ error: 'Failed to update item', id: req.body?.id });
   }
 });
 
