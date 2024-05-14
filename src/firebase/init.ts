@@ -1,6 +1,8 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import serviceAccount from '../google-service-account.json';
 import config from '../../config';
+import getBaseForm from '../language-script-helpers/get-base-form';
+import { v4 as uuidv4 } from 'uuid';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -78,14 +80,20 @@ const addJapaneseWord = async ({ ref, word }) => {
     // Fetch the existing array
     const snapshot = await db.ref(ref).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
+    const baseForm = await getBaseForm(word);
 
     // Check if the new item's ID already exists in the array
-    const entryID = word.id; // Assuming each entry has a unique 'id' property
-    const isDuplicate = newArray.some((item) => item.id === entryID);
+    const isDuplicate = newArray.some((item) => item.baseForm === baseForm);
 
     if (!isDuplicate) {
+      const wordData = {
+        id: uuidv4(),
+        baseForm,
+        surfaceForm: word,
+        contexts: [],
+      };
       // Add the new item to the array
-      newArray.push(word);
+      newArray.push(wordData);
 
       // Update the entire array
       await db.ref(ref).set(newArray);

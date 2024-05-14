@@ -1,28 +1,9 @@
-import kuromoji from 'kuromoji';
 import Kuroshiro from 'kuroshiro';
 import KuromojiAnalyzer from 'kuroshiro-analyzer-kuromoji';
-
-let tokenizerInstance: kuromoji.Tokenizer<any>;
+import { initializeTokenizer } from './init';
 
 interface kanjiToHiraganaParams {
   sentence: string;
-}
-
-async function initializeTokenizer() {
-  if (!tokenizerInstance) {
-    tokenizerInstance = await new Promise((resolve, reject) => {
-      kuromoji
-        .builder({ dicPath: 'node_modules/kuromoji/dict' })
-        .build((err, tokenizer) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve(tokenizer);
-        });
-    });
-  }
-  return tokenizerInstance;
 }
 
 const kanjiToHiragana = async ({ sentence }: kanjiToHiraganaParams) => {
