@@ -244,27 +244,6 @@ app.post('/underline-target-words', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/satori-flashcard', async (req: Request, res: Response) => {
-  const sessionToken = req.body?.sessionToken;
-  const flashCardDifficulty = req.body?.flashCardDifficulty;
-  const cardId = req.body?.cardId;
-
-  try {
-    const flashcardResponseSuccess = await satoriFlashcard({
-      sessionToken,
-      flashCardDifficulty,
-      cardId,
-    });
-
-    if (flashcardResponseSuccess) {
-      // send text too?
-      res.status(200).json({ cardId });
-    }
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-});
-
 app.post('/satori-audio', async (req: Request, res: Response) => {
   const sessionToken = req.body?.sessionToken;
   const id = req.body?.id;
