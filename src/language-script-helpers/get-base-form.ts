@@ -9,6 +9,9 @@ const getBaseForm = async (word: string) => {
     // Tokenize the word
     const tokens = tokenizer.tokenize(word);
 
+    if (tokens?.length > 1) {
+      return word;
+    }
     // If the word is not conjugated or unknown, return the original word
     if (tokens.length === 0 || tokens[0].basic_form === undefined) {
       return word;
