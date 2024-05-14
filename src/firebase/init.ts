@@ -74,10 +74,10 @@ const deleteJapaneseWord = async ({ ref, id }) => {
   }
 };
 
-const addJapaneseWord = async ({ ref, word }) => {
+const addJapaneseWord = async ({ word, contexts }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(ref).once('value');
+    const snapshot = await db.ref(japaneseWords).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
     const baseForm = await getBaseForm(word);
 
@@ -89,13 +89,13 @@ const addJapaneseWord = async ({ ref, word }) => {
         id: uuidv4(),
         baseForm,
         surfaceForm: word,
-        contexts: [],
+        contexts,
       };
       // Add the new item to the array
       newArray.push(wordData);
 
       // Update the entire array
-      await db.ref(ref).set(newArray);
+      await db.ref(japaneseWords).set(newArray);
       return 200;
     } else {
       return 409;
