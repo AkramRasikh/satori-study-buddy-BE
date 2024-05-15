@@ -1,20 +1,39 @@
 import kuromoji, { Tokenizer, IpadicFeatures } from 'kuromoji';
 
+const getToken = async () => {
+  const tokenizer: Tokenizer<IpadicFeatures> = await new Promise(
+    (resolve, reject) => {
+      kuromoji
+        .builder({ dicPath: 'node_modules/kuromoji/dict' })
+        .build((err, tokenizer) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(tokenizer);
+        });
+    },
+  );
+
+  return tokenizer;
+};
+
+const getPhrase = (matchingSurfaceForms, wordBank, preUnderlinedSentence) => {
+  const overlapsRemoved = wordBank.filter(
+    (item) => !matchingSurfaceForms.includes(item),
+  );
+
+  if (overlapsRemoved?.length > 0) {
+    return overlapsRemoved.filter((item) =>
+      preUnderlinedSentence.includes(item),
+    );
+  }
+  return null;
+};
+
 const underlineTargetWords = async ({ preUnderlinedSentence, wordBank }) => {
   try {
-    const tokenizer: Tokenizer<IpadicFeatures> = await new Promise(
-      (resolve, reject) => {
-        kuromoji
-          .builder({ dicPath: 'node_modules/kuromoji/dict' })
-          .build((err, tokenizer) => {
-            if (err) {
-              reject(err);
-              return;
-            }
-            resolve(tokenizer);
-          });
-      },
-    );
+    const tokenizer = await getToken();
 
     // Tokenize the Japanese sentence
     const tokens = tokenizer.tokenize(preUnderlinedSentence);
@@ -27,6 +46,15 @@ const underlineTargetWords = async ({ preUnderlinedSentence, wordBank }) => {
     const matchingSurfaceForms = matchingTokens.map(
       (token) => token.surface_form,
     );
+    const phrases = getPhrase(
+      matchingSurfaceForms,
+      wordBank,
+      preUnderlinedSentence,
+    );
+
+    if (phrases?.length > 0) {
+      return [...matchingSurfaceForms, ...phrases];
+    }
 
     return matchingSurfaceForms;
   } catch (error) {
