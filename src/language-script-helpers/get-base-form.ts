@@ -17,8 +17,13 @@ const getBaseForm = async (word: string) => {
       return word;
     }
 
+    const firstToken = tokens[0];
+
+    if (firstToken.basic_form === '*') {
+      return firstToken.surface_form;
+    }
     // Return the basic form of the word
-    return tokens[0].basic_form;
+    return firstToken.basic_form;
   } catch (error) {
     throw error;
   }

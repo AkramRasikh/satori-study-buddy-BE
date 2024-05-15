@@ -4,6 +4,8 @@ import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
 import { japaneseWords } from './refs';
+import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
+import { translate } from '@vitalets/google-translate-api';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -74,6 +76,27 @@ const deleteJapaneseWord = async ({ ref, id }) => {
   }
 };
 
+const getJapaneseWordDefinition = async (word) => {
+  try {
+    const { text: definition, raw } = (await translate(word, {
+      from: 'ja',
+      to: 'en',
+    })) as any;
+
+    let transliteration: string[] = [];
+    raw.sentences?.forEach((sentence) => {
+      if (sentence?.src_translit) {
+        transliteration.push(sentence.src_translit);
+      }
+    });
+    const finalTransliteration = transliteration?.join(' ');
+
+    return { definition, transliteration: finalTransliteration };
+  } catch (error) {
+    throw error;
+  }
+};
+
 const addJapaneseWord = async ({ word, contexts }) => {
   try {
     // Fetch the existing array
@@ -85,10 +108,18 @@ const addJapaneseWord = async ({ word, contexts }) => {
     const isDuplicate = newArray.some((item) => item.baseForm === baseForm);
 
     if (!isDuplicate) {
+      const { definition, transliteration } = await getJapaneseWordDefinition(
+        word,
+      );
+      const phonetic = await kanjiToHiragana({ sentence: word });
+
       const wordData = {
         id: uuidv4(),
         baseForm,
         surfaceForm: word,
+        phonetic,
+        definition,
+        transliteration,
         contexts,
       };
       // Add the new item to the array
