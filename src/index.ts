@@ -18,7 +18,12 @@ import {
   updateJapaneseContexts,
   deleteJapaneseWord,
 } from './firebase/init';
-import { japaneseContent, japaneseWords, satoriContent } from './firebase/refs';
+import {
+  japaneseContent,
+  japaneseWords,
+  satoriContent,
+  japaneseSentences,
+} from './firebase/refs';
 import { structureSatoriFlashcards } from './satori/structure-satori-data';
 import { satoriRoutes } from './satori/routes';
 
@@ -213,10 +218,13 @@ app.post('/satori-data-with-fb', async (req: Request, res: Response) => {
 app.post('/satori-content-add', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
   const contentEntry = req.body?.contentEntry;
-
-  if (
-    !(ref === japaneseContent || ref === japaneseWords || ref === satoriContent)
-  ) {
+  const allowedRefs = [
+    japaneseContent,
+    japaneseWords,
+    satoriContent,
+    japaneseSentences,
+  ];
+  if (!allowedRefs.includes(ref)) {
     res.status(500).json({ error: `Wrong ref added ${ref}` });
   }
   try {
