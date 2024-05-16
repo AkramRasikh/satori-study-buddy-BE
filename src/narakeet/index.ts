@@ -8,14 +8,18 @@ const japaneseVoices = [
   // 'Ayami',
   // 'Mariko',
   // 'Takeshi',
-  'Yuriko',
-  'Kenichi',
-  'Takuya',
-  'Kaori',
-  'Hideaki', // the best!
-  'Akira', // nice
-  'Tomoka', // nice
-  'Kenji', // the best!
+  // 'Yuriko',
+  // 'Kenichi',
+  // 'Takuya',
+  // 'Kaori',
+  // 'Akira', // nice
+  // 'Tomoka', // nice
+  // 'Hideaki', // the best!
+  // 'Hideaki', // the best!
+  // 'Kenji', // the best!
+  // 'Kenji', // the best!
+  'Kuniko', // the best!
+  'Kuniko', // the best!
   'Kuniko', // the best!
 ];
 
