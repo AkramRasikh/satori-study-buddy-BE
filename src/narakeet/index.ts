@@ -2,22 +2,22 @@ import { Readable } from 'stream';
 import fetch from 'node-fetch'; // or import axios from 'axios';
 import { uploadBufferToFirebase } from '../firebase/init';
 
+// 'Kasumi',
+// 'Kei',
+// 'Ayami',
+// 'Mariko',
+// 'Takeshi',
 const japaneseVoices = [
-  // 'Kasumi',
-  // 'Kei',
-  // 'Ayami',
-  // 'Mariko',
-  // 'Takeshi',
-  // 'Yuriko',
-  // 'Kenichi',
-  // 'Takuya',
-  // 'Kaori',
-  // 'Akira', // nice
-  // 'Tomoka', // nice
-  // 'Hideaki', // the best!
-  // 'Hideaki', // the best!
-  // 'Kenji', // the best!
-  // 'Kenji', // the best!
+  'Yuriko',
+  'Kenichi',
+  'Takuya',
+  'Kaori',
+  'Akira', // nice
+  'Tomoka', // nice
+  'Hideaki', // the best!
+  'Hideaki', // the best!
+  'Kenji', // the best!
+  'Kenji', // the best!
   'Kuniko', // the best!
   'Kuniko', // the best!
   'Kuniko', // the best!
