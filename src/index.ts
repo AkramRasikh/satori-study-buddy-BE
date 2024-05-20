@@ -2,12 +2,8 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import cors from 'cors';
 import config from '../config';
-import chatGptTextAPI from './open-ai/chat-gpt';
-import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
-import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
 import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
-import underlineTargetWords from './language-script-helpers/underline-target-words';
 import {
   getFirebaseContent,
   addEntry,
@@ -22,6 +18,7 @@ import {
 } from './firebase/refs';
 import { structureSatoriFlashcards } from './satori/structure-satori-data';
 import { satoriRoutes } from './satori/routes';
+import { openAIRoutes } from './open-ai/routes';
 
 const app = express();
 
@@ -33,34 +30,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 satoriRoutes(app);
-
-app.post('/chat-gpt-text', async (req: Request, res: Response) => {
-  const { body } = req;
-  const openAIKey = body?.openAIKey;
-  const sentence = body?.sentence;
-  const model = body?.model;
-  try {
-    const resultContent = await chatGptTextAPI({ sentence, model, openAIKey });
-    console.log('## /chat-gpt-text success');
-    res.status(200).json(resultContent);
-  } catch (error) {
-    console.log('## yooooo Errror');
-    res.status(500).json({ error });
-  }
-});
-
-app.post('/kanji-to-hiragana', async (req: Request, res: Response) => {
-  const preHiraganaText = req.body?.sentence;
-  try {
-    const hiraganaTextSentence = await kanjiToHiragana({
-      sentence: preHiraganaText,
-    });
-
-    res.status(200).json({ sentence: hiraganaTextSentence });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-});
+openAIRoutes(app);
 
 app.post('/update-content', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
@@ -174,42 +144,6 @@ app.post('/satori-content-add', async (req: Request, res: Response) => {
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error });
-  }
-});
-
-app.post('/underline-target-words', async (req: Request, res: Response) => {
-  // need to check body before functions
-  const preUnderlinedSentence = req.body.sentence;
-  const wordBank = req.body.wordBank;
-  try {
-    const hiraganaTextSentence = await underlineTargetWords({
-      preUnderlinedSentence,
-      wordBank,
-    });
-    console.log('## hiraganaTextSentence: ', hiraganaTextSentence);
-
-    res.status(200).json({ underlinedText: hiraganaTextSentence });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-});
-
-app.post('/chat-gpt-tts', async (req: Request, res: Response) => {
-  const { body } = req;
-  const openAIKey = body?.openAIKey;
-  const sentence = body?.sentence;
-  const id = body?.id;
-
-  try {
-    const successResIdSentence = await chatGPTTextToSpeech({
-      openAIKey,
-      sentence,
-      id,
-    });
-
-    return res.status(200).json({ mp3FilesOnServer: successResIdSentence });
-  } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
