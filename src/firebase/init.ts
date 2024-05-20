@@ -110,20 +110,6 @@ const addEntry = async ({ ref, contentEntry }) => {
   }
 };
 
-const getSpecifiedFirebaseContent = async ({ ref, id }) => {
-  const refs = db.ref(ref);
-  try {
-    const res = await refs.once('value');
-    const japaneseContent = res.val();
-
-    const desiredReference = japaneseContent.find((item) => item?.id === id);
-
-    return desiredReference;
-  } catch (error) {
-    console.error('Error retrieving posts:', error);
-    return error;
-  }
-};
 const getFirebaseContent = async ({ ref }) => {
   const postsRef = db.ref(ref);
   try {
@@ -156,7 +142,6 @@ const uploadBufferToFirebase = async ({ buffer, filePath }) => {
 export {
   uploadBufferToFirebase,
   getFirebaseContent,
-  getSpecifiedFirebaseContent,
   addEntry,
   addToSatori,
   addJapaneseWord,

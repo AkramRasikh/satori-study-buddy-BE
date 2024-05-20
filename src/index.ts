@@ -13,7 +13,6 @@ import {
   getFirebaseContent,
   addEntry,
   addToSatori,
-  getSpecifiedFirebaseContent,
   addJapaneseWord,
 } from './firebase/init';
 import {
