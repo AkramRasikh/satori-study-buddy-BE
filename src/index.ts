@@ -16,7 +16,6 @@ import {
   getSpecifiedFirebaseContent,
   addJapaneseWord,
   updateJapaneseContexts,
-  deleteJapaneseWord,
 } from './firebase/init';
 import {
   japaneseContent,
@@ -115,26 +114,6 @@ app.post('/update-word', async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to update item', id: req.body?.id });
-  }
-});
-
-app.post('/delete-word', async (req: Request, res: Response) => {
-  const ref = req.body?.ref;
-  const word = req.body?.word;
-
-  try {
-    // for now
-    const resStatus = await deleteJapaneseWord({ ref, id: word.id });
-    if (resStatus === 404) {
-      return res.status(404).json({ message: "Entry doesn't exist", word });
-    }
-    if (resStatus === 200) {
-      res.status(200).json({ message: 'Successfully deleted entry', word });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Failed to delete item', word: req.body?.word });
   }
 });
 

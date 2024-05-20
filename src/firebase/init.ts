@@ -51,31 +51,6 @@ const updateJapaneseContexts = async ({ id, updatedContext }) => {
   }
 };
 
-const deleteJapaneseWord = async ({ ref, id }) => {
-  try {
-    // Fetch the existing array
-    const snapshot = await db.ref(ref).once('value');
-    let existingArray = snapshot.val() || []; // If the array doesn't exist, create an empty array
-
-    // Find the index of the entry with the specified entryID
-    const index = existingArray.findIndex((item) => item.id === id);
-
-    if (index !== -1) {
-      // Remove the entry from the array
-      existingArray.splice(index, 1);
-
-      // Update the array in the database
-      await db.ref(ref).set(existingArray);
-      return 200; // Successful deletion
-    } else {
-      return 404; // Entry not found
-    }
-  } catch (error) {
-    console.error('## Error deleting item (deleteJapaneseWord): ', error);
-    throw new Error();
-  }
-};
-
 const getJapaneseWordDefinition = async (word) => {
   try {
     const { text: definition, raw } = (await translate(word, {
@@ -222,5 +197,4 @@ export {
   addToSatori,
   addJapaneseWord,
   updateJapaneseContexts,
-  deleteJapaneseWord,
 };
