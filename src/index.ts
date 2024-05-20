@@ -115,23 +115,6 @@ app.post('/firebase-data', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/firebase-data-entry', async (req: Request, res: Response) => {
-  const ref = req.body?.ref;
-  const id = req.body?.id;
-
-  if (
-    !(ref === japaneseContent || ref === japaneseWords || ref === satoriContent)
-  ) {
-    res.status(500).json({ error: `Wrong ref added ${ref}` });
-  }
-  try {
-    const data = await getSpecifiedFirebaseContent({ ref, id });
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-});
-
 app.post('/satori-data-with-fb', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
   const sessionToken = req.body?.sessionToken;
