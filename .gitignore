@@ -4,8 +4,3 @@ node_modules
 ## env
 .env
 
-## assets
-public
-
-## google
-google-service-account.json
