@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import config from '../config';
-import functions from 'firebase-functions';
 import { satoriRoutes } from './satori/routes';
 import { openAIRoutes } from './open-ai/routes';
 import { firebaseRoutes } from './firebase/routes';
@@ -27,5 +26,3 @@ app.listen(port, () => {
   console.log(`## Server is running at http://localhost:${port}`);
   console.log('## port: ', port);
 });
-
-exports.api = functions.https.onRequest(app);
