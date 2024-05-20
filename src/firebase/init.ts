@@ -15,42 +15,6 @@ const bucketName = config.firebaseBucketName;
 
 const db = admin.database();
 
-const updateJapaneseContexts = async ({ id, updatedContext }) => {
-  try {
-    // Fetch the existing array
-    const snapshot = await db.ref(japaneseWords).once('value');
-    const existingArray = snapshot.val();
-
-    if (existingArray) {
-      // Find the index of the entry with the specified entryID
-      const index = existingArray.findIndex((entry) => entry.id === id);
-
-      if (index !== -1) {
-        // Update the 'contexts' field of the entry at the found index
-        if (updatedContext !== undefined) {
-          existingArray[index].contexts = updatedContext;
-        } else {
-          // Handle the case where updatedContexts is undefined
-          // For example, throw an error or set a default value
-
-          throw new Error('updatedContexts is undefined');
-        }
-
-        // Update the array in the database
-        await db.ref(japaneseWords).set(existingArray);
-        return 200; // Successful update
-      } else {
-        return 404; // Entry not found
-      }
-    } else {
-      return 404; // Array not found or empty
-    }
-  } catch (error) {
-    console.error('## Error updating item (updateJapaneseContexts): ', error);
-    throw new Error();
-  }
-};
-
 const getJapaneseWordDefinition = async (word) => {
   try {
     const { text: definition, raw } = (await translate(word, {
@@ -196,5 +160,4 @@ export {
   addEntry,
   addToSatori,
   addJapaneseWord,
-  updateJapaneseContexts,
 };

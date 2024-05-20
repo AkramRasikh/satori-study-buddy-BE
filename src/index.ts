@@ -15,7 +15,6 @@ import {
   addToSatori,
   getSpecifiedFirebaseContent,
   addJapaneseWord,
-  updateJapaneseContexts,
 } from './firebase/init';
 import {
   japaneseContent,
