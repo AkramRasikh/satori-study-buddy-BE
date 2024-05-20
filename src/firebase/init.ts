@@ -1,5 +1,4 @@
-import admin, { ServiceAccount } from 'firebase-admin';
-import serviceAccount from '../google-service-account.json';
+import admin from 'firebase-admin';
 import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +7,7 @@ import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as ServiceAccount),
+  credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
   databaseURL: config.firebaseDBUrl,
 });
 const bucketName = config.firebaseBucketName;
