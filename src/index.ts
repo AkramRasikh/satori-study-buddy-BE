@@ -142,7 +142,12 @@ app.post('/firebase-data', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
 
   if (
-    !(ref === japaneseContent || ref === japaneseWords || ref === satoriContent)
+    !(
+      ref === japaneseContent ||
+      ref === japaneseWords ||
+      ref === satoriContent ||
+      ref === japaneseSentences
+    )
   ) {
     res.status(500).json({ error: `Wrong ref added ${ref}` });
   }
