@@ -95,28 +95,6 @@ app.post('/add-word', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/update-word', async (req: Request, res: Response) => {
-  const id = req.body?.id;
-  const updatedContext = req.body?.updatedContext;
-
-  try {
-    const resStatus: any = await updateJapaneseContexts({
-      id,
-      updatedContext,
-    });
-    if (resStatus === 404) {
-      return res
-        .status(404)
-        .json({ message: 'Entry does not exists to update', id });
-    }
-    if (resStatus === 200) {
-      res.status(200).json({ message: 'Successfully updated entry', id });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update item', id: req.body?.id });
-  }
-});
-
 app.post('/firebase-data', async (req: Request, res: Response) => {
   const ref = req.body?.ref;
 
