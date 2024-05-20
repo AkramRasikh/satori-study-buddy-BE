@@ -7,7 +7,6 @@ import chatGPTTextToSpeech from './open-ai/chat-gpt-tts';
 import kanjiToHiragana from './language-script-helpers/kanji-to-hiragana';
 import narakeetAudio from './narakeet';
 import getSatoriCardsInBulk from './satori/bulk-cards';
-import getSatoriSentence from './satori/audio';
 import underlineTargetWords from './language-script-helpers/underline-target-words';
 import {
   getFirebaseContent,
@@ -190,25 +189,6 @@ app.post('/underline-target-words', async (req: Request, res: Response) => {
     console.log('## hiraganaTextSentence: ', hiraganaTextSentence);
 
     res.status(200).json({ underlinedText: hiraganaTextSentence });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-});
-
-app.post('/satori-audio', async (req: Request, res: Response) => {
-  const sessionToken = req.body?.sessionToken;
-  const id = req.body?.id;
-  const episode = req.body?.episode;
-
-  try {
-    const audioUrl = await getSatoriSentence({
-      id,
-      episode,
-      sessionToken,
-    });
-    if (audioUrl) {
-      res.status(200).json({ url: audioUrl });
-    }
   } catch (error) {
     res.status(500).json({ error });
   }
