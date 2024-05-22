@@ -6,6 +6,7 @@ import { openAIRoutes } from './open-ai/routes';
 import { firebaseRoutes } from './firebase/routes';
 import { languageScriptHelpers } from './language-script-helpers/routes';
 import { narakeetRoutes } from './narakeet/routes';
+import { mp3Utils } from './mp3-utils/routes';
 
 const app = express();
 
@@ -21,6 +22,7 @@ openAIRoutes(app);
 firebaseRoutes(app);
 languageScriptHelpers(app);
 narakeetRoutes(app);
+mp3Utils(app);
 
 app.listen(port, () => {
   console.log(`## Server is running at http://localhost:${port}`);

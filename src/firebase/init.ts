@@ -132,7 +132,13 @@ const uploadBufferToFirebase = async ({ buffer, filePath }) => {
     await storage.bucket(bucketName).file(filePath).save(buffer, {
       metadata: metadata,
     });
-    console.log('## Successfully uploaded file to Firebase');
+    const bucket = storage.bucket(bucketName);
+    const file = bucket.file(filePath);
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: '03-01-2500',
+    });
+    return url;
   } catch (error) {
     console.error('## Error uploading file to firebase:', error);
   }
