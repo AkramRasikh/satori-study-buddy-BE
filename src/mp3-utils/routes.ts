@@ -2,11 +2,15 @@ import { Request, Response } from 'express';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
-import { uploadBufferToFirebase } from '../firebase/init';
+import { addFullJapaneseMP3, uploadBufferToFirebase } from '../firebase/init';
+
+const folderPath = 'japanese-audio';
 
 const mp3Utils = (app) => {
   app.post('/combine-audio', (req: Request, res: Response) => {
     const audioFiles = req?.body?.audioFiles;
+    const mp3Name = req?.body?.mp3Name;
+    const formattedFirebaseName = folderPath + '/' + mp3Name + '.mp3';
 
     const outputFilePath = path.join(__dirname, 'output.mp3');
 
@@ -32,7 +36,13 @@ const mp3Utils = (app) => {
         try {
           const url = await uploadBufferToFirebase({
             buffer,
-            filePath: 'abc123.mp3',
+            filePath: formattedFirebaseName,
+          });
+
+          await addFullJapaneseMP3({
+            contentEntry: {
+              name: mp3Name,
+            },
           });
 
           res.status(200).send({ url });

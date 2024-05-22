@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { addEntry, addJapaneseWord, getFirebaseContent } from './init';
 import {
   japaneseContent,
+  japaneseContentFullMP3s,
   japaneseSentences,
   japaneseWords,
   satoriContent,
@@ -48,7 +49,8 @@ const firebaseRoutes = (app) => {
         ref === japaneseContent ||
         ref === japaneseWords ||
         ref === satoriContent ||
-        ref === japaneseSentences
+        ref === japaneseSentences ||
+        ref === japaneseContentFullMP3s
       )
     ) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
