@@ -87,7 +87,8 @@ const firebaseRoutes = (app) => {
         ref === japaneseWords ||
         ref === satoriContent ||
         ref === japaneseSentences ||
-        ref === japaneseContentFullMP3s
+        ref === japaneseContentFullMP3s ||
+        ref === japaneseSnippets
       )
     ) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
