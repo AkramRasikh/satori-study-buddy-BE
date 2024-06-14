@@ -1,14 +1,51 @@
 import { Request, Response } from 'express';
-import { addEntry, addJapaneseWord, getFirebaseContent } from './init';
+import {
+  addEntry,
+  addJapaneseWord,
+  addSnippet,
+  getFirebaseContent,
+  removeSnippet,
+} from './init';
 import {
   japaneseContent,
   japaneseContentFullMP3s,
   japaneseSentences,
   japaneseWords,
   satoriContent,
+  japaneseSnippets,
 } from './refs';
 
 const firebaseRoutes = (app) => {
+  app.post('/add-snippet', async (req: Request, res: Response) => {
+    const ref = req.body?.ref;
+    const contentEntry = req.body?.contentEntry;
+    const allowedRefs = [japaneseSnippets];
+    if (!allowedRefs.includes(ref)) {
+      res.status(500).json({ error: `Wrong ref added ${ref}` });
+    }
+    try {
+      const data = await addSnippet({ ref, contentEntry });
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
+
+  app.post('/delete-snippet', async (req: Request, res: Response) => {
+    const ref = req.body?.ref;
+    const contentEntry = req.body?.contentEntry;
+    const allowedRefs = [japaneseSnippets];
+    if (!allowedRefs.includes(ref)) {
+      res.status(500).json({ error: `Wrong ref added ${ref}` });
+    }
+    try {
+      const data = await removeSnippet({ ref, contentEntry });
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
+
   app.post('/update-content', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
     const contentEntry = req.body?.contentEntry;

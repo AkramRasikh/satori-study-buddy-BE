@@ -7,11 +7,11 @@ import { uploadBufferToFirebase } from '../firebase/init';
 // 'Ayami',
 // 'Mariko',
 // 'Takeshi',
+// 'Kaori',
 const japaneseVoices = [
   'Yuriko',
   'Kenichi',
   'Takuya',
-  'Kaori',
   'Akira', // nice
   'Tomoka', // nice
   'Hideaki', // the best!
