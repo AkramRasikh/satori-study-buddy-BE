@@ -6,6 +6,7 @@ export async function fetchBufferFromUrl(url) {
   try {
     // Fetch the data from the URL
     const response = await fetch(url);
+    console.log('## fetchBufferFromUrl 1: ', { url, response });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.statusText}`);
@@ -13,6 +14,7 @@ export async function fetchBufferFromUrl(url) {
 
     // Convert the response into a buffer
     const buffer = await response.buffer();
+    console.log('## fetchBufferFromUrl 2: ', { url, buffer });
     return buffer;
   } catch (error) {
     console.error('Error fetching buffer from URL:', error);
