@@ -34,21 +34,28 @@ const mp3Utils = (app) => {
             const audioUrl = getFirebaseAudioURL(item.id);
             const id = item.id;
             const tempFilePath = path.join(__dirname, `${id}.mp3`);
+            try {
+              const buffer = await fetchBufferFromUrl(audioUrl);
+              await saveBufferToFile(buffer, tempFilePath);
 
-            const buffer = await fetchBufferFromUrl(audioUrl);
-            await saveBufferToFile(buffer, tempFilePath);
+              const formatData = (await useFFmpeg(tempFilePath)) as any;
+              const duration = formatData.format.duration;
 
-            const formatData = (await useFFmpeg(tempFilePath)) as any;
-            const duration = formatData.format.duration;
-
-            fs.unlinkSync(tempFilePath);
-
-            return {
-              ...item,
-              duration,
-              position: index,
-              audioUrl,
-            };
+              return {
+                ...item,
+                duration,
+                position: index,
+                audioUrl,
+              };
+            } catch (error) {
+              console.error('Error processing item:', error);
+              return null; // or handle error as needed
+            } finally {
+              // Always ensure to delete temporary file and close resources
+              if (fs.existsSync(tempFilePath)) {
+                fs.unlinkSync(tempFilePath);
+              }
+            }
           })
           .sort((a, b) => a.position - b.position),
       );
