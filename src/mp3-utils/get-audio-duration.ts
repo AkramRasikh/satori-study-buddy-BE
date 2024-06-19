@@ -5,6 +5,7 @@ import fs from 'fs';
 export async function fetchBufferFromUrl(url) {
   try {
     // Fetch the data from the URL
+    console.log('## fetchBufferFromUrl 0: ', { url });
     const response = await fetch(url);
     console.log('## fetchBufferFromUrl 1: ', { url, response });
 
