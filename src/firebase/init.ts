@@ -35,6 +35,16 @@ const getJapaneseWordDefinition = async (word) => {
   }
 };
 
+const getContent = async ({ ref }) => {
+  try {
+    const snapshot = await db.ref(ref).once('value');
+    const data = snapshot.val();
+    return data;
+  } catch (error) {
+    console.error('## getContent', error);
+  }
+};
+
 const addJapaneseWord = async ({ word, contexts }) => {
   try {
     // Fetch the existing array
@@ -223,4 +233,5 @@ export {
   addFullJapaneseMP3,
   addSnippet,
   removeSnippet,
+  getContent,
 };
