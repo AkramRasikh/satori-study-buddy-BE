@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Request, Response } from 'express';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
+import { fetchMixMatchJsonData } from './mix-match';
 
 function srtTimestampToSeconds(timestamp) {
   const parts = timestamp.split(/[:,]/);
@@ -88,6 +89,10 @@ const bilingualContentRoutes = (app) => {
   app.get('/combine', async (req: Request, res: Response) => {
     const combinedSubtitles = await everything();
     res.send(combinedSubtitles).status(200);
+  });
+  app.get('/get-lyrics', async (req: Request, res: Response) => {
+    const siu = await fetchMixMatchJsonData();
+    res.send(siu).status(200);
   });
 };
 
