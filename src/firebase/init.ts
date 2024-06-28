@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { japaneseContentFullMP3s, japaneseWords } from './refs';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
+import { chatGPTTranslator } from '../open-ai/translator';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
@@ -31,6 +32,11 @@ const getJapaneseWordDefinition = async (word) => {
 
     return { definition, transliteration: finalTransliteration };
   } catch (error) {
+    const tooManyRequests = error?.message?.includes('Too Many Requests');
+    if (tooManyRequests) {
+      const openAIKey = process.env.OPENAI_API_KEY;
+      return await chatGPTTranslator({ word, model: 'gpt-4', openAIKey });
+    }
     throw error;
   }
 };
@@ -85,6 +91,20 @@ const addJapaneseWord = async ({ word, contexts }) => {
   }
 };
 
+const addLyricsToFirestore = async ({ ref, contentEntry }) => {
+  try {
+    if (contentEntry) {
+      const docRef = db.ref(ref);
+
+      await docRef.set(contentEntry);
+      console.log('Document successfully written with ID:', contentEntry.id);
+    } else {
+      console.error('No song data to add to Firestore.');
+    }
+  } catch (error) {
+    console.error('Error adding document to Firestore:', error);
+  }
+};
 const addToSatori = async ({ ref, contentEntry }) => {
   try {
     // Fetch the existing array
@@ -234,4 +254,5 @@ export {
   addSnippet,
   removeSnippet,
   getContent,
+  addLyricsToFirestore,
 };
