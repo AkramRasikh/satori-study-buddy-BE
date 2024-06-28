@@ -46,9 +46,9 @@ async function fetchMixMatchJsonData() {
         })
         .flat()
         .map((item, index) => ({ position: index + 1, id: uuidv4(), ...item }));
-      console.log('## ', mappedLyrics);
 
       return {
+        id: uuidv4(),
         title,
         snippets: [],
         lyrics: mappedLyrics,
