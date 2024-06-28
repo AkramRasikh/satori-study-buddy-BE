@@ -61,19 +61,24 @@ const getContent = async ({ ref }) => {
 };
 
 const addJapaneseWord = async ({ word, contexts }) => {
+  console.log('## addJapaneseWord 1');
   try {
     // Fetch the existing array
     const snapshot = await db.ref(japaneseWords).once('value');
+    console.log('## addJapaneseWord 2');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
     const baseForm = await getBaseForm(word);
+    console.log('## addJapaneseWord 3');
 
     // Check if the new item's ID already exists in the array
     const isDuplicate = newArray.some((item) => item.baseForm === baseForm);
 
     if (!isDuplicate) {
+      console.log('## addJapaneseWord 4');
       const { definition, transliteration } = await getJapaneseWordDefinition(
         word,
       );
+      console.log('## addJapaneseWord 5 ', { definition, transliteration });
       const phonetic = await kanjiToHiragana({ sentence: word });
 
       const wordData = {

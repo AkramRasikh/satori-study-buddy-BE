@@ -62,10 +62,12 @@ const firebaseRoutes = (app) => {
   app.post('/add-word', async (req: Request, res: Response) => {
     const word = req.body?.word;
     const contexts = req.body?.contexts;
+    console.log('## add-word 1', { word, contexts });
+
     try {
       const resStatus = await addJapaneseWord({ word, contexts });
       if (resStatus === 409) {
-        console.log('## 1');
+        console.log('## add-word 2');
         return res.status(409).json({ message: 'Entry already exists', word });
       }
       if (resStatus === 200) {
