@@ -60,18 +60,26 @@ const firebaseRoutes = (app) => {
   });
 
   app.post('/add-word', async (req: Request, res: Response) => {
+    console.log('## add-word 0');
     const word = req.body?.word;
     const contexts = req.body?.contexts;
     console.log('## add-word 1', { word, contexts });
 
     try {
-      const resStatus = await addJapaneseWord({ word, contexts });
-      if (resStatus === 409) {
+      const japaneseWordRes = await addJapaneseWord({ word, contexts });
+      if (japaneseWordRes.status === 409) {
         console.log('## add-word 2');
-        return res.status(409).json({ message: 'Entry already exists', word });
+        return res
+          .status(409)
+          .json({ message: 'Entry already exists', word: {} });
       }
-      if (resStatus === 200) {
-        res.status(200).json({ message: 'Successfully added entry', word });
+      if (japaneseWordRes.status === 200) {
+        res
+          .status(200)
+          .json({
+            message: 'Successfully added entry',
+            word: japaneseWordRes.wordData,
+          });
       }
     } catch (error) {
       res

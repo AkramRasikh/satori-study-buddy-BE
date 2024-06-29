@@ -95,9 +95,9 @@ const addJapaneseWord = async ({ word, contexts }) => {
 
       // Update the entire array
       await db.ref(japaneseWords).set(newArray);
-      return 200;
+      return { status: 200, wordData };
     } else {
-      return 409;
+      return { status: 409 };
     }
   } catch (error) {
     console.error('## Error adding item (addJapaneseWord): ', error);
