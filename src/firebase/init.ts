@@ -16,15 +16,11 @@ const bucketName = config.firebaseBucketName;
 const db = admin.database();
 
 const getJapaneseWordDefinition = async (word) => {
-  console.log('## getJapaneseWordDefinition 1');
-
   try {
-    console.log('## getJapaneseWordDefinition 2');
     const { text: definition, raw } = (await translate(word, {
       from: 'ja',
       to: 'en',
     })) as any;
-    console.log('## getJapaneseWordDefinition 3');
 
     let transliteration: string[] = [];
     raw.sentences?.forEach((sentence) => {
@@ -34,16 +30,11 @@ const getJapaneseWordDefinition = async (word) => {
     });
     const finalTransliteration = transliteration?.join(' ');
 
-    console.log('## getJapaneseWordDefinition 4');
     return { definition, transliteration: finalTransliteration };
   } catch (error) {
-    console.log('## getJapaneseWordDefinition 5 ', { error });
     const tooManyRequests = error?.message?.includes('Too Many Requests');
-    console.log('## getJapaneseWordDefinition 6');
     if (tooManyRequests) {
-      console.log('## getJapaneseWordDefinition 7');
       const openAIKey = process.env.OPENAI_API_KEY;
-      console.log('## getJapaneseWordDefinition 7 ', { openAIKey });
       return await chatGPTTranslator({ word, model: 'gpt-4', openAIKey });
     }
     throw error;
@@ -61,24 +52,21 @@ const getContent = async ({ ref }) => {
 };
 
 const addJapaneseWord = async ({ word, contexts }) => {
-  console.log('## addJapaneseWord 1');
   try {
     // Fetch the existing array
     const snapshot = await db.ref(japaneseWords).once('value');
-    console.log('## addJapaneseWord 2');
+
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
     const baseForm = await getBaseForm(word);
-    console.log('## addJapaneseWord 3');
 
     // Check if the new item's ID already exists in the array
     const isDuplicate = newArray.some((item) => item.baseForm === baseForm);
 
     if (!isDuplicate) {
-      console.log('## addJapaneseWord 4');
       const { definition, transliteration } = await getJapaneseWordDefinition(
         word,
       );
-      console.log('## addJapaneseWord 5 ', { definition, transliteration });
+
       const phonetic = await kanjiToHiragana({ sentence: word });
 
       const wordData = {

@@ -3,6 +3,8 @@ import path from 'path';
 import { Request, Response } from 'express';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { fetchMixMatchJsonData } from './mix-match';
+import { addLyricsToFirestore } from '../firebase/init';
+import { japaneseSongs } from '../firebase/refs';
 
 function srtTimestampToSeconds(timestamp) {
   const parts = timestamp.split(/[:,]/);
@@ -91,8 +93,13 @@ const bilingualContentRoutes = (app) => {
     res.send(combinedSubtitles).status(200);
   });
   app.get('/get-lyrics', async (req: Request, res: Response) => {
-    const siu = await fetchMixMatchJsonData();
-    res.send(siu).status(200);
+    const japaneseSongContentEntry = await fetchMixMatchJsonData();
+
+    await addLyricsToFirestore({
+      ref: japaneseSongs,
+      contentEntry: japaneseSongContentEntry,
+    });
+    res.send(japaneseSongContentEntry).status(200);
   });
 };
 

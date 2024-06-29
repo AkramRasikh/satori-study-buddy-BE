@@ -47,13 +47,9 @@ const chatGPTTranslator = async ({
       model,
     });
 
-    console.log('## chatGPTTranslator 1', { completion });
-
     const content = completion.choices[0].message.content;
-    console.log('## chatGPTTranslator 2', { content });
 
     const parsed = JSON.parse(content);
-    console.log('## chatGPTTranslator 3', { parsed });
 
     return parsed;
   } catch (error) {
