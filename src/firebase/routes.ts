@@ -13,6 +13,7 @@ import {
   japaneseWords,
   satoriContent,
   japaneseSnippets,
+  japaneseSongs,
 } from './refs';
 
 const firebaseRoutes = (app) => {
@@ -90,6 +91,7 @@ const firebaseRoutes = (app) => {
       !(
         ref === japaneseContent ||
         ref === japaneseWords ||
+        ref === japaneseSongs ||
         ref === satoriContent ||
         ref === japaneseSentences ||
         ref === japaneseContentFullMP3s ||

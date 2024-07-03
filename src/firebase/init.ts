@@ -95,16 +95,26 @@ const addJapaneseWord = async ({ word, contexts }) => {
 
 const addLyricsToFirestore = async ({ ref, contentEntry }) => {
   try {
-    if (contentEntry) {
-      const docRef = db.ref(ref);
+    // Fetch the existing array
+    const snapshot = await db.ref(ref).once('value');
+    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
-      await docRef.set(contentEntry);
-      console.log('Document successfully written with ID:', contentEntry.id);
+    // Check if the new item's ID already exists in the array
+    const entryID = contentEntry.id; // Assuming each entry has a unique 'id' property
+    const isDuplicate = newArray.some((item) => item.id === entryID);
+
+    if (!isDuplicate) {
+      // Add the new item to the array
+      newArray.push(contentEntry);
+
+      // Update the entire array
+      await db.ref(ref).set(newArray);
     } else {
-      console.error('No song data to add to Firestore.');
+      console.log('## Item already exists in DB');
     }
   } catch (error) {
-    console.error('Error adding document to Firestore:', error);
+    console.error('## Error updating database structure:', error);
+    return error;
   }
 };
 const addToSatori = async ({ ref, contentEntry }) => {

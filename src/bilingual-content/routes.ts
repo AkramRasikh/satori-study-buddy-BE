@@ -92,8 +92,14 @@ const bilingualContentRoutes = (app) => {
     const combinedSubtitles = await everything();
     res.send(combinedSubtitles).status(200);
   });
-  app.get('/get-lyrics', async (req: Request, res: Response) => {
-    const japaneseSongContentEntry = await fetchMixMatchJsonData();
+
+  app.post('/get-lyrics', async (req: Request, res: Response) => {
+    const url = req?.body?.url;
+    const title = req?.body?.title;
+    const japaneseSongContentEntry = await fetchMixMatchJsonData({
+      url,
+      title,
+    });
 
     await addLyricsToFirestore({
       ref: japaneseSongs,

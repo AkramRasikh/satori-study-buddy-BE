@@ -2,12 +2,8 @@ import fetch from 'node-fetch'; // Optional if you want to run this code on Node
 import { load } from 'cheerio';
 import { v4 as uuidv4 } from 'uuid';
 
-const url =
-  'https://www.musixmatch.com/lyrics/satomoka/melt-bitter/translation/english';
-
-async function fetchMixMatchJsonData() {
+async function fetchMixMatchJsonData({ title, url }) {
   const cookie = process.env.MIX_MATCH_COOKIE;
-  const title = 'melt bitter';
   try {
     const response = await fetch(url, {
       headers: {
@@ -37,8 +33,8 @@ async function fetchMixMatchJsonData() {
             const text = line.text;
             const time = line.time.total;
             return {
-              targetLang: text,
-              baseLang: crowdTranslationGetData[text],
+              targetLang: text || '',
+              baseLang: text ? crowdTranslationGetData[text] : '',
               time: time,
             };
           });
