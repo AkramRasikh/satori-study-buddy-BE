@@ -32,8 +32,12 @@ const getJapaneseWordDefinition = async (word) => {
 
     return { definition, transliteration: finalTransliteration };
   } catch (error) {
-    const tooManyRequests = error?.message?.includes('Too Many Requests');
-    if (tooManyRequests) {
+    const message = error?.message;
+
+    const tooManyRequestsOrVerifyIssues =
+      message?.includes('Too Many Requests') ||
+      message?.includes('unable to verify');
+    if (tooManyRequestsOrVerifyIssues) {
       const openAIKey = process.env.OPENAI_API_KEY;
       return await chatGPTTranslator({ word, model: 'gpt-4', openAIKey });
     }
