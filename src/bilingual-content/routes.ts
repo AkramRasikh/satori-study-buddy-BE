@@ -12,10 +12,11 @@ const folderPath = 'japanese-songs';
 
 const bilingualContentRoutes = (app) => {
   app.post('/combine-with-url', async (req: Request, res: Response) => {
-    const url = req?.body?.url;
     const title = req?.body?.title;
     const youtubeId = req?.body?.youtubeId;
     const outputDir = path.join(__dirname, 'output');
+
+    const url = 'https://www.youtube.com/watch?v=' + youtubeId;
 
     try {
       const buffer = await extractYoutubeAudio({ url, title });
