@@ -23,7 +23,7 @@ const extractYoutubeAudio = async ({ url, title }) => {
     // Execute the command and wait for it to complete
     const { stdout, stderr } = await execAsync(command);
 
-    if (stderr) {
+    if (stderr && !stderr.includes('WARNING')) {
       console.error(`stderr: ${stderr}`);
       throw new Error(`Error during extraction: ${stderr}`);
     }
@@ -35,7 +35,7 @@ const extractYoutubeAudio = async ({ url, title }) => {
     console.log(`## Audio has been extracted and saved to ${outputFilePath}`);
     return fileBuffer; // Optionally return the path to the saved file
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`## extractYoutubeAudio Error: ${error.message}`);
     throw error; // Re-throw the error to handle it elsewhere if needed
   }
 };

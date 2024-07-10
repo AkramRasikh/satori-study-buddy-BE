@@ -14,23 +14,32 @@ const bilingualContentRoutes = (app) => {
   app.post('/combine-with-url', async (req: Request, res: Response) => {
     const title = req?.body?.title;
     const youtubeId = req?.body?.youtubeId;
+    const targetLang = req?.body?.targetLang || 'ja';
     const outputDir = path.join(__dirname, 'output');
 
     const url = 'https://www.youtube.com/watch?v=' + youtubeId;
 
     try {
       const buffer = await extractYoutubeAudio({ url, title });
+      console.log('## extracted video');
       const englishContent = await extractSrtData({ youtubeId, lang: 'en' });
-      const japaneseContent = await extractSrtData({ youtubeId, lang: 'ja' });
+      console.log('## extracted english Subs');
+      const japaneseContent = await extractSrtData({
+        youtubeId,
+        lang: targetLang,
+      });
+      console.log('## extracted target lang subs');
       const japaneseSongContentEntry = await combineFromYoutubeSRTData({
         title,
         englishSRT: englishContent,
         japaneseSRT: japaneseContent,
       });
+      console.log('## combined subs');
       await uploadBufferToFirebase({
         buffer,
         filePath: folderPath + '/' + title + '.mp3',
       });
+      console.log('## uploading to firestore');
       await addLyricsToFirestore({
         ref: japaneseSongs,
         contentEntry: japaneseSongContentEntry,
