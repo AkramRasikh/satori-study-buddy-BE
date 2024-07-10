@@ -144,6 +144,21 @@ const getCollectionOfWordData = async () => {
   };
 };
 
+const countOccurrences = (arr) => {
+  let counts = {};
+
+  for (let i = 0; i < arr.length; i++) {
+    let item = arr[i];
+    if (counts[item]) {
+      counts[item]++;
+    } else {
+      counts[item] = 1;
+    }
+  }
+
+  return counts;
+};
+
 const getTopicsWithFlashWordsToStudy = async () => {
   const japaneseWordsRes = await getJapaneseWords();
   const japaneseContentRes = await getJapaneseContent();
@@ -167,9 +182,9 @@ const getTopicsWithFlashWordsToStudy = async () => {
     const thisTopicArr = japaneseContentRes[topic];
     thisTopicArr.forEach((sentenceData) => {
       if (contextIds.includes(sentenceData.id)) {
-        if (!topicsForAudio.includes(topic)) {
-          topicsForAudio.push(topic);
-        }
+        // if (!topicsForAudio.includes(topic)) {
+        topicsForAudio.push(topic);
+        // }
       }
     });
   });
@@ -180,14 +195,14 @@ const getTopicsWithFlashWordsToStudy = async () => {
     const title = song.title;
     lyrics.forEach((sentenceData) => {
       if (contextIds.includes(sentenceData.id)) {
-        if (!topicsForAudio.includes(title)) {
-          topicsForAudio.push(title);
-        }
+        // if (!topicsForAudio.includes(title)) {
+        topicsForAudio.push(title);
+        // }
       }
     });
   });
 
-  return topicsForAudio;
+  return countOccurrences(topicsForAudio);
 };
 
 export {
