@@ -8,7 +8,11 @@ const flashcardRoutes = async (app) => {
       const japaneseContentRes = await getJapaneseContent();
       const japaneseSongsRes = await getJapaneseSongs();
       const japaneseContentTopicKeys = Object.keys(japaneseContentRes);
+
       const contextIds = [];
+      const contextData = [];
+      const topicsForAudio = [];
+
       japaneseWordsRes.forEach((word) => {
         const contexts = word.contexts;
         contexts.forEach((singleContext) => {
@@ -18,7 +22,6 @@ const flashcardRoutes = async (app) => {
         });
       });
 
-      const contextData = [];
       japaneseContentTopicKeys.forEach((topic) => {
         const thisTopicArr = japaneseContentRes[topic];
         thisTopicArr.forEach((sentenceData) => {
@@ -28,6 +31,9 @@ const flashcardRoutes = async (app) => {
               ...sentenceData,
             };
             contextData.push(contextDataObj);
+            if (!topicsForAudio.includes(topic)) {
+              topicsForAudio.push(topic);
+            }
           }
         });
       });
@@ -40,14 +46,37 @@ const flashcardRoutes = async (app) => {
           if (contextIds.includes(sentenceData.id)) {
             const contextDataObj = {
               topic: title,
+              isMusic: true,
               ...sentenceData,
             };
             contextData.push(contextDataObj);
+            if (!topicsForAudio.includes(title)) {
+              topicsForAudio.push(title);
+            }
           }
         });
       });
 
-      res.send(contextData).status(200);
+      const wordToContextData = japaneseWordsRes.map((word) => {
+        const contexts = word.contexts;
+
+        const contextToData = contextData.filter((contextDataWidget) =>
+          contexts.includes(contextDataWidget.id),
+        );
+
+        return {
+          ...word,
+          contextToData,
+        };
+      });
+
+      res
+        .send({
+          wordToContextData,
+          // topics: topicsForAudio,
+          // flashCardData: contextData,
+        })
+        .status(200);
     } catch (error) {
       console.log('## error get-japanese-words', error);
     }
