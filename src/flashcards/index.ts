@@ -138,10 +138,56 @@ const getCollectionOfWordData = async () => {
     };
   });
   return {
-    wordToContextData,
     topics: topicsForAudio,
+    wordToContextData,
     flashCardData: contextData,
   };
+};
+
+const getTopicsWithFlashWordsToStudy = async () => {
+  const japaneseWordsRes = await getJapaneseWords();
+  const japaneseContentRes = await getJapaneseContent();
+  const japaneseSongsRes = await getJapaneseSongs();
+  const japaneseContentTopicKeys = Object.keys(japaneseContentRes);
+
+  const contextIds = [];
+
+  const topicsForAudio = [];
+
+  japaneseWordsRes.forEach((word) => {
+    const contexts = word.contexts;
+    contexts.forEach((singleContext) => {
+      if (!contextIds.includes(singleContext)) {
+        contextIds.push(singleContext);
+      }
+    });
+  });
+
+  japaneseContentTopicKeys.forEach((topic) => {
+    const thisTopicArr = japaneseContentRes[topic];
+    thisTopicArr.forEach((sentenceData) => {
+      if (contextIds.includes(sentenceData.id)) {
+        if (!topicsForAudio.includes(topic)) {
+          topicsForAudio.push(topic);
+        }
+      }
+    });
+  });
+
+  // until no more contextIds
+  japaneseSongsRes.forEach((song) => {
+    const lyrics = song.lyrics;
+    const title = song.title;
+    lyrics.forEach((sentenceData) => {
+      if (contextIds.includes(sentenceData.id)) {
+        if (!topicsForAudio.includes(title)) {
+          topicsForAudio.push(title);
+        }
+      }
+    });
+  });
+
+  return topicsForAudio;
 };
 
 export {
@@ -150,4 +196,5 @@ export {
   getJapaneseSongs,
   getCollectionOfWordData,
   getJapaneseWordsViaTopic,
+  getTopicsWithFlashWordsToStudy,
 };
