@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
   getCollectionOfWordData,
+  getJapaneseWordsViaSong,
   getJapaneseWordsViaTopic,
   getTopicsWithFlashWordsToStudy,
 } from '.';
@@ -28,6 +29,16 @@ const flashcardRoutes = async (app) => {
     const topic = req.body?.topic;
     try {
       const thisTopicsWords = await getJapaneseWordsViaTopic({ topic });
+      res.send(thisTopicsWords).status(200);
+    } catch (error) {
+      console.log('## error get-japanese-words', error);
+    }
+  });
+
+  app.post('/get-japanese-words-song', async (req: Request, res: Response) => {
+    const topic = req.body?.topic;
+    try {
+      const thisTopicsWords = await getJapaneseWordsViaSong({ topic });
       res.send(thisTopicsWords).status(200);
     } catch (error) {
       console.log('## error get-japanese-words', error);

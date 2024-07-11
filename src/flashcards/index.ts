@@ -35,7 +35,6 @@ const getJapaneseWordsViaTopic = async ({ topic }) => {
   });
 
   const prefixName = topic.split('-')[0];
-  console.log('####### prefixName', prefixName);
 
   const topicKeys = Object.keys(japaneseContentRes).filter(
     (thisTopic) => thisTopic.split('-')[0] === prefixName,
@@ -53,6 +52,54 @@ const getJapaneseWordsViaTopic = async ({ topic }) => {
       }
     });
   });
+  const lastMap = [];
+  japaneseWordsRes.forEach((word) => {
+    const contexts = word.contexts;
+
+    const contextToData = contextData.filter((contextDataWidget) =>
+      contexts.includes(contextDataWidget.id),
+    );
+    if (contextToData?.length > 0) {
+      lastMap.push({
+        ...word,
+        contextToData,
+      });
+    }
+  });
+
+  return lastMap;
+};
+
+const getJapaneseWordsViaSong = async ({ topic }) => {
+  const japaneseWordsRes = await getJapaneseWords();
+  const japaneseSongsRes = await getJapaneseSongs();
+  const [thisSong] = japaneseSongsRes.filter((song) => song.title === topic);
+
+  const contextIds = [];
+  const contextData = [];
+
+  japaneseWordsRes.forEach((word) => {
+    const contexts = word.contexts;
+    contexts.forEach((singleContext) => {
+      if (!contextIds.includes(singleContext)) {
+        contextIds.push(singleContext);
+      }
+    });
+  });
+
+  const lyrics = thisSong.lyrics;
+  const title = thisSong.title;
+  lyrics.forEach((sentenceData) => {
+    if (contextIds.includes(sentenceData.id)) {
+      const contextDataObj = {
+        topic: title,
+        isMusic: true,
+        ...sentenceData,
+      };
+      contextData.push(contextDataObj);
+    }
+  });
+
   const lastMap = [];
   japaneseWordsRes.forEach((word) => {
     const contexts = word.contexts;
@@ -212,4 +259,5 @@ export {
   getCollectionOfWordData,
   getJapaneseWordsViaTopic,
   getTopicsWithFlashWordsToStudy,
+  getJapaneseWordsViaSong,
 };
