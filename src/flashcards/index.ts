@@ -219,20 +219,18 @@ const getTopicsWithFlashWordsToStudy = async () => {
   japaneseWordsRes.forEach((word) => {
     const contexts = word.contexts;
     contexts.forEach((singleContext) => {
-      if (!contextIds.includes(singleContext)) {
-        contextIds.push(singleContext);
-      }
+      contextIds.push(singleContext);
     });
   });
 
   japaneseContentTopicKeys.forEach((topic) => {
     const thisTopicArr = japaneseContentRes[topic];
     thisTopicArr.forEach((sentenceData) => {
-      if (contextIds.includes(sentenceData.id)) {
-        // if (!topicsForAudio.includes(topic)) {
-        topicsForAudio.push(topic);
-        // }
-      }
+      contextIds.forEach((contextId) => {
+        if (contextId === sentenceData.id) {
+          topicsForAudio.push(topic);
+        }
+      });
     });
   });
 
@@ -241,11 +239,11 @@ const getTopicsWithFlashWordsToStudy = async () => {
     const lyrics = song.lyrics;
     const title = song.title;
     lyrics.forEach((sentenceData) => {
-      if (contextIds.includes(sentenceData.id)) {
-        // if (!topicsForAudio.includes(title)) {
-        topicsForAudio.push(title);
-        // }
-      }
+      contextIds.forEach((contextId) => {
+        if (contextId === sentenceData.id) {
+          topicsForAudio.push(title);
+        }
+      });
     });
   });
 
