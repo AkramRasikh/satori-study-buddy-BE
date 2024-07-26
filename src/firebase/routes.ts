@@ -14,6 +14,7 @@ import {
   satoriContent,
   japaneseSnippets,
   japaneseSongs,
+  tempContent,
 } from './refs';
 
 const firebaseRoutes = (app) => {
@@ -95,7 +96,8 @@ const firebaseRoutes = (app) => {
         ref === satoriContent ||
         ref === japaneseSentences ||
         ref === japaneseContentFullMP3s ||
-        ref === japaneseSnippets
+        ref === japaneseSnippets ||
+        ref === tempContent
       )
     ) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });

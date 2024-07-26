@@ -5,3 +5,4 @@ export const satoriContent = 'satoriContent';
 export const japaneseContentFullMP3s = 'japaneseContentFullMP3s';
 export const japaneseSnippets = 'japaneseSnippets';
 export const japaneseSongs = 'japaneseSongs';
+export const tempContent = 'tempContent';
