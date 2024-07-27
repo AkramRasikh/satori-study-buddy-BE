@@ -117,15 +117,15 @@ const firebaseRoutes = (app) => {
     const fieldToUpdate = req.body?.fieldToUpdate;
 
     try {
-      const data = await updateAndCreateReview({
+      const bool = await updateAndCreateReview({
         ref,
         contentEntry,
         fieldToUpdate,
       });
-      if (data) {
-        res.status(200).json(data);
+      if (bool) {
+        res.status(200).json(bool);
       } else {
-        res.status(200).json({ message: 'Not found' });
+        res.status(400).json({ message: 'Not found' });
       }
     } catch (error) {
       res.status(400).json();

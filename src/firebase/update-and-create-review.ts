@@ -24,10 +24,7 @@ const updateAndCreateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
         contentEntry,
         fieldToUpdate,
       });
-      return {
-        contentEntry,
-        fieldToUpdate,
-      };
+      return true;
     } else {
       console.log('## updateAndCreateReview Object not found');
     }
