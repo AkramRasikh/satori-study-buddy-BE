@@ -16,7 +16,7 @@ import {
   japaneseSongs,
   tempContent,
 } from './refs';
-import { updateReview } from './update-review';
+import { updateAndCreateReview } from './update-and-create-review';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
@@ -117,7 +117,11 @@ const firebaseRoutes = (app) => {
     const fieldToUpdate = req.body?.fieldToUpdate;
 
     try {
-      const data = await updateReview({ ref, contentEntry, fieldToUpdate });
+      const data = await updateAndCreateReview({
+        ref,
+        contentEntry,
+        fieldToUpdate,
+      });
       if (data) {
         res.status(200).json(data);
       } else {

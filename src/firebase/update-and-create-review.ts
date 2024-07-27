@@ -1,6 +1,6 @@
 import { db } from './init';
 
-const updateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
+const updateAndCreateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
   try {
     const refObj = db.ref(ref);
 
@@ -29,11 +29,11 @@ const updateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
         fieldToUpdate,
       };
     } else {
-      console.log('## updateReview Object not found');
+      console.log('## updateAndCreateReview Object not found');
     }
   } catch (error) {
-    console.error('## updateReview error:', error);
+    console.error('## updateAndCreateReview error:', error);
   }
 };
 
-export { updateReview };
+export { updateAndCreateReview };
