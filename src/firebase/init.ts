@@ -13,7 +13,7 @@ admin.initializeApp({
 });
 const bucketName = config.firebaseBucketName;
 
-const db = admin.database();
+export const db = admin.database();
 
 const getJapaneseWordDefinition = async (word) => {
   try {

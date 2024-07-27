@@ -16,6 +16,7 @@ import {
   japaneseSongs,
   tempContent,
 } from './refs';
+import { updateReview } from './update-review';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
@@ -107,6 +108,24 @@ const firebaseRoutes = (app) => {
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
+    }
+  });
+
+  app.post('/update-review', async (req: Request, res: Response) => {
+    const ref = req.body?.ref;
+    const contentEntry = req.body?.contentEntry;
+    const fieldToUpdate = req.body?.fieldToUpdate;
+
+    try {
+      const data = await updateReview({ ref, contentEntry, fieldToUpdate });
+      if (data) {
+        res.status(200).json(data);
+      } else {
+        res.status(200).json({ message: 'Not found' });
+      }
+    } catch (error) {
+      res.status(400).json();
+      console.log('## /update-review Err', { error });
     }
   });
 
