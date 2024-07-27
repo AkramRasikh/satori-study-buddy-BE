@@ -141,7 +141,7 @@ const firebaseRoutes = (app) => {
     };
 
     try {
-      const [data] = await getFirebaseDataMap();
+      const data = await getFirebaseDataMap();
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
