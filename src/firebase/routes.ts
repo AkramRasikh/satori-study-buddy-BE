@@ -109,6 +109,44 @@ const firebaseRoutes = (app) => {
       res.status(500).json({ error });
     }
   });
+
+  app.post('/firebase-data-mobile', async (req: Request, res: Response) => {
+    const refs = req.body?.refs;
+
+    // filter
+    const isValidRef = (ref) => {
+      if (
+        ref === japaneseContent ||
+        ref === japaneseWords ||
+        ref === japaneseSongs ||
+        ref === satoriContent ||
+        ref === japaneseSentences ||
+        ref === japaneseContentFullMP3s ||
+        ref === japaneseSnippets ||
+        ref === tempContent
+      ) {
+        return true;
+      }
+      return false;
+    };
+
+    const validRefs = refs.filter(isValidRef);
+
+    const getFirebaseDataMap = async () => {
+      return await Promise.all(
+        validRefs.map(async (ref) => {
+          return { [ref]: await getFirebaseContent({ ref }) };
+        }),
+      );
+    };
+
+    try {
+      const [data] = await getFirebaseDataMap();
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
 };
 
 export { firebaseRoutes };
