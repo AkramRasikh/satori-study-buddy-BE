@@ -17,6 +17,7 @@ import {
   tempContent,
 } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
+import { updateContentItem } from './update-content-item';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
@@ -120,6 +121,28 @@ const firebaseRoutes = (app) => {
       const fieldToUpdateRes = await updateAndCreateReview({
         ref,
         contentEntry,
+        fieldToUpdate,
+      });
+      if (fieldToUpdateRes) {
+        res.status(200).json(fieldToUpdateRes);
+      } else {
+        res.status(400).json({ message: 'Not found' });
+      }
+    } catch (error) {
+      res.status(400).json();
+      console.log('## /update-review Err', { error });
+    }
+  });
+
+  app.post('/update-content-item', async (req: Request, res: Response) => {
+    const sentenceId = req.body?.sentenceId;
+    const topicName = req.body?.topicName;
+    const fieldToUpdate = req.body?.fieldToUpdate;
+
+    try {
+      const fieldToUpdateRes = await updateContentItem({
+        sentenceId,
+        topicName,
         fieldToUpdate,
       });
       if (fieldToUpdateRes) {
