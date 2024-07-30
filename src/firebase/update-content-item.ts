@@ -1,11 +1,9 @@
 import { db } from './init';
-import { tempContent } from './refs';
-
-const ref = tempContent;
+import { japaneseContent } from './refs';
 
 const updateContentItem = async ({ sentenceId, topicName, fieldToUpdate }) => {
   try {
-    const refObj = db.ref(ref);
+    const refObj = db.ref(japaneseContent);
     const snapshot = await refObj.once('value');
     const data = snapshot.val();
 

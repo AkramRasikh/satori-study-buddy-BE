@@ -14,7 +14,6 @@ import {
   satoriContent,
   japaneseSnippets,
   japaneseSongs,
-  tempContent,
 } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -103,8 +102,7 @@ const firebaseRoutes = (app) => {
         ref === satoriContent ||
         ref === japaneseSentences ||
         ref === japaneseContentFullMP3s ||
-        ref === japaneseSnippets ||
-        ref === tempContent
+        ref === japaneseSnippets
       )
     ) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
@@ -173,8 +171,7 @@ const firebaseRoutes = (app) => {
         ref === satoriContent ||
         ref === japaneseSentences ||
         ref === japaneseContentFullMP3s ||
-        ref === japaneseSnippets ||
-        ref === tempContent
+        ref === japaneseSnippets
       ) {
         return true;
       }
