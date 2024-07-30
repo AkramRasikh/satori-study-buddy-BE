@@ -208,9 +208,11 @@ const countOccurrences = (arr) => {
 
 const getTopicsWithFlashWordsToStudy = async () => {
   const japaneseWordsRes = await getJapaneseWords();
-  const japaneseContentRes = await getJapaneseContent();
+  const japaneseContentRes = Object.values(await getJapaneseContent()) as any;
+  const japaneseContentNoNulls = japaneseContentRes?.filter(
+    (item) => item !== null,
+  );
   const japaneseSongsRes = await getJapaneseSongs();
-  const japaneseContentTopicKeys = Object.keys(japaneseContentRes);
 
   const contextIds = [];
 
@@ -223,12 +225,11 @@ const getTopicsWithFlashWordsToStudy = async () => {
     });
   });
 
-  japaneseContentTopicKeys.forEach((topic) => {
-    const thisTopicArr = japaneseContentRes[topic];
-    thisTopicArr.forEach((sentenceData) => {
+  japaneseContentNoNulls.forEach((topic) => {
+    topic.content.forEach((sentenceData) => {
       contextIds.forEach((contextId) => {
         if (contextId === sentenceData.id) {
-          topicsForAudio.push(topic);
+          topicsForAudio.push(topic.title);
         }
       });
     });
