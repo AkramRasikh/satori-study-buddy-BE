@@ -225,6 +225,31 @@ const addEntry = async ({ ref, contentEntry }) => {
   }
 };
 
+const addContentArr = async ({ ref, contentEntry }) => {
+  try {
+    // Fetch the existing array
+    const snapshot = await db.ref(ref).once('value');
+    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
+
+    // Check if the new item's ID already exists in the array
+    const entryTitle = contentEntry.title;
+    const isDuplicate = newArray.some((item) => item.title === entryTitle);
+
+    if (!isDuplicate) {
+      // Add the new item to the array
+      newArray.push(contentEntry);
+
+      // Update the entire array
+      await db.ref(ref).set(newArray);
+    } else {
+      console.log('## Item already exists in DB');
+    }
+  } catch (error) {
+    console.error('## Error updating database structure:', error);
+    return error;
+  }
+};
+
 const getFirebaseContent = async ({ ref }) => {
   const postsRef = db.ref(ref);
   try {
@@ -271,4 +296,5 @@ export {
   removeSnippet,
   getContent,
   addLyricsToFirestore,
+  addContentArr,
 };

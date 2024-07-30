@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import {
-  addEntry,
+  addContentArr,
   addJapaneseWord,
   addSnippet,
   getFirebaseContent,
@@ -53,8 +53,13 @@ const firebaseRoutes = (app) => {
   app.post('/update-content', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
     const contentEntry = req.body?.contentEntry;
+
+    if (japaneseContent !== ref) {
+      res.status(500).json({ error: `Wrong ref added ${ref}` });
+      return;
+    }
     try {
-      await addEntry({ ref, contentEntry });
+      await addContentArr({ ref, contentEntry });
       res
         .status(200)
         .json({ message: 'Successfully updated entry', contentEntry });
