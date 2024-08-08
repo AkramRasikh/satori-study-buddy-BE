@@ -5,6 +5,30 @@ import {
   japaneseWords,
 } from '../firebase/refs';
 
+const getSentencesMarkedAsDifficult = async () => {
+  const difficultSentences = [];
+  const data = await getFirebaseContent({ ref: japaneseContent });
+  const viableLoadedContent = data.filter(
+    (contentWidget) => contentWidget !== null,
+  );
+  viableLoadedContent.forEach((contentWidget) => {
+    const thisTopic = contentWidget.title;
+    const isCore = contentWidget.isCore;
+    const content = contentWidget.content;
+    content.forEach((sentenceInContent) => {
+      if (sentenceInContent?.nextReview) {
+        difficultSentences.push({
+          topic: thisTopic,
+          isCore,
+          ...sentenceInContent,
+        });
+      }
+    });
+  });
+
+  return difficultSentences;
+};
+
 const getJapaneseWords = async () => {
   const data = await getFirebaseContent({ ref: japaneseWords });
   return data;
@@ -259,4 +283,5 @@ export {
   getJapaneseWordsViaTopic,
   getTopicsWithFlashWordsToStudy,
   getJapaneseWordsViaSong,
+  getSentencesMarkedAsDifficult,
 };
