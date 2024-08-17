@@ -161,6 +161,7 @@ const firebaseRoutes = (app) => {
 
   app.post('/firebase-data-mobile', async (req: Request, res: Response) => {
     const refs = req.body?.refs;
+    console.log('## /firebase-data-mobile called');
 
     // filter
     const isValidRef = (ref) => {
@@ -183,7 +184,10 @@ const firebaseRoutes = (app) => {
     const getFirebaseDataMap = async () => {
       return await Promise.all(
         validRefs.map(async (ref) => {
-          return { [ref]: await getFirebaseContent({ ref }) };
+          const refData = await getFirebaseContent({ ref });
+          return {
+            [ref]: refData.filter((item) => item !== null),
+          };
         }),
       );
     };
