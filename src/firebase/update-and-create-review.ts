@@ -9,6 +9,7 @@ const updateAndCreateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
 
     // Convert object of objects to an array
     const values = Object.values(data);
+    const keys = Object.keys(data);
 
     // Find the index of the object to update
     const index = values.findIndex((item) => {
@@ -17,7 +18,8 @@ const updateAndCreateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
 
     if (index !== -1) {
       // Firebase paths should be strings
-      const objectRef = refObj.child(`${index}`);
+      const key = keys[index];
+      const objectRef = refObj.child(key);
 
       await objectRef.update(fieldToUpdate);
       console.log('## Data successfully updated!', {
