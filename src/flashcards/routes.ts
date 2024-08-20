@@ -3,19 +3,10 @@ import {
   getCollectionOfWordData,
   getJapaneseWordsViaSong,
   getJapaneseWordsViaTopic,
-  getSentencesMarkedAsDifficult,
   getTopicsWithFlashWordsToStudy,
 } from '.';
 
 const flashcardRoutes = async (app) => {
-  app.get('/get-hard-sentences', async (_: Request, res: Response) => {
-    try {
-      const resData = await getSentencesMarkedAsDifficult();
-      res.send(resData).status(200);
-    } catch (error) {
-      res.send().status(404);
-    }
-  });
   app.get('/get-japanese-words', async (req: Request, res: Response) => {
     try {
       const collectionOfWordData = await getCollectionOfWordData();
