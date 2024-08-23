@@ -17,6 +17,10 @@ import {
 } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
+import narakeetAudio from '../narakeet';
+import { combineAudio } from '../mp3-utils/combine-audio';
+import { getFirebaseAudioURL } from '../mp3-utils/get-audio-url';
+import { getLanguageContentData } from './get-language-content-data';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
@@ -136,6 +140,56 @@ const firebaseRoutes = (app) => {
       console.log('## /update-review Err', { error });
     }
   });
+
+  app.post(
+    '/update-content-item-correction',
+    async (req: Request, res: Response) => {
+      const sentenceId = req.body?.sentenceId;
+      const topicName = req.body?.topicName;
+      const fieldToUpdate = req.body?.fieldToUpdate;
+      const withAudio = req.body?.withAudio;
+      const apiKey = process.env.NARAKEET_KEY;
+      const voice = req.body?.voice;
+      const sentence = fieldToUpdate?.targetLang;
+      try {
+        const fieldToUpdateRes = await updateContentItem({
+          sentenceId,
+          topicName,
+          fieldToUpdate,
+        });
+        if (withAudio) {
+          const naraKeetRes = await narakeetAudio({
+            id: sentenceId,
+            apiKey,
+            sentence,
+            voice,
+          });
+          if (naraKeetRes) {
+            const languageContent = await getLanguageContentData({ topicName });
+            const audioFiles = languageContent.map((item) =>
+              getFirebaseAudioURL(item.id),
+            );
+            const combineAudioRes = combineAudio({
+              audioFiles,
+              mp3Name: topicName,
+            });
+            if (combineAudioRes) {
+              res.status(200).json(fieldToUpdateRes);
+            } else {
+              res.status(400).json({ message: 'Issue combining' });
+            }
+          } else {
+            res.status(400).json({ message: 'Not found' });
+          }
+        } else {
+          res.status(200).json(fieldToUpdateRes);
+        }
+      } catch (error) {
+        res.status(400).json();
+        console.log('## /update-review Err', { error });
+      }
+    },
+  );
 
   app.post('/update-content-item', async (req: Request, res: Response) => {
     const sentenceId = req.body?.sentenceId;
