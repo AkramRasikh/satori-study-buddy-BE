@@ -2,7 +2,7 @@ import admin from 'firebase-admin';
 import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
-import { japaneseContentFullMP3s, japaneseWords } from './refs';
+import { japaneseWords } from './refs';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
@@ -192,28 +192,6 @@ const removeSnippet = async ({ ref, contentEntry }) => {
   }
 };
 
-const addFullJapaneseMP3 = async ({ contentEntry }) => {
-  try {
-    // Fetch the existing array
-    const snapshot = await db.ref(japaneseContentFullMP3s).once('value');
-    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
-
-    const isDuplicate = newArray.some((item) => item.id === contentEntry.name);
-
-    if (!isDuplicate) {
-      // Add the new item to the array
-      newArray.push(contentEntry);
-
-      // Update the entire array
-      await db.ref(japaneseContentFullMP3s).set(newArray);
-    } else {
-      console.log('## Item already exists in DB');
-    }
-  } catch (error) {
-    console.error('## Error updating database structure:', error);
-    return error;
-  }
-};
 // array!
 const addEntry = async ({ ref, contentEntry }) => {
   console.log('## addEntry ref: ', { ref, contentEntry });
@@ -291,7 +269,6 @@ export {
   addEntry,
   addToSatori,
   addJapaneseWord,
-  addFullJapaneseMP3,
   addSnippet,
   removeSnippet,
   getContent,

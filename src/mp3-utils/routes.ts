@@ -2,11 +2,7 @@ import { Request, Response } from 'express';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
-import {
-  addFullJapaneseMP3,
-  getContent,
-  uploadBufferToFirebase,
-} from '../firebase/init';
+import { getContent, uploadBufferToFirebase } from '../firebase/init';
 import { japaneseContent } from '../firebase/refs';
 import { getFirebaseAudioURL } from './get-audio-url';
 import {
@@ -14,6 +10,7 @@ import {
   saveBufferToFile,
   useFFmpeg,
 } from './get-audio-duration';
+import { updateAndCreateReview } from '../firebase/update-and-create-review';
 
 const folderPath = 'japanese-audio';
 
@@ -85,6 +82,7 @@ const mp3Utils = (app) => {
   app.post('/combine-audio', (req: Request, res: Response) => {
     const audioFiles = req?.body?.audioFiles;
     const mp3Name = req?.body?.mp3Name;
+    const topicName = req?.body?.topicName;
     const formattedFirebaseName = folderPath + '/' + mp3Name + '.mp3';
 
     const outputFilePath = path.join(__dirname, 'output.mp3');
@@ -114,16 +112,20 @@ const mp3Utils = (app) => {
             filePath: formattedFirebaseName,
           });
 
-          await addFullJapaneseMP3({
-            contentEntry: {
-              name: mp3Name,
-            },
+          const fieldToUpdateRes = await updateAndCreateReview({
+            ref: japaneseContent,
+            contentEntry: topicName,
+            fieldToUpdate: { hasAudio: true },
           });
 
-          res.status(200).send({ url });
+          if (fieldToUpdateRes) {
+            res.status(200).send({ url });
+          } else {
+            res.status(500).send('Error uploading to Firebase Storage 1');
+          }
         } catch (error) {
           console.error('Error uploading to Firebase Storage:', error);
-          res.status(500).send('Error uploading to Firebase Storage');
+          res.status(500).send('Error uploading to Firebase Storage 2');
         } finally {
           fs.unlinkSync(outputFilePath); // Clean up the temporary file
         }

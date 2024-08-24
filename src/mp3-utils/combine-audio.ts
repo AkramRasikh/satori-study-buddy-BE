@@ -1,7 +1,7 @@
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
-import { addFullJapaneseMP3, uploadBufferToFirebase } from '../firebase/init';
+import { uploadBufferToFirebase } from '../firebase/init';
 
 const folderPath = 'japanese-audio';
 
@@ -31,15 +31,9 @@ export const combineAudio = ({ audioFiles, mp3Name }) => {
       const buffer = fs.readFileSync(outputFilePath);
 
       try {
-        const url = await uploadBufferToFirebase({
+        await uploadBufferToFirebase({
           buffer,
           filePath: formattedFirebaseName,
-        });
-
-        await addFullJapaneseMP3({
-          contentEntry: {
-            name: mp3Name,
-          },
         });
 
         // res.status(200).send({ url });
