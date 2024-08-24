@@ -8,7 +8,6 @@ import {
 } from './init';
 import {
   japaneseContent,
-  japaneseContentFullMP3s,
   japaneseSentences,
   japaneseWords,
   satoriContent,
@@ -105,7 +104,6 @@ const firebaseRoutes = (app) => {
         ref === japaneseSongs ||
         ref === satoriContent ||
         ref === japaneseSentences ||
-        ref === japaneseContentFullMP3s ||
         ref === japaneseSnippets
       )
     ) {
@@ -173,6 +171,7 @@ const firebaseRoutes = (app) => {
               audioFiles,
               mp3Name: topicName,
             });
+            // delete snippets if they exists
             if (combineAudioRes) {
               res.status(200).json(fieldToUpdateRes);
             } else {
@@ -225,7 +224,6 @@ const firebaseRoutes = (app) => {
         ref === japaneseSongs ||
         ref === satoriContent ||
         ref === japaneseSentences ||
-        ref === japaneseContentFullMP3s ||
         ref === japaneseSnippets
       ) {
         return true;
