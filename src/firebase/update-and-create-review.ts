@@ -12,6 +12,19 @@ export const getThisContentsIndex = ({ data, contentEntry }) => {
 
   return { keys, index };
 };
+
+export const getThisSentenceIndex = ({ data, id }) => {
+  // Convert object of objects to an array
+  const values = Object.values(data);
+  const sentenceKeys = Object.keys(data);
+
+  // Find the index of the object to update
+  const sentenceIndex = values.findIndex((item) => {
+    return (item as any).id === id;
+  });
+
+  return { sentenceKeys, sentenceIndex };
+};
 const updateAndCreateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
   try {
     const refObj = db.ref(ref);

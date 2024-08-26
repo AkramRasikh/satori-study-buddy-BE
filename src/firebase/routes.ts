@@ -139,6 +139,7 @@ const firebaseRoutes = (app) => {
     }
   });
 
+  // only for when the targetLang is being updated
   app.post(
     '/update-content-item-correction',
     async (req: Request, res: Response) => {
@@ -170,7 +171,7 @@ const firebaseRoutes = (app) => {
             const combineAudioRes = combineAudio({
               audioFiles,
               mp3Name: topicName,
-            });
+            }); // returns fluentpackage object
             // delete snippets if they exists
             if (combineAudioRes) {
               res.status(200).json(fieldToUpdateRes);
@@ -185,7 +186,7 @@ const firebaseRoutes = (app) => {
         }
       } catch (error) {
         res.status(400).json();
-        console.log('## /update-review Err', { error });
+        console.log('## /update-content-item-correction Err', { error });
       }
     },
   );

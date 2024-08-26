@@ -61,7 +61,7 @@ const narakeetAudio = async ({ sentence, apiKey, id, voice }) => {
     });
 
     console.log('File saved successfully: ', { sentence, voiceSelected });
-    return nameToSaveUnder;
+    return nameToSaveUnder; // sentenceId
   } catch (error) {
     console.error('Error occurred:', error);
     return error;

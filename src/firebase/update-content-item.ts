@@ -1,6 +1,9 @@
 import { db } from './init';
 import { japaneseContent } from './refs';
-import { getThisContentsIndex } from './update-and-create-review';
+import {
+  getThisContentsIndex,
+  getThisSentenceIndex,
+} from './update-and-create-review';
 
 const updateContentItem = async ({ sentenceId, topicName, fieldToUpdate }) => {
   try {
@@ -17,12 +20,16 @@ const updateContentItem = async ({ sentenceId, topicName, fieldToUpdate }) => {
       const key = keys[index];
       const thisTopicContent = data[key].content;
       // two in one refactor needed
-      const targetSentenceIndex = thisTopicContent.findIndex(
-        (sentence) => sentence.id === sentenceId,
-      );
+
+      const { sentenceKeys, sentenceIndex } = getThisSentenceIndex({
+        data: thisTopicContent,
+        id: sentenceId,
+      });
+
+      const thisSentenceKey = sentenceKeys[sentenceIndex];
 
       // Firebase paths should be strings
-      const objectRef = refObj.child(`${key}/content/${targetSentenceIndex}`);
+      const objectRef = refObj.child(`${key}/content/${thisSentenceKey}`);
       await objectRef.update(fieldToUpdate);
       console.log('## Data successfully updated!', {
         sentenceId,
