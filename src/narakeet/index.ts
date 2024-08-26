@@ -30,7 +30,19 @@ const getRandomVoice = () => {
   return japaneseVoices[randomIndex];
 };
 
-const narakeetAudio = async ({ sentence, apiKey, id, voice }) => {
+interface NarakeetProps {
+  sentence: string;
+  apiKey: string;
+  id: string;
+  voice?: string;
+}
+
+const narakeetAudio = async ({
+  sentence,
+  apiKey,
+  id,
+  voice,
+}: NarakeetProps) => {
   const nameToSaveUnder = id || sentence;
   const voiceSelected = voice || getRandomVoice();
   const fileNameWithMP3Ending = nameToSaveUnder + '.mp3';

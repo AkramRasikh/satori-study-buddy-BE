@@ -20,6 +20,7 @@ import narakeetAudio from '../narakeet';
 import { combineAudio } from '../mp3-utils/combine-audio';
 import { getFirebaseAudioURL } from '../mp3-utils/get-audio-url';
 import { getLanguageContentData } from './get-language-content-data';
+import { addAdhocSentence } from './adhoc-sentence';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
@@ -190,6 +191,16 @@ const firebaseRoutes = (app) => {
       }
     },
   );
+
+  app.post('/add-adhoc-sentence', async (req: Request, res: Response) => {
+    const adhocSentence = req.body.adhocSentence;
+    try {
+      const result = await addAdhocSentence({ adhocSentence });
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to add sentence' });
+    }
+  });
 
   app.post('/update-content-item', async (req: Request, res: Response) => {
     const sentenceId = req.body?.sentenceId;
