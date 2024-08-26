@@ -194,8 +194,10 @@ const firebaseRoutes = (app) => {
 
   app.post('/add-adhoc-sentence', async (req: Request, res: Response) => {
     const adhocSentence = req.body.adhocSentence;
+    const tags = req.body?.tags;
+    const topic = req.body?.topic;
     try {
-      const result = await addAdhocSentence({ adhocSentence });
+      const result = await addAdhocSentence({ adhocSentence, tags, topic });
       res.status(200).json(result);
     } catch (error) {
       res.status(400).json({ message: 'Failed to add sentence' });

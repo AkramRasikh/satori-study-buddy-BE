@@ -23,15 +23,16 @@ const jsonReturnFormat = {
 
 const adhocPrompt = `
   I am studying Japanese. I want the sentence below to be translated in the most natural way to Japanese.
-  I want it to be returned as a JSON object as such: ${jsonReturnFormat}
+  I want it to be returned as a JSON object as such: ${jsonReturnFormat}.
 
+  Return the Japanese in the "targetLang" and english in the "baseLang".
   The property ‘notes’ for each line that is there to explain any nuisance linguistic difference that may require explanation.
   The target sentence is below in the object "baseLang". I sometimes add a "context" property to help explain how I want things to be translated/idea to convey
 
 `;
 
 // adhocSentence (baseLang, context)
-const addAdhocSentence = async ({ adhocSentence }) => {
+const addAdhocSentence = async ({ adhocSentence, topic, tags }) => {
   const openAIKey = process.env.OPENAI_API_KEY;
   const narakeetKey = process.env.NARAKEET_KEY;
   const sentenceId = uuidv4(); // maybe create on frontend?
@@ -57,22 +58,21 @@ const addAdhocSentence = async ({ adhocSentence }) => {
       model: chatgpt4,
       openAIKey,
     });
-    console.log('## 1', resultContent.targetLang);
 
     if (resultContent.targetLang) {
-      console.log('## 2');
       try {
         const naraKeetRes = await narakeetAudio({
           id: sentenceId,
           apiKey: narakeetKey,
           sentence: resultContent.targetLang,
         });
-        console.log('## 2', { naraKeetRes });
 
         if (naraKeetRes) {
           const newAdhocSentence = {
             id: sentenceId,
             hasAudio: sentenceId,
+            topic,
+            tags,
             ...resultContent,
           };
           newArray.push(newAdhocSentence);
