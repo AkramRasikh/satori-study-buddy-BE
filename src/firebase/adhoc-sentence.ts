@@ -78,7 +78,7 @@ const addAdhocSentence = async ({ adhocSentence, topic, tags }) => {
           newArray.push(newAdhocSentence);
           // Update the entire array
           await db.ref(japaneseAdhocSentences).set(newArray);
-          return true;
+          return newAdhocSentence;
         } else {
           console.log('## translation created, but audio failed 1', {
             adhocSentence,
