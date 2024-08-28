@@ -2,28 +2,26 @@ import { db } from './init';
 import { japaneseAdhocSentences } from './refs';
 
 const updateAdhocSentence = async ({ sentenceId, fieldToUpdate }) => {
-  console.log('## updateAdhocSentence 1');
   try {
-    console.log('## updateAdhocSentence 2');
     const refObj = db.ref(japaneseAdhocSentences);
     const snapshot = await refObj.once('value');
     const data = snapshot.val();
 
-    const thisSentenceIndex = Object.values(data).findIndex(
+    const values = Object.values(data);
+    const keys = Object.keys(data);
+    const thisSentenceIndex = values.findIndex(
       (sentenceData: any) => sentenceData?.id === sentenceId,
     );
 
-    console.log('## updateAdhocSentence 3', { thisSentenceIndex });
     if (thisSentenceIndex !== -1) {
-      console.log('## updateAdhocSentence 4');
+      const key = keys[thisSentenceIndex];
       // Firebase paths should be strings
-      const objectRef = refObj.child(`${thisSentenceIndex}`);
+      const objectRef = refObj.child(key);
       await objectRef.update(fieldToUpdate);
-      console.log('## updateAdhocSentence 5 Data successfully updated!', {
+      console.log('## updateAdhocSentence Data successfully updated!', {
         sentenceId,
         fieldToUpdate,
       });
-      console.log('## updateAdhocSentence 6');
       return fieldToUpdate;
     } else {
       console.log('## updateAdhocSentence Object not found');
