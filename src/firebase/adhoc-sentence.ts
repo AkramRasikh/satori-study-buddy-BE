@@ -32,7 +32,7 @@ const adhocPrompt = `
 `;
 
 // adhocSentence (baseLang, context)
-const addAdhocSentence = async ({ adhocSentence, topic, tags }) => {
+const addAdhocSentence = async ({ adhocSentence, topic, tags, nextReview }) => {
   const openAIKey = process.env.OPENAI_API_KEY;
   const narakeetKey = process.env.NARAKEET_KEY;
   const sentenceId = uuidv4(); // maybe create on frontend?
@@ -73,6 +73,7 @@ const addAdhocSentence = async ({ adhocSentence, topic, tags }) => {
             hasAudio: sentenceId,
             topic,
             tags,
+            nextReview,
             ...resultContent,
           };
           newArray.push(newAdhocSentence);
