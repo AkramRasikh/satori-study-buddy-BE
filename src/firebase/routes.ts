@@ -13,6 +13,7 @@ import {
   satoriContent,
   japaneseSnippets,
   japaneseSongs,
+  japaneseAdhocSentences,
 } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -244,7 +245,8 @@ const firebaseRoutes = (app) => {
         ref === japaneseSongs ||
         ref === satoriContent ||
         ref === japaneseSentences ||
-        ref === japaneseSnippets
+        ref === japaneseSnippets ||
+        ref === japaneseAdhocSentences
       ) {
         return true;
       }
