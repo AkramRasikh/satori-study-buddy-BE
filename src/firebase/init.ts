@@ -172,14 +172,14 @@ const addSnippet = async ({ ref, contentEntry }) => {
   }
 };
 
-const removeSnippet = async ({ ref, contentEntry }) => {
+const removeSnippet = async ({ ref, snippetId }) => {
   try {
     // Fetch the existing array
     const snapshot = await db.ref(ref).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Get the ID of the content entry to be removed
-    const entryID = contentEntry.id; // Assuming each entry has a unique 'id' property
+    const entryID = snippetId; // Assuming each entry has a unique 'id' property
 
     // Remove the item with the specified ID
     newArray = newArray.filter((item) => item.id !== entryID);

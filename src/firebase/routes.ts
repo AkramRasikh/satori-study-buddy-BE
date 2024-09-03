@@ -42,13 +42,13 @@ const firebaseRoutes = (app) => {
 
   app.post('/delete-snippet', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
-    const contentEntry = req.body?.contentEntry;
+    const snippetId = req.body?.snippetId;
     const allowedRefs = [japaneseSnippets];
     if (!allowedRefs.includes(ref)) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
     }
     try {
-      const data = await removeSnippet({ ref, contentEntry });
+      const data = await removeSnippet({ ref, snippetId });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
