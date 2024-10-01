@@ -3,10 +3,20 @@ import fs from 'fs';
 import { Request, Response } from 'express';
 import { fetchMixMatchJsonData } from './mix-match';
 import { combineFromYoutubeSRTData, combineSRTData } from './combine-srt-data';
-import { japaneseSongs } from '../firebase/refs';
-import { addLyricsToFirestore, uploadBufferToFirebase } from '../firebase/init';
+import { japaneseContent, japaneseSongs } from '../firebase/refs';
+import {
+  addContentArr,
+  addLyricsToFirestore,
+  uploadBufferToFirebase,
+} from '../firebase/init';
 import { extractYoutubeAudio } from './extract-youtube-audio';
 import { extractSrtData } from './extract-srt-data';
+import {
+  extractMP3Section,
+  getUpdateToAndFromValues,
+  splitByInterval,
+  splitSubtitlesByInterval,
+} from './output/youtube-txt-file';
 
 const folderPath = 'japanese-songs';
 
@@ -81,6 +91,78 @@ const bilingualContentRoutes = (app) => {
     // });
     res.send(japaneseSongContentEntry).status(200);
   });
+
+  app.post(
+    '/youtube-to-audio-snippets',
+    async (req: Request, res: Response) => {
+      const url = req?.body?.url;
+      const title = req?.body?.title;
+      const splits = req?.body?.interval;
+
+      await extractYoutubeAudio({ url, title });
+      const filePath = path.resolve(
+        __dirname,
+        'output',
+        'リベラルアーツって役立つの.txt',
+      );
+      const mp3FileInput = path.resolve(
+        __dirname,
+        'output',
+        'リベラルアーツって役立つの.mp3',
+      );
+
+      const outputFile = (title) => {
+        return path.resolve(__dirname, 'output', `${title}.mp3`);
+      };
+
+      const outputJson = splitSubtitlesByInterval(filePath);
+      const resFromChunking = splitByInterval(outputJson, splits, title);
+      const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
+      try {
+        await Promise.all(
+          updateToAndFromValues.slice(0, 5).map(async (item) => {
+            const audioPath = outputFile(item.title);
+            const extractedSectionIndex = await extractMP3Section(
+              mp3FileInput,
+              outputFile(item.title),
+              item.from,
+              item.to,
+            );
+
+            const fileBuffer = fs.readFileSync(audioPath);
+            const formattedFirebaseName =
+              'japanese-audio/' + item.title + '.mp3';
+
+            await uploadBufferToFirebase({
+              buffer: fileBuffer,
+              filePath: formattedFirebaseName,
+            });
+
+            await addContentArr({
+              ref: japaneseContent,
+              contentEntry: {
+                title: item.title,
+                hasAudio: item.hasAudio,
+                origin: 'youtube',
+                content: item.content,
+              },
+            });
+
+            return extractedSectionIndex;
+          }),
+        );
+      } catch (error) {
+        console.error('Error creating snippets:', error);
+      } finally {
+        // const outputDir = path.join(__dirname, 'output');
+        // if (fs.existsSync(outputDir)) {
+        //   fs.unlinkSync(outputFilePath); // Clean up the temporary file
+        // }
+      }
+
+      res.send(updateToAndFromValues).status(200);
+    },
+  );
 };
 
 export { bilingualContentRoutes };
