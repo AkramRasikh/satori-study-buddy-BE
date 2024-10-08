@@ -280,6 +280,26 @@ const firebaseRoutes = (app) => {
       return await Promise.all(
         validRefs.map(async (ref) => {
           const refData = await getFirebaseContent({ ref });
+          if (ref === japaneseContent) {
+            const surfaceLevelNullRemoved = refData.filter(
+              (item) => item !== null,
+            );
+            const filteredOutUndefinedNull = surfaceLevelNullRemoved.map(
+              (japaneseContentItem) => {
+                return {
+                  ...japaneseContentItem,
+                  content: japaneseContentItem.content.filter(
+                    (japaneseContentScript) =>
+                      japaneseContentScript !== null ||
+                      japaneseContentScript !== undefined,
+                  ),
+                };
+              },
+            );
+            return {
+              [ref]: filteredOutUndefinedNull,
+            };
+          }
           return {
             [ref]: refData.filter((item) => item !== null),
           };
