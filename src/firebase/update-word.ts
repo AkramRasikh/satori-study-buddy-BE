@@ -17,7 +17,7 @@ const updateWord = async ({ wordId, fieldToUpdate }) => {
 
     if (index !== -1) {
       const wordKeyInWordDB = keys[index];
-      const wordObjectRef = refObj.child(`${wordKeyInWordDB}`);
+      const wordObjectRef = refObj.child(wordKeyInWordDB);
       await wordObjectRef.update(fieldToUpdate);
       return fieldToUpdate;
     } else {
