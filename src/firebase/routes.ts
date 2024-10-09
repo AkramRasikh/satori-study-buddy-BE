@@ -23,6 +23,7 @@ import { getFirebaseAudioURL } from '../mp3-utils/get-audio-url';
 import { getLanguageContentData } from './get-language-content-data';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
+import { updateWord } from './update-word';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
@@ -231,6 +232,27 @@ const firebaseRoutes = (app) => {
     } catch (error) {
       res.status(400).json();
       console.log('## /update-review Err', { error });
+    }
+  });
+
+  app.post('/update-word', async (req: Request, res: Response) => {
+    const wordId = req.body?.wordId;
+
+    const fieldToUpdate = req.body?.fieldToUpdate;
+
+    try {
+      const fieldToUpdateRes = await updateWord({
+        wordId,
+        fieldToUpdate,
+      });
+      if (fieldToUpdateRes) {
+        res.status(200).json(fieldToUpdateRes);
+      } else {
+        res.status(400).json({ message: 'Not found' });
+      }
+    } catch (error) {
+      res.status(400).json();
+      console.log('## /update-word Err', { error });
     }
   });
 
