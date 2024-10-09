@@ -100,15 +100,11 @@ const bilingualContentRoutes = (app) => {
       const splits = req?.body?.interval;
 
       await extractYoutubeAudio({ url, title });
-      const filePath = path.resolve(
-        __dirname,
-        'output',
-        'リベラルアーツって役立つの.txt',
-      );
+      const filePath = path.resolve(__dirname, 'output', 'what-is-sakoku.txt');
       const mp3FileInput = path.resolve(
         __dirname,
         'output',
-        'リベラルアーツって役立つの.mp3',
+        'what-is-sakoku.mp3',
       );
 
       const outputFile = (title) => {
@@ -119,45 +115,40 @@ const bilingualContentRoutes = (app) => {
       const resFromChunking = splitByInterval(outputJson, splits, title);
       const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
       try {
-        await Promise.all(
-          updateToAndFromValues.slice(0, 5).map(async (item) => {
-            const audioPath = outputFile(item.title);
-            const extractedSectionIndex = await extractMP3Section(
-              mp3FileInput,
-              outputFile(item.title),
-              item.from,
-              item.to,
-            );
+        // Sequential processing using for...of and await
+        for (const item of updateToAndFromValues) {
+          const audioPath = outputFile(item.title);
+          const extractedSectionIndex = await extractMP3Section(
+            mp3FileInput,
+            outputFile(item.title),
+            item.from,
+            item.to,
+          );
 
-            const fileBuffer = fs.readFileSync(audioPath);
-            const formattedFirebaseName =
-              'japanese-audio/' + item.title + '.mp3';
+          const fileBuffer = fs.readFileSync(audioPath);
+          const formattedFirebaseName = 'japanese-audio/' + item.title + '.mp3';
 
-            await uploadBufferToFirebase({
-              buffer: fileBuffer,
-              filePath: formattedFirebaseName,
-            });
+          // Upload audio snippet to Firebase
+          await uploadBufferToFirebase({
+            buffer: fileBuffer,
+            filePath: formattedFirebaseName,
+          });
 
-            await addContentArr({
-              ref: japaneseContent,
-              contentEntry: {
-                title: item.title,
-                hasAudio: item.hasAudio,
-                origin: 'youtube',
-                content: item.content,
-              },
-            });
-
-            return extractedSectionIndex;
-          }),
-        );
+          // Add content metadata to Firebase
+          await addContentArr({
+            ref: japaneseContent,
+            contentEntry: {
+              title: item.title,
+              hasAudio: item.hasAudio,
+              origin: 'youtube',
+              content: item.content,
+              url,
+              interval: splits,
+            },
+          });
+        }
       } catch (error) {
         console.error('Error creating snippets:', error);
-      } finally {
-        // const outputDir = path.join(__dirname, 'output');
-        // if (fs.existsSync(outputDir)) {
-        //   fs.unlinkSync(outputFilePath); // Clean up the temporary file
-        // }
       }
 
       res.send(updateToAndFromValues).status(200);
