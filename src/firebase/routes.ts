@@ -3,6 +3,7 @@ import {
   addContentArr,
   addJapaneseWord,
   addSnippet,
+  deleteWord,
   getFirebaseContent,
   removeSnippet,
 } from './init';
@@ -50,6 +51,19 @@ const firebaseRoutes = (app) => {
     }
     try {
       const data = await removeSnippet({ ref, snippetId });
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
+
+  app.post('/delete-word', async (req: Request, res: Response) => {
+    const wordId = req.body?.wordId;
+    if (!wordId) {
+      res.status(500).json({ error: 'No wordId (/delete-word)' });
+    }
+    try {
+      const data = await deleteWord({ wordId });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });

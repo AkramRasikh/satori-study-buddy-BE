@@ -192,6 +192,26 @@ const removeSnippet = async ({ ref, snippetId }) => {
   }
 };
 
+const deleteWord = async ({ wordId }) => {
+  try {
+    // Fetch the existing array
+    const snapshot = await db.ref(japaneseWords).once('value');
+    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
+
+    // Get the ID of the content entry to be removed
+    const entryID = wordId; // Assuming each entry has a unique 'id' property
+
+    // Remove the item with the specified ID
+    newArray = newArray.filter((item) => item.id !== entryID);
+
+    // Update the entire array
+    await db.ref(japaneseWords).set(newArray);
+  } catch (error) {
+    console.error('## Error updating database structure:', error);
+    return error;
+  }
+};
+
 // array!
 const addEntry = async ({ ref, contentEntry }) => {
   console.log('## addEntry ref: ', { ref, contentEntry });
@@ -274,4 +294,5 @@ export {
   getContent,
   addLyricsToFirestore,
   addContentArr,
+  deleteWord,
 };
