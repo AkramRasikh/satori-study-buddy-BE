@@ -12,3 +12,16 @@ const mockScriptData = {
     },
   ],
 };
+
+const mockSatoriObj = {
+  id: 'ed68c4ac-ea5d-458a-a199-827fe691fea0',
+  baseLang:
+    "Let's stop swinging around the product purchased through mail order.",
+  hasAudio: true,
+  matchedWords: ['振り回す', '通信販売'],
+  moodUsed:
+    'Imperative mood: This is the mood used to give commands or make requests.',
+  targetLang: '通信販売で購入した製品を振り回すのはやめましょう。',
+  underlinedText:
+    '<u>通信販売</u>で購入した製品を<u>振り回す</u>のはやめましょう。',
+};
