@@ -1,20 +1,11 @@
 import { Request, Response } from 'express';
 import {
-  getCollectionOfWordData,
   getJapaneseWordsViaSong,
   getJapaneseWordsViaTopic,
   getTopicsWithFlashWordsToStudy,
 } from '.';
 
 const flashcardRoutes = async (app) => {
-  app.get('/get-japanese-words', async (req: Request, res: Response) => {
-    try {
-      const collectionOfWordData = await getCollectionOfWordData();
-      res.send(collectionOfWordData).status(200);
-    } catch (error) {
-      console.log('## error get-japanese-words', error);
-    }
-  });
   app.get('/topics-to-study', async (req: Request, res: Response) => {
     try {
       const topicsWithFlashWordsToStudy =
