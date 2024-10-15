@@ -11,10 +11,12 @@ import {
   useFFmpeg,
 } from './get-audio-duration';
 import { updateAndCreateReview } from '../firebase/update-and-create-review';
+import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 
 const folderPath = 'japanese-audio';
 
 const mp3Utils = (app) => {
+  // check the relevance of this
   app.post('/get-segments', async (req: Request, res: Response) => {
     // const unifiedAudioMP3 = req?.body?.unifiedAudioMP3;
     const topicName = req?.body?.topicName;
@@ -79,61 +81,65 @@ const mp3Utils = (app) => {
     // getAudio
   });
 
-  app.post('/combine-audio', (req: Request, res: Response) => {
-    const audioFiles = req?.body?.audioFiles;
-    const mp3Name = req?.body?.mp3Name;
-    const language = req?.body?.language;
-    const topicName = req?.body?.topicName;
-    const formattedFirebaseName = folderPath + '/' + mp3Name + '.mp3';
+  app.post(
+    '/combine-audio',
+    checkMandatoryLanguage,
+    (req: Request, res: Response) => {
+      const audioFiles = req?.body?.audioFiles;
+      const mp3Name = req?.body?.mp3Name;
+      const language = req?.body?.language;
+      const topicName = req?.body?.topicName;
+      const formattedFirebaseName = folderPath + '/' + mp3Name + '.mp3';
 
-    const outputFilePath = path.join(__dirname, 'output.mp3');
+      const outputFilePath = path.join(__dirname, 'output.mp3');
 
-    const command = ffmpeg();
-    audioFiles.forEach((file) => {
-      command.input(file);
-    });
+      const command = ffmpeg();
+      audioFiles.forEach((file) => {
+        command.input(file);
+      });
 
-    command
-      .on('start', function (commandLine) {
-        console.log('Spawned ffmpeg with command: ' + commandLine);
-      })
-      .on('error', function (err, stdout, stderr) {
-        console.error('Error: ' + err.message);
-        console.error('ffmpeg stderr: ' + stderr);
-        res.status(500).send('Error processing audio files');
-      })
-      .on('end', async () => {
-        console.log('Files have been merged successfully');
+      command
+        .on('start', function (commandLine) {
+          console.log('Spawned ffmpeg with command: ' + commandLine);
+        })
+        .on('error', function (err, stdout, stderr) {
+          console.error('Error: ' + err.message);
+          console.error('ffmpeg stderr: ' + stderr);
+          res.status(500).send('Error processing audio files');
+        })
+        .on('end', async () => {
+          console.log('Files have been merged successfully');
 
-        const buffer = fs.readFileSync(outputFilePath);
+          const buffer = fs.readFileSync(outputFilePath);
 
-        try {
-          const url = await uploadBufferToFirebase({
-            buffer,
-            filePath: formattedFirebaseName,
-          });
+          try {
+            const url = await uploadBufferToFirebase({
+              buffer,
+              filePath: formattedFirebaseName,
+            });
 
-          const fieldToUpdateRes = await updateAndCreateReview({
-            ref: content,
-            contentEntry: topicName,
-            fieldToUpdate: { hasAudio: true },
-            language,
-          });
+            const fieldToUpdateRes = await updateAndCreateReview({
+              ref: content,
+              contentEntry: topicName,
+              fieldToUpdate: { hasAudio: true },
+              language,
+            });
 
-          if (fieldToUpdateRes) {
-            res.status(200).send({ url });
-          } else {
-            res.status(500).send('Error uploading to Firebase Storage 1');
+            if (fieldToUpdateRes) {
+              res.status(200).send({ url });
+            } else {
+              res.status(500).send('Error uploading to Firebase Storage 1');
+            }
+          } catch (error) {
+            console.error('Error uploading to Firebase Storage:', error);
+            res.status(500).send('Error uploading to Firebase Storage 2');
+          } finally {
+            fs.unlinkSync(outputFilePath); // Clean up the temporary file
           }
-        } catch (error) {
-          console.error('Error uploading to Firebase Storage:', error);
-          res.status(500).send('Error uploading to Firebase Storage 2');
-        } finally {
-          fs.unlinkSync(outputFilePath); // Clean up the temporary file
-        }
-      })
-      .mergeToFile(outputFilePath, __dirname);
-  });
+        })
+        .mergeToFile(outputFilePath, __dirname);
+    },
+  );
 };
 
 export { mp3Utils };
