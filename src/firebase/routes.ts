@@ -145,10 +145,6 @@ const firebaseRoutes = (app) => {
     }
   });
 
-  app.post('/mandatory-endpoint', checkMandatoryLanguage, (req, res) => {
-    res.json({ message: `Language used: ${req.language}` });
-  });
-
   app.post('/update-review', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
     const language = req.body?.language;
