@@ -11,7 +11,6 @@ import {
   japaneseContent,
   japaneseSentences,
   japaneseWords,
-  satoriContent,
   japaneseSnippets,
   japaneseSongs,
   japaneseAdhocSentences,
@@ -120,7 +119,6 @@ const firebaseRoutes = (app) => {
         ref === japaneseContent ||
         ref === japaneseWords ||
         ref === japaneseSongs ||
-        ref === satoriContent ||
         ref === japaneseSentences ||
         ref === japaneseSnippets
       )
@@ -300,7 +298,6 @@ const firebaseRoutes = (app) => {
         ref === japaneseContent ||
         ref === japaneseWords ||
         ref === japaneseSongs ||
-        ref === satoriContent ||
         ref === japaneseSentences ||
         ref === japaneseSnippets ||
         ref === japaneseAdhocSentences
