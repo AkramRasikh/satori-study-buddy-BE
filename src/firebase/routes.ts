@@ -15,6 +15,9 @@ import {
   japaneseSnippets,
   japaneseSongs,
   snippets,
+  content,
+  words,
+  sentences,
 } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -417,20 +420,29 @@ const firebaseRoutes = (app) => {
     },
   );
 
-  app.post('/add-my-generated-content', async (req: Request, res: Response) => {
-    const ref = req.body?.ref;
-    const contentEntry = req.body?.contentEntry;
-    const allowedRefs = [japaneseContent, japaneseWords, japaneseSentences];
-    if (!allowedRefs.includes(ref)) {
-      res.status(500).json({ error: `Wrong ref added ${ref}` });
-    }
-    try {
-      const data = await addMyGeneratedContent({ ref, contentEntry });
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-  });
+  app.post(
+    '/add-my-generated-content',
+    checkMandatoryLanguage,
+    async (req: Request, res: Response) => {
+      const ref = req.body?.ref;
+      const language = req.body?.language;
+      const contentEntry = req.body?.contentEntry;
+      const allowedRefs = [content, words, sentences];
+      if (!allowedRefs.includes(ref)) {
+        res.status(500).json({ error: `Wrong ref added ${ref}` });
+      }
+      try {
+        const data = await addMyGeneratedContent({
+          ref,
+          language,
+          contentEntry,
+        });
+        res.status(200).json(data);
+      } catch (error) {
+        res.status(500).json({ error });
+      }
+    },
+  );
 };
 
 export { firebaseRoutes };

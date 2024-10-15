@@ -1,10 +1,10 @@
 import { getRefPath } from '../utils/get-ref-path';
 import { db } from './init';
-import { adhocSentence } from './refs';
+import { adhocSentences } from './refs';
 
 const updateAdhocSentence = async ({ sentenceId, language, fieldToUpdate }) => {
   try {
-    const refPath = getRefPath({ language, ref: adhocSentence });
+    const refPath = getRefPath({ language, ref: adhocSentences });
     const refObj = db.ref(refPath);
     const snapshot = await refObj.once('value');
     const data = snapshot.val();

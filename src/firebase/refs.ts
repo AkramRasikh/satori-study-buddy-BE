@@ -7,5 +7,6 @@ export const japaneseSongs = 'japaneseSongs';
 export const content = 'content';
 export const songs = 'songs';
 export const words = 'words';
-export const adhocSentence = 'adhocSentence';
+export const sentences = 'sentences';
+export const adhocSentences = 'adhocSentences';
 export const snippets = 'snippets';

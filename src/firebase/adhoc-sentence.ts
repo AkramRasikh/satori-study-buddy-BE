@@ -3,6 +3,7 @@ import chatGptTextAPI from '../open-ai/chat-gpt';
 import { db } from './init';
 import narakeetAudio from '../narakeet';
 import { getRefPath } from '../utils/get-ref-path';
+import { adhocSentences } from './refs';
 
 const chatgpt4 = 'gpt-4';
 const checkHasSimilarity = (item, adhocSentence) => {
@@ -44,7 +45,7 @@ const addAdhocSentence = async ({
   const sentenceId = uuidv4(); // maybe create on frontend?
 
   try {
-    const refPath = getRefPath({ language, ref: adhocSentence });
+    const refPath = getRefPath({ language, ref: adhocSentences });
     // Fetch the existing array
     const snapshot = await db.ref(refPath).once('value');
     let newArray = snapshot.val() || [];
@@ -85,7 +86,7 @@ const addAdhocSentence = async ({
           };
           newArray.push(newAdhocSentence);
           // Update the entire array
-          const refPath = getRefPath({ language, ref: adhocSentence });
+          const refPath = getRefPath({ language, ref: adhocSentences });
 
           await db.ref(refPath).set(newArray);
           return newAdhocSentence;

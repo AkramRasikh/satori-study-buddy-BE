@@ -126,10 +126,14 @@ const addLyricsToFirestore = async ({ ref, contentEntry }) => {
     return error;
   }
 };
-const addMyGeneratedContent = async ({ ref, contentEntry }) => {
+const addMyGeneratedContent = async ({ ref, language, contentEntry }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(ref).once('value');
+    const refPath = getRefPath({
+      language,
+      ref: words,
+    });
+    const snapshot = await db.ref(refPath).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Check if the new item's ID already exists in the array
