@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
 import { Request, Response } from 'express';
-import { fetchMixMatchJsonData } from './mix-match';
 import { combineFromYoutubeSRTData, combineSRTData } from './combine-srt-data';
 import { japaneseContent, japaneseSongs } from '../firebase/refs';
 import {
@@ -74,21 +73,6 @@ const bilingualContentRoutes = (app) => {
       ref: japaneseSongs,
       contentEntry: japaneseSongContentEntry,
     });
-    res.send(japaneseSongContentEntry).status(200);
-  });
-
-  app.post('/get-lyrics', async (req: Request, res: Response) => {
-    const url = req?.body?.url;
-    const title = req?.body?.title;
-    const japaneseSongContentEntry = await fetchMixMatchJsonData({
-      url,
-      title,
-    });
-
-    // await addLyricsToFirestore({
-    //   ref: japaneseSongs,
-    //   contentEntry: japaneseSongContentEntry,
-    // });
     res.send(japaneseSongContentEntry).status(200);
   });
 
