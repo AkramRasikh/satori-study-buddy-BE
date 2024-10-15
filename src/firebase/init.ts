@@ -46,9 +46,10 @@ const getJapaneseWordDefinition = async (word) => {
   }
 };
 
-const getContent = async ({ ref }) => {
+const getContent = async ({ language, ref }) => {
   try {
-    const snapshot = await db.ref(ref).once('value');
+    const refPath = getRefPath({ language, ref });
+    const snapshot = await db.ref(refPath).once('value');
     const data = snapshot.val();
     return data;
   } catch (error) {
@@ -277,8 +278,8 @@ const getFirebaseContent = async ({ language, ref }) => {
     });
     const postsRef = db.ref(refPath);
     const res = await postsRef.once('value');
-    const japaneseContent = res.val();
-    return japaneseContent;
+    const japaneseDataContent = res.val();
+    return japaneseDataContent;
   } catch (error) {
     console.error('Error retrieving posts:', error);
     return error;

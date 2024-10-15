@@ -3,7 +3,7 @@ import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import { getContent, uploadBufferToFirebase } from '../firebase/init';
-import { content, japaneseContent } from '../firebase/refs';
+import { content } from '../firebase/refs';
 import { getFirebaseAudioURL } from './get-audio-url';
 import {
   fetchBufferFromUrl,
@@ -17,69 +17,77 @@ const folderPath = 'japanese-audio';
 
 const mp3Utils = (app) => {
   // check the relevance of this
-  app.post('/get-segments', async (req: Request, res: Response) => {
-    // const unifiedAudioMP3 = req?.body?.unifiedAudioMP3;
-    const topicName = req?.body?.topicName;
+  app.post(
+    '/get-segments',
+    checkMandatoryLanguage,
+    async (req: Request, res: Response) => {
+      // const unifiedAudioMP3 = req?.body?.unifiedAudioMP3;
+      const topicName = req?.body?.topicName;
+      const language = req?.body?.language;
 
-    try {
-      const japaneseContentData = await getContent({ ref: japaneseContent });
-      const thisTopicsData = japaneseContentData[topicName];
+      try {
+        const japaneseContentData = await getContent({
+          language,
+          ref: content,
+        });
+        const thisTopicsData = japaneseContentData[topicName];
 
-      let startAt = 0;
+        let startAt = 0;
 
-      const withDuration = await Promise.all(
-        thisTopicsData
-          .map(async (item, index) => {
-            const audioUrl = getFirebaseAudioURL(item.id);
-            const id = item.id;
-            const tempFilePath = path.join(__dirname, `${id}.mp3`);
-            try {
-              const buffer = await fetchBufferFromUrl(audioUrl);
-              await saveBufferToFile(buffer, tempFilePath);
+        const withDuration = await Promise.all(
+          thisTopicsData
+            .map(async (item, index) => {
+              const audioUrl = getFirebaseAudioURL(item.id);
+              const id = item.id;
+              const tempFilePath = path.join(__dirname, `${id}.mp3`);
+              try {
+                const buffer = await fetchBufferFromUrl(audioUrl);
+                await saveBufferToFile(buffer, tempFilePath);
 
-              const formatData = (await useFFmpeg(tempFilePath)) as any;
-              const duration = formatData.format.duration;
+                const formatData = (await useFFmpeg(tempFilePath)) as any;
+                const duration = formatData.format.duration;
 
-              return {
-                ...item,
-                duration,
-                position: index,
-                audioUrl,
-              };
-            } catch (error) {
-              console.error('Error processing item:', error);
-              return null; // or handle error as needed
-            } finally {
-              // Always ensure to delete temporary file and close resources
-              if (fs.existsSync(tempFilePath)) {
-                fs.unlinkSync(tempFilePath);
+                return {
+                  ...item,
+                  duration,
+                  position: index,
+                  audioUrl,
+                };
+              } catch (error) {
+                console.error('Error processing item:', error);
+                return null; // or handle error as needed
+              } finally {
+                // Always ensure to delete temporary file and close resources
+                if (fs.existsSync(tempFilePath)) {
+                  fs.unlinkSync(tempFilePath);
+                }
               }
-            }
-          })
-          .sort((a, b) => a.position - b.position),
-      );
+            })
+            .sort((a, b) => a.position - b.position),
+        );
 
-      const formatWithStartAt = withDuration?.map((item) => {
-        const position = item.position;
-        const duration = item.duration;
-        if (position > 0) {
-          startAt += duration;
-        }
-        return {
-          ...item,
-          startAt,
-        };
-      });
+        const formatWithStartAt = withDuration?.map((item) => {
+          const position = item.position;
+          const duration = item.duration;
+          if (position > 0) {
+            startAt += duration;
+          }
+          return {
+            ...item,
+            startAt,
+          };
+        });
 
-      res.status(200).send({
-        data: formatWithStartAt,
-      });
-    } catch (error) {
-      res.status(401);
-    }
+        res.status(200).send({
+          data: formatWithStartAt,
+        });
+      } catch (error) {
+        res.status(401);
+      }
 
-    // getAudio
-  });
+      // getAudio
+    },
+  );
 
   app.post(
     '/combine-audio',

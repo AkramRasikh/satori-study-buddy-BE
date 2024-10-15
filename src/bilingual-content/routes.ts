@@ -40,7 +40,7 @@ const bilingualContentRoutes = (app) => {
         console.log('## extracted video');
         const englishContent = await extractSrtData({ youtubeId, lang: 'en' });
         console.log('## extracted english Subs');
-        const japaneseContent = await extractSrtData({
+        const extractedTargetLangContent = await extractSrtData({
           youtubeId,
           lang: targetLang,
         });
@@ -48,7 +48,7 @@ const bilingualContentRoutes = (app) => {
         const japaneseSongContentEntry = await combineFromYoutubeSRTData({
           title,
           englishSRT: englishContent,
-          japaneseSRT: japaneseContent,
+          japaneseSRT: extractedTargetLangContent,
         });
         console.log('## combined subs');
         await uploadBufferToFirebase({

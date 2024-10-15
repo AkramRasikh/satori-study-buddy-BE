@@ -8,17 +8,7 @@ import {
   getFirebaseContent,
   removeSnippet,
 } from './init';
-import {
-  japaneseContent,
-  japaneseSentences,
-  japaneseWords,
-  japaneseSnippets,
-  japaneseSongs,
-  snippets,
-  content,
-  words,
-  sentences,
-} from './refs';
+import { snippets, content, words, sentences, songs } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
 import narakeetAudio from '../narakeet';
@@ -94,7 +84,7 @@ const firebaseRoutes = (app) => {
     const ref = req.body?.ref;
     const contentEntry = req.body?.contentEntry;
 
-    if (japaneseContent !== ref) {
+    if (content !== ref) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
       return;
     }
@@ -150,11 +140,11 @@ const firebaseRoutes = (app) => {
 
       if (
         !(
-          ref === japaneseContent ||
-          ref === japaneseWords ||
-          ref === japaneseSongs ||
-          ref === japaneseSentences ||
-          ref === japaneseSnippets
+          ref === content ||
+          ref === words ||
+          ref === songs ||
+          ref === sentences ||
+          ref === snippets
         )
       ) {
         res.status(500).json({ error: `Wrong ref added ${ref}` });
@@ -224,7 +214,10 @@ const firebaseRoutes = (app) => {
             voice,
           });
           if (naraKeetRes) {
-            const languageContent = await getLanguageContentData({ topicName });
+            const languageContent = await getLanguageContentData({
+              language,
+              topicName,
+            });
             const audioFiles = languageContent.map((item) =>
               getFirebaseAudioURL(item.id),
             );
@@ -384,7 +377,7 @@ const firebaseRoutes = (app) => {
         return await Promise.all(
           validRefs.map(async (ref) => {
             const refData = await getFirebaseContent({ language, ref });
-            if (ref === japaneseContent) {
+            if (ref === content) {
               const surfaceLevelNullRemoved = refData.filter(
                 (item) => item !== null,
               );

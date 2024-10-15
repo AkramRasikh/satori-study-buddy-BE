@@ -1,6 +1,6 @@
 import { getRefPath } from '../utils/get-ref-path';
 import { db } from './init';
-import { content, japaneseContent } from './refs';
+import { content } from './refs';
 import {
   getThisContentsIndex,
   getThisSentenceIndex,

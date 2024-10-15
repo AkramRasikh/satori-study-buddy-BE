@@ -1,12 +1,5 @@
 import { getFirebaseContent } from '../firebase/init';
-import {
-  japaneseContent,
-  japaneseSongs,
-  japaneseWords,
-  content,
-  songs,
-  words,
-} from '../firebase/refs';
+import { content, songs, words } from '../firebase/refs';
 
 const getJapaneseWords = async ({ language }) => {
   const data = await getFirebaseContent({ language, ref: words });
