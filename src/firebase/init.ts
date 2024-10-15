@@ -266,9 +266,12 @@ const addContentArr = async ({ ref, contentEntry }) => {
 };
 
 const getFirebaseContent = async ({ language, ref }) => {
-  const refPath = `${language}/${ref}`;
-  const postsRef = db.ref(refPath);
   try {
+    const refPath = getRefPath({
+      language,
+      ref,
+    });
+    const postsRef = db.ref(refPath);
     const res = await postsRef.once('value');
     const japaneseContent = res.val();
     return japaneseContent;
