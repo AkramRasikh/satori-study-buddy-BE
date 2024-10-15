@@ -14,7 +14,7 @@ import {
   japaneseWords,
   japaneseSnippets,
   japaneseSongs,
-  japaneseAdhocSentences,
+  snippets,
 } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -25,17 +25,19 @@ import { getLanguageContentData } from './get-language-content-data';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { updateWord } from './update-word';
+import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 
 const firebaseRoutes = (app) => {
   app.post('/add-snippet', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
+    const language = req.body?.language;
     const contentEntry = req.body?.contentEntry;
-    const allowedRefs = [japaneseSnippets];
+    const allowedRefs = [snippets];
     if (!allowedRefs.includes(ref)) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
     }
     try {
-      const data = await addSnippet({ ref, contentEntry });
+      const data = await addSnippet({ ref, language, contentEntry });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
@@ -45,12 +47,13 @@ const firebaseRoutes = (app) => {
   app.post('/delete-snippet', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
     const snippetId = req.body?.snippetId;
-    const allowedRefs = [japaneseSnippets];
+    const language = req.body?.language;
+    const allowedRefs = [snippets];
     if (!allowedRefs.includes(ref)) {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
     }
     try {
-      const data = await removeSnippet({ ref, snippetId });
+      const data = await removeSnippet({ ref, language, snippetId });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
@@ -59,11 +62,13 @@ const firebaseRoutes = (app) => {
 
   app.post('/delete-word', async (req: Request, res: Response) => {
     const wordId = req.body?.wordId;
+    const language = req.body?.language;
+
     if (!wordId) {
       res.status(500).json({ error: 'No wordId (/delete-word)' });
     }
     try {
-      const data = await deleteWord({ wordId });
+      const data = await deleteWord({ language, wordId });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
@@ -90,10 +95,15 @@ const firebaseRoutes = (app) => {
 
   app.post('/add-word', async (req: Request, res: Response) => {
     const word = req.body?.word;
+    const language = req.body?.language;
     const contexts = req.body?.contexts;
 
     try {
-      const japaneseWordRes = await addJapaneseWord({ word, contexts });
+      const japaneseWordRes = await addJapaneseWord({
+        word,
+        language,
+        contexts,
+      });
       if (japaneseWordRes.status === 409) {
         return res
           .status(409)
@@ -114,6 +124,7 @@ const firebaseRoutes = (app) => {
 
   app.post('/firebase-data', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
+    const language = req.body?.language;
 
     if (
       !(
@@ -127,15 +138,20 @@ const firebaseRoutes = (app) => {
       res.status(500).json({ error: `Wrong ref added ${ref}` });
     }
     try {
-      const data = await getFirebaseContent({ ref });
+      const data = await getFirebaseContent({ language, ref });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });
     }
   });
 
+  app.post('/mandatory-endpoint', checkMandatoryLanguage, (req, res) => {
+    res.json({ message: `Language used: ${req.language}` });
+  });
+
   app.post('/update-review', async (req: Request, res: Response) => {
     const ref = req.body?.ref;
+    const language = req.body?.language;
     const contentEntry = req.body?.contentEntry;
     const fieldToUpdate = req.body?.fieldToUpdate;
 
@@ -144,6 +160,7 @@ const firebaseRoutes = (app) => {
         ref,
         contentEntry,
         fieldToUpdate,
+        language,
       });
       if (fieldToUpdateRes) {
         res.status(200).json(fieldToUpdateRes);
@@ -166,12 +183,14 @@ const firebaseRoutes = (app) => {
       const withAudio = req.body?.withAudio;
       const apiKey = process.env.NARAKEET_KEY;
       const voice = req.body?.voice;
+      const language = req.body?.language;
       const sentence = fieldToUpdate?.targetLang;
       try {
         const fieldToUpdateRes = await updateContentItem({
           sentenceId,
           topicName,
           fieldToUpdate,
+          language,
         });
         if (withAudio) {
           const naraKeetRes = await narakeetAudio({
@@ -213,8 +232,11 @@ const firebaseRoutes = (app) => {
     const nextReview = req.body.nextReview;
     const tags = req.body?.tags;
     const topic = req.body?.topic;
+    const language = req.body?.language;
+
     try {
       const result = await addAdhocSentence({
+        language,
         adhocSentence,
         tags,
         topic,
@@ -227,12 +249,15 @@ const firebaseRoutes = (app) => {
   });
 
   app.post('/update-content-item', async (req: Request, res: Response) => {
+    //
     const sentenceId = req.body?.sentenceId;
+    const language = req.body?.language;
     const topicName = req.body?.topicName;
     const fieldToUpdate = req.body?.fieldToUpdate;
 
     try {
       const fieldToUpdateRes = await updateContentItem({
+        language,
         sentenceId,
         topicName,
         fieldToUpdate,
@@ -250,11 +275,12 @@ const firebaseRoutes = (app) => {
 
   app.post('/update-word', async (req: Request, res: Response) => {
     const wordId = req.body?.wordId;
-
+    const language = req.body?.language;
     const fieldToUpdate = req.body?.fieldToUpdate;
 
     try {
       const fieldToUpdateRes = await updateWord({
+        language,
         wordId,
         fieldToUpdate,
       });
@@ -271,12 +297,14 @@ const firebaseRoutes = (app) => {
 
   app.post('/update-adhoc-sentence', async (req: Request, res: Response) => {
     const sentenceId = req.body?.sentenceId;
+    const language = req.body?.language;
     const fieldToUpdate = req.body?.fieldToUpdate;
 
     try {
       const fieldToUpdateRes = await updateAdhocSentence({
         sentenceId,
         fieldToUpdate,
+        language,
       });
       if (fieldToUpdateRes) {
         res.status(200).json(fieldToUpdateRes);
@@ -289,65 +317,69 @@ const firebaseRoutes = (app) => {
     }
   });
 
-  app.post('/firebase-data-mobile', async (req: Request, res: Response) => {
-    const refs = req.body?.refs;
-    console.log('## /firebase-data-mobile called');
+  app.post(
+    '/firebase-data-mobile',
+    checkMandatoryLanguage,
+    async (req: Request, res: Response) => {
+      const refs = req.body?.refs;
+      const language = req.body?.language;
+      console.log('## /firebase-data-mobile called');
 
-    // filter
-    const isValidRef = (ref) => {
-      if (
-        ref === japaneseContent ||
-        ref === japaneseWords ||
-        ref === japaneseSongs ||
-        ref === japaneseSentences ||
-        ref === japaneseSnippets ||
-        ref === japaneseAdhocSentences
-      ) {
-        return true;
-      }
-      return false;
-    };
+      const isValidRef = (ref) => {
+        if (
+          ref === 'content' ||
+          ref === 'words' ||
+          ref === 'songs' ||
+          ref === 'sentences' ||
+          ref === 'snippets' ||
+          ref === 'adhocSentences'
+        ) {
+          return true;
+        }
+        return false;
+      };
 
-    const validRefs = refs.filter(isValidRef);
+      const validRefs = refs.filter(isValidRef);
 
-    const getFirebaseDataMap = async () => {
-      return await Promise.all(
-        validRefs.map(async (ref) => {
-          const refData = await getFirebaseContent({ ref });
-          if (ref === japaneseContent) {
-            const surfaceLevelNullRemoved = refData.filter(
-              (item) => item !== null,
-            );
-            const filteredOutUndefinedNull = surfaceLevelNullRemoved.map(
-              (japaneseContentItem) => {
-                return {
-                  ...japaneseContentItem,
-                  content: japaneseContentItem.content.filter(
-                    (japaneseContentScript) =>
-                      japaneseContentScript !== null ||
-                      japaneseContentScript !== undefined,
-                  ),
-                };
-              },
-            );
+      const getFirebaseDataMap = async () => {
+        return await Promise.all(
+          validRefs.map(async (ref) => {
+            const refData = await getFirebaseContent({ language, ref });
+            if (ref === japaneseContent) {
+              const surfaceLevelNullRemoved = refData.filter(
+                (item) => item !== null,
+              );
+              const filteredOutUndefinedNull = surfaceLevelNullRemoved.map(
+                (japaneseContentItem) => {
+                  return {
+                    ...japaneseContentItem,
+                    content: japaneseContentItem.content.filter(
+                      (japaneseContentScript) =>
+                        japaneseContentScript !== null ||
+                        japaneseContentScript !== undefined,
+                    ),
+                  };
+                },
+              );
+              return {
+                [ref]: filteredOutUndefinedNull,
+              };
+            }
             return {
-              [ref]: filteredOutUndefinedNull,
+              [ref]: refData.filter((item) => item !== null),
             };
-          }
-          return {
-            [ref]: refData.filter((item) => item !== null),
-          };
-        }),
-      );
-    };
+          }),
+        );
+      };
 
-    try {
-      const data = await getFirebaseDataMap();
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-  });
+      try {
+        const data = await getFirebaseDataMap();
+        res.status(200).json(data);
+      } catch (error) {
+        res.status(500).json({ error });
+      }
+    },
+  );
 
   app.post('/add-my-generated-content', async (req: Request, res: Response) => {
     const ref = req.body?.ref;

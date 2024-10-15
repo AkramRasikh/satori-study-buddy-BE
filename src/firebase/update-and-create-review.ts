@@ -1,3 +1,4 @@
+import { getRefPath } from '../utils/get-ref-path';
 import { db } from './init';
 
 export const getThisContentsIndex = ({ data, contentEntry }) => {
@@ -25,9 +26,15 @@ export const getThisSentenceIndex = ({ data, id }) => {
 
   return { sentenceKeys, sentenceIndex };
 };
-const updateAndCreateReview = async ({ ref, contentEntry, fieldToUpdate }) => {
+const updateAndCreateReview = async ({
+  ref,
+  contentEntry,
+  language,
+  fieldToUpdate,
+}) => {
   try {
-    const refObj = db.ref(ref);
+    const refPath = getRefPath({ language, ref });
+    const refObj = db.ref(refPath);
     const snapshot = await refObj.once('value');
     const data = snapshot.val();
 

@@ -3,7 +3,7 @@ import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import { getContent, uploadBufferToFirebase } from '../firebase/init';
-import { japaneseContent } from '../firebase/refs';
+import { content, japaneseContent } from '../firebase/refs';
 import { getFirebaseAudioURL } from './get-audio-url';
 import {
   fetchBufferFromUrl,
@@ -82,6 +82,7 @@ const mp3Utils = (app) => {
   app.post('/combine-audio', (req: Request, res: Response) => {
     const audioFiles = req?.body?.audioFiles;
     const mp3Name = req?.body?.mp3Name;
+    const language = req?.body?.language;
     const topicName = req?.body?.topicName;
     const formattedFirebaseName = folderPath + '/' + mp3Name + '.mp3';
 
@@ -113,9 +114,10 @@ const mp3Utils = (app) => {
           });
 
           const fieldToUpdateRes = await updateAndCreateReview({
-            ref: japaneseContent,
+            ref: content,
             contentEntry: topicName,
             fieldToUpdate: { hasAudio: true },
+            language,
           });
 
           if (fieldToUpdateRes) {

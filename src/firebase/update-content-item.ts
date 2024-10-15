@@ -1,13 +1,20 @@
+import { getRefPath } from '../utils/get-ref-path';
 import { db } from './init';
-import { japaneseContent } from './refs';
+import { content, japaneseContent } from './refs';
 import {
   getThisContentsIndex,
   getThisSentenceIndex,
 } from './update-and-create-review';
 
-const updateContentItem = async ({ sentenceId, topicName, fieldToUpdate }) => {
+const updateContentItem = async ({
+  sentenceId,
+  language,
+  topicName,
+  fieldToUpdate,
+}) => {
   try {
-    const refObj = db.ref(japaneseContent);
+    const refPath = getRefPath({ language, ref: content });
+    const refObj = db.ref(refPath);
     const snapshot = await refObj.once('value');
     const data = snapshot.val();
 

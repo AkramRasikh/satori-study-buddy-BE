@@ -1,9 +1,11 @@
+import { getRefPath } from '../utils/get-ref-path';
 import { db } from './init';
-import { japaneseWords } from './refs';
+import { words } from './refs';
 
-const updateWord = async ({ wordId, fieldToUpdate }) => {
+const updateWord = async ({ wordId, language, fieldToUpdate }) => {
   try {
-    const refObj = db.ref(japaneseWords);
+    const refPath = getRefPath({ language, ref: words });
+    const refObj = db.ref(refPath);
     const snapshot = await refObj.once('value');
     const wordData = snapshot.val();
 

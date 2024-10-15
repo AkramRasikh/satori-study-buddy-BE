@@ -2,10 +2,11 @@ import admin from 'firebase-admin';
 import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
-import { japaneseWords } from './refs';
+import { japaneseWords, words } from './refs';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
+import { getRefPath } from '../utils/get-ref-path';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
@@ -55,10 +56,14 @@ const getContent = async ({ ref }) => {
   }
 };
 
-const addJapaneseWord = async ({ word, contexts }) => {
+const addJapaneseWord = async ({ word, language, contexts }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(japaneseWords).once('value');
+    const refPath = getRefPath({
+      language,
+      ref: words,
+    });
+    const snapshot = await db.ref(refPath).once('value');
 
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
     const baseForm = await getBaseForm(word);
@@ -147,10 +152,14 @@ const addMyGeneratedContent = async ({ ref, contentEntry }) => {
 };
 
 // same as above
-const addSnippet = async ({ ref, contentEntry }) => {
+const addSnippet = async ({ ref, language, contentEntry }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(ref).once('value');
+    const refPath = getRefPath({
+      ref,
+      language,
+    });
+    const snapshot = await db.ref(refPath).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Check if the new item's ID already exists in the array
@@ -172,10 +181,14 @@ const addSnippet = async ({ ref, contentEntry }) => {
   }
 };
 
-const removeSnippet = async ({ ref, snippetId }) => {
+const removeSnippet = async ({ ref, language, snippetId }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(ref).once('value');
+    const refPath = getRefPath({
+      ref,
+      language,
+    });
+    const snapshot = await db.ref(refPath).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Get the ID of the content entry to be removed
@@ -192,10 +205,14 @@ const removeSnippet = async ({ ref, snippetId }) => {
   }
 };
 
-const deleteWord = async ({ wordId }) => {
+const deleteWord = async ({ language, wordId }) => {
   try {
     // Fetch the existing array
-    const snapshot = await db.ref(japaneseWords).once('value');
+    const refPath = getRefPath({
+      ref: words,
+      language,
+    });
+    const snapshot = await db.ref(refPath).once('value');
     let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
     // Get the ID of the content entry to be removed
@@ -248,8 +265,9 @@ const addContentArr = async ({ ref, contentEntry }) => {
   }
 };
 
-const getFirebaseContent = async ({ ref }) => {
-  const postsRef = db.ref(ref);
+const getFirebaseContent = async ({ language, ref }) => {
+  const refPath = `${language}/${ref}`;
+  const postsRef = db.ref(refPath);
   try {
     const res = await postsRef.once('value');
     const japaneseContent = res.val();

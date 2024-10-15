@@ -3,24 +3,27 @@ import {
   japaneseContent,
   japaneseSongs,
   japaneseWords,
+  content,
+  songs,
+  words,
 } from '../firebase/refs';
 
-const getJapaneseWords = async () => {
-  const data = await getFirebaseContent({ ref: japaneseWords });
+const getJapaneseWords = async ({ language }) => {
+  const data = await getFirebaseContent({ language, ref: words });
   return data;
 };
-const getJapaneseContent = async () => {
-  const data = await getFirebaseContent({ ref: japaneseContent });
+const getJapaneseContent = async ({ language }) => {
+  const data = await getFirebaseContent({ language, ref: content });
   return data;
 };
-const getJapaneseSongs = async () => {
-  const data = await getFirebaseContent({ ref: japaneseSongs });
+const getJapaneseSongs = async ({ language }) => {
+  const data = await getFirebaseContent({ language, ref: songs });
   return data;
 };
 
-const getJapaneseWordsViaTopic = async ({ topic }) => {
-  const japaneseWordsRes = await getJapaneseWords();
-  const japaneseContentRes = await getJapaneseContent();
+const getJapaneseWordsViaTopic = async ({ topic, language }) => {
+  const japaneseWordsRes = await getJapaneseWords({ language });
+  const japaneseContentRes = await getJapaneseContent({ language });
 
   const contextIds = [];
   const contextData = [];
@@ -70,9 +73,9 @@ const getJapaneseWordsViaTopic = async ({ topic }) => {
   return lastMap;
 };
 
-const getJapaneseWordsViaSong = async ({ topic }) => {
-  const japaneseWordsRes = await getJapaneseWords();
-  const japaneseSongsRes = await getJapaneseSongs();
+const getJapaneseWordsViaSong = async ({ topic, language }) => {
+  const japaneseWordsRes = await getJapaneseWords({ language });
+  const japaneseSongsRes = await getJapaneseSongs({ language });
   const [thisSong] = japaneseSongsRes.filter((song) => song.title === topic);
 
   const contextIds = [];
@@ -133,13 +136,15 @@ const countOccurrences = (arr) => {
   return counts;
 };
 
-const getTopicsWithFlashWordsToStudy = async () => {
-  const japaneseWordsRes = await getJapaneseWords();
-  const japaneseContentRes = Object.values(await getJapaneseContent()) as any;
+const getTopicsWithFlashWordsToStudy = async ({ language }) => {
+  const japaneseWordsRes = await getJapaneseWords({ language });
+  const japaneseContentRes = Object.values(
+    await getJapaneseContent({ language }),
+  ) as any;
   const japaneseContentNoNulls = japaneseContentRes?.filter(
     (item) => item !== null,
   );
-  const japaneseSongsRes = await getJapaneseSongs();
+  const japaneseSongsRes = await getJapaneseSongs({ language });
 
   const contextIds = [];
 

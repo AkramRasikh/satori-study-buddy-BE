@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import chatGptTextAPI from '../open-ai/chat-gpt';
 import { db } from './init';
-import { japaneseAdhocSentences } from './refs';
 import narakeetAudio from '../narakeet';
+import { getRefPath } from '../utils/get-ref-path';
 
 const chatgpt4 = 'gpt-4';
 const checkHasSimilarity = (item, adhocSentence) => {
@@ -32,14 +32,21 @@ const adhocPrompt = `
 `;
 
 // adhocSentence (baseLang, context)
-const addAdhocSentence = async ({ adhocSentence, topic, tags, nextReview }) => {
+const addAdhocSentence = async ({
+  adhocSentence,
+  language,
+  topic,
+  tags,
+  nextReview,
+}) => {
   const openAIKey = process.env.OPENAI_API_KEY;
   const narakeetKey = process.env.NARAKEET_KEY;
   const sentenceId = uuidv4(); // maybe create on frontend?
 
   try {
+    const refPath = getRefPath({ language, ref: adhocSentence });
     // Fetch the existing array
-    const snapshot = await db.ref(japaneseAdhocSentences).once('value');
+    const snapshot = await db.ref(refPath).once('value');
     let newArray = snapshot.val() || [];
 
     // Check if the new item's ID already exists in the array
@@ -78,7 +85,9 @@ const addAdhocSentence = async ({ adhocSentence, topic, tags, nextReview }) => {
           };
           newArray.push(newAdhocSentence);
           // Update the entire array
-          await db.ref(japaneseAdhocSentences).set(newArray);
+          const refPath = getRefPath({ language, ref: adhocSentence });
+
+          await db.ref(refPath).set(newArray);
           return newAdhocSentence;
         } else {
           console.log('## translation created, but audio failed 1', {
