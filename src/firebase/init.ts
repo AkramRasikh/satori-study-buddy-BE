@@ -121,7 +121,7 @@ const addLyricsToFirestore = async ({ ref, contentEntry }) => {
     return error;
   }
 };
-const addToSatori = async ({ ref, contentEntry }) => {
+const addMyGeneratedContent = async ({ ref, contentEntry }) => {
   try {
     // Fetch the existing array
     const snapshot = await db.ref(ref).once('value');
@@ -287,7 +287,7 @@ export {
   uploadBufferToFirebase,
   getFirebaseContent,
   addEntry,
-  addToSatori,
+  addMyGeneratedContent,
   addJapaneseWord,
   addSnippet,
   removeSnippet,

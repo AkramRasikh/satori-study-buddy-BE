@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   addContentArr,
   addJapaneseWord,
+  addMyGeneratedContent,
   addSnippet,
   deleteWord,
   getFirebaseContent,
@@ -342,6 +343,21 @@ const firebaseRoutes = (app) => {
 
     try {
       const data = await getFirebaseDataMap();
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
+
+  app.post('/add-my-generated-content', async (req: Request, res: Response) => {
+    const ref = req.body?.ref;
+    const contentEntry = req.body?.contentEntry;
+    const allowedRefs = [japaneseContent, japaneseWords, japaneseSentences];
+    if (!allowedRefs.includes(ref)) {
+      res.status(500).json({ error: `Wrong ref added ${ref}` });
+    }
+    try {
+      const data = await addMyGeneratedContent({ ref, contentEntry });
       res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ error });

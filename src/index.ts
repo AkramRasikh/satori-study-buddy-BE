@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import config from '../config';
-import { satoriRoutes } from './satori/routes';
 import { openAIRoutes } from './open-ai/routes';
 import { firebaseRoutes } from './firebase/routes';
 import { languageScriptHelpers } from './language-script-helpers/routes';
@@ -19,7 +18,6 @@ const port = config.port;
 app.use(express.json());
 
 // routes
-satoriRoutes(app);
 openAIRoutes(app);
 firebaseRoutes(app);
 languageScriptHelpers(app);
