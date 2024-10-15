@@ -138,6 +138,7 @@ const bilingualContentRoutes = (app) => {
           // Add content metadata to Firebase
           await addContentArr({
             ref: refPath,
+            language,
             contentEntry: {
               title: item.title,
               hasAudio: item.hasAudio,

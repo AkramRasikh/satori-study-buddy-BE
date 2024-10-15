@@ -80,23 +80,28 @@ const firebaseRoutes = (app) => {
     },
   );
 
-  app.post('/update-content', async (req: Request, res: Response) => {
-    const ref = req.body?.ref;
-    const contentEntry = req.body?.contentEntry;
+  app.post(
+    '/update-content',
+    checkMandatoryLanguage,
+    async (req: Request, res: Response) => {
+      const ref = req.body?.ref;
+      const language = req.body?.language;
+      const contentEntry = req.body?.contentEntry;
 
-    if (content !== ref) {
-      res.status(500).json({ error: `Wrong ref added ${ref}` });
-      return;
-    }
-    try {
-      await addContentArr({ ref, contentEntry });
-      res
-        .status(200)
-        .json({ message: 'Successfully updated entry', contentEntry });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-  });
+      if (content !== ref) {
+        res.status(500).json({ error: `Wrong ref added ${ref}` });
+        return;
+      }
+      try {
+        await addContentArr({ ref, language, contentEntry });
+        res
+          .status(200)
+          .json({ message: 'Successfully updated entry', contentEntry });
+      } catch (error) {
+        res.status(500).json({ error });
+      }
+    },
+  );
 
   app.post(
     '/add-word',
