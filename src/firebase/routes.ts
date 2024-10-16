@@ -8,14 +8,7 @@ import {
   getFirebaseContent,
   removeSnippet,
 } from './init';
-import {
-  snippets,
-  content,
-  words,
-  sentences,
-  songs,
-  adhocSentences,
-} from './refs';
+import { snippets, content, words, sentences, songs } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
 import narakeetAudio from '../narakeet';
@@ -26,6 +19,7 @@ import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { updateWord } from './update-word';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
+import { getOnLoadData, getOnLoadDataValidation } from './get-on-load-data';
 
 const firebaseRoutes = (app) => {
   app.post(
@@ -361,69 +355,7 @@ const firebaseRoutes = (app) => {
     },
   );
 
-  app.post(
-    '/firebase-data-mobile',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const refs = req.body?.refs;
-      const language = req.body?.language;
-      console.log('## /firebase-data-mobile called');
-
-      const isValidRef = (ref) => {
-        if (
-          ref === content ||
-          ref === words ||
-          ref === songs ||
-          ref === sentences ||
-          ref === snippets ||
-          ref === adhocSentences
-        ) {
-          return true;
-        }
-        return false;
-      };
-
-      const validRefs = refs.filter(isValidRef);
-
-      const getFirebaseDataMap = async () => {
-        return await Promise.all(
-          validRefs.map(async (ref) => {
-            const refData = await getFirebaseContent({ language, ref });
-            if (ref === content) {
-              const surfaceLevelNullRemoved = refData.filter(
-                (item) => item !== null,
-              );
-              const filteredOutUndefinedNull = surfaceLevelNullRemoved.map(
-                (japaneseContentItem) => {
-                  return {
-                    ...japaneseContentItem,
-                    content: japaneseContentItem.content.filter(
-                      (japaneseContentScript) =>
-                        japaneseContentScript !== null ||
-                        japaneseContentScript !== undefined,
-                    ),
-                  };
-                },
-              );
-              return {
-                [ref]: filteredOutUndefinedNull,
-              };
-            }
-            return {
-              [ref]: refData.filter((item) => item !== null),
-            };
-          }),
-        );
-      };
-
-      try {
-        const data = await getFirebaseDataMap();
-        res.status(200).json(data);
-      } catch (error) {
-        res.status(500).json({ error });
-      }
-    },
-  );
+  app.post('/firebase-data-mobile', getOnLoadDataValidation, getOnLoadData);
 
   app.post(
     '/add-my-generated-content',
