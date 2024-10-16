@@ -18,7 +18,7 @@ const eligibleRefs = [
 
 const checkEligibleIsRef = (ref) => eligibleRefs.includes(ref);
 
-const checkRefsEligibilityRoute = (req, res) => {
+const checkRefsEligibilityRoute = (req, res, next) => {
   const { refs } = req.body;
   const refsCheckedBool = refs.every(checkEligibleIsRef);
 
@@ -31,6 +31,7 @@ const checkRefsEligibilityRoute = (req, res) => {
       error: errorMsg,
     });
   }
+  next?.();
 };
 
 export { checkEligibleIsRef, checkRefsEligibilityRoute };

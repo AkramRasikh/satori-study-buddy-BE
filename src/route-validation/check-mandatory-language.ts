@@ -1,6 +1,6 @@
 const eligibleLanguages = ['japanese'];
 
-const checkMandatoryLanguage = (req, res) => {
+const checkMandatoryLanguage = (req, res, next) => {
   const { language } = req.body;
   if (!language || !eligibleLanguages.includes(language)) {
     const errorMsg = `Language is required in the request body. '${language}' is not valid. Eligible languages: ${eligibleLanguages.join(
@@ -10,6 +10,7 @@ const checkMandatoryLanguage = (req, res) => {
       error: errorMsg,
     });
   }
+  next?.();
 };
 
 export { checkMandatoryLanguage };

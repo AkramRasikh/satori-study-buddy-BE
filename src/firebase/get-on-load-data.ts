@@ -5,10 +5,10 @@ import { checkRefsEligibilityRoute } from '../route-validation/check-eligible-is
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 
 export const getOnLoadDataValidation = (req, res, next) => {
-  if (checkMandatoryLanguage(req, res)) {
+  if (checkMandatoryLanguage(req, res, null)) {
     return;
   }
-  if (checkRefsEligibilityRoute(req, res)) {
+  if (checkRefsEligibilityRoute(req, res, null)) {
     return;
   }
   next();
