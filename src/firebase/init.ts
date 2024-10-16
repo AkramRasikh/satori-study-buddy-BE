@@ -8,6 +8,7 @@ import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
 import { getRefPath } from '../utils/get-ref-path';
 import { filterOutNestedNulls } from '../utils/filter-out-nested-nulls';
+import { FirebaseCoreQueryParams } from './types';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
@@ -272,7 +273,10 @@ const addContentArr = async ({ ref, language, contentEntry }) => {
   }
 };
 
-const getFirebaseContentType = async ({ language, ref }) => {
+const getFirebaseContentType = async ({
+  language,
+  ref,
+}: FirebaseCoreQueryParams) => {
   try {
     const refPath = getRefPath({
       language,

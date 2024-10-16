@@ -1,19 +1,32 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getFirebaseContentType } from './init';
 import { checkRefsEligibilityRoute } from '../route-validation/check-eligible-is-ref';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
+import { FirebaseCoreQueryParams } from './types';
 
-export const getOnLoadDataValidation = (req, res, next) => {
-  if (checkMandatoryLanguage(req, res, null)) {
+export const getOnLoadDataValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (checkMandatoryLanguage(req, res)) {
     return;
   }
-  if (checkRefsEligibilityRoute(req, res, null)) {
+  if (checkRefsEligibilityRoute(req, res)) {
     return;
   }
   next();
 };
 
-const getFirebaseDataMap = async ({ refs, language }) => {
+interface GetFirebaseDataMapTypes {
+  refs: string[];
+  language: FirebaseCoreQueryParams['language'];
+}
+
+const getFirebaseDataMap = async ({
+  refs,
+  language,
+}: GetFirebaseDataMapTypes) => {
   return await Promise.all(
     refs.map(async (ref) => {
       const refData = await getFirebaseContentType({ language, ref });

@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express';
 import {
   snippets,
   content,
@@ -16,9 +17,18 @@ const eligibleRefs = [
   adhocSentences,
 ];
 
-const checkEligibleIsRef = (ref) => eligibleRefs.includes(ref);
+const checkEligibleIsRef = (ref: string) => {
+  if (!ref) {
+    return false;
+  }
+  eligibleRefs.includes(ref);
+};
 
-const checkRefsEligibilityRoute = (req, res, next) => {
+const checkRefsEligibilityRoute = (
+  req: Request,
+  res: Response,
+  next?: NextFunction,
+) => {
   const { refs } = req.body;
   const refsCheckedBool = refs.every(checkEligibleIsRef);
 
@@ -34,4 +44,4 @@ const checkRefsEligibilityRoute = (req, res, next) => {
   next?.();
 };
 
-export { checkEligibleIsRef, checkRefsEligibilityRoute };
+export { checkRefsEligibilityRoute };

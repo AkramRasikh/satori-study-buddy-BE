@@ -1,8 +1,6 @@
-const getRefPath = ({ language, ref }) => {
-  if (!language || !ref) {
-    return null;
-    // figure out how best to reject
-  }
+import { FirebaseCoreQueryParams } from '../firebase/types';
+
+const getRefPath = ({ language, ref }: FirebaseCoreQueryParams) => {
   return `${language}/${ref}`;
 };
 
