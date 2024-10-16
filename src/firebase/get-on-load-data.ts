@@ -4,6 +4,11 @@ import { checkRefsEligibilityRoute } from '../route-validation/check-eligible-is
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { FirebaseCoreQueryParams } from './types';
 
+interface GetFirebaseDataMapTypes {
+  refs: string[];
+  language: FirebaseCoreQueryParams['language'];
+}
+
 export const getOnLoadDataValidation = (
   req: Request,
   res: Response,
@@ -17,11 +22,6 @@ export const getOnLoadDataValidation = (
   }
   next();
 };
-
-interface GetFirebaseDataMapTypes {
-  refs: string[];
-  language: FirebaseCoreQueryParams['language'];
-}
 
 const getFirebaseDataMap = async ({
   refs,
@@ -38,13 +38,12 @@ const getFirebaseDataMap = async ({
 };
 
 const getOnLoadData = async (req: Request, res: Response) => {
-  const refs = req.body.refs;
-  const language = req.body.language;
+  const { refs, language } = req.body;
   try {
     const data = await getFirebaseDataMap({ refs, language });
     res.status(200).json(data);
   } catch (error) {
-    console.error('## getOnLoadData ', { error });
+    console.error('## Error (getOnLoadData) ', { error });
     res.status(500).json({ error: 'Error getting on load data' });
   }
 };
