@@ -2,13 +2,11 @@ import admin from 'firebase-admin';
 import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
-import { content, japaneseWords, words } from './refs';
+import { japaneseWords, words } from './refs';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
 import { getRefPath } from '../utils/get-ref-path';
-import { filterOutNestedNulls } from '../utils/filter-out-nested-nulls';
-import { FirebaseCoreQueryParams } from './types';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
@@ -273,37 +271,6 @@ const addContentArr = async ({ ref, language, contentEntry }) => {
   }
 };
 
-const getFirebaseContentType = async ({
-  language,
-  ref,
-}: FirebaseCoreQueryParams) => {
-  try {
-    const refPath = getRefPath({
-      language,
-      ref,
-    });
-    const postsRef = db.ref(refPath);
-    const refResults = await postsRef.once('value');
-    const realValues = filterOutNestedNulls(refResults.val());
-    if (ref === content) {
-      const filteredOutUndefinedNull = realValues.map(
-        (thisLangaugeContentItem) => {
-          return {
-            ...thisLangaugeContentItem,
-            content: filterOutNestedNulls(thisLangaugeContentItem.content),
-          };
-        },
-      );
-      return filteredOutUndefinedNull;
-    } else {
-      return realValues;
-    }
-  } catch (error) {
-    console.error('Error getFirebaseContentType:', { error });
-    return error;
-  }
-};
-
 const uploadBufferToFirebase = async ({ buffer, filePath }) => {
   const metadata = {
     contentType: 'audio/mpeg',
@@ -329,7 +296,6 @@ const uploadBufferToFirebase = async ({ buffer, filePath }) => {
 
 export {
   uploadBufferToFirebase,
-  getFirebaseContentType,
   addEntry,
   addMyGeneratedContent,
   addJapaneseWord,

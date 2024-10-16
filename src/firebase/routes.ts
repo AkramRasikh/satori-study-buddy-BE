@@ -5,7 +5,6 @@ import {
   addMyGeneratedContent,
   addSnippet,
   deleteWord,
-  getFirebaseContentType,
   removeSnippet,
 } from './init';
 import { snippets, content, words, sentences, songs } from './refs';
@@ -20,6 +19,7 @@ import { updateAdhocSentence } from './update-adhoc-sentence';
 import { updateWord } from './update-word';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { getOnLoadData, getOnLoadDataValidation } from './get-on-load-data';
+import { getFirebaseContentType } from './get-firebase-content-type';
 
 const firebaseRoutes = (app) => {
   app.post(

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { getFirebaseContentType } from './init';
 import { checkRefsEligibilityRoute } from '../route-validation/check-eligible-is-ref';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { FirebaseCoreQueryParams } from './types';
+import { getFirebaseContentType } from './get-firebase-content-type';
 
 interface GetFirebaseDataMapTypes {
   refs: string[];
