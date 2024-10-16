@@ -2,7 +2,7 @@ import admin from 'firebase-admin';
 import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
-import { japaneseWords, words } from './refs';
+import { words } from './refs';
 import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
@@ -92,7 +92,7 @@ const addJapaneseWord = async ({ word, language, contexts }) => {
       newArray.push(wordData);
 
       // Update the entire array
-      await db.ref(japaneseWords).set(newArray);
+      await db.ref(refPath).set(newArray);
       return { status: 200, wordData };
     } else {
       return { status: 409 };
@@ -227,7 +227,7 @@ const deleteWord = async ({ language, wordId }) => {
     newArray = newArray.filter((item) => item.id !== entryID);
 
     // Update the entire array
-    await db.ref(japaneseWords).set(newArray);
+    await db.ref(refPath).set(newArray);
   } catch (error) {
     console.error('## Error updating database structure:', error);
     return error;
