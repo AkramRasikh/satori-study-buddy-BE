@@ -17,12 +17,7 @@ const eligibleRefs = [
   adhocSentences,
 ];
 
-const checkEligibleIsRef = (ref: string) => {
-  if (!ref) {
-    return false;
-  }
-  eligibleRefs.includes(ref);
-};
+const checkEligibleIsRef = (ref: string) => eligibleRefs.includes(ref);
 
 const checkRefsEligibilityRoute = (
   req: Request,
