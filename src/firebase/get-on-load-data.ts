@@ -52,7 +52,8 @@ const getOnLoadData = async (req: Request, res: Response) => {
     const data = await getFirebaseDataMap();
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ error });
+    console.error('## getOnLoadData ', { error });
+    res.status(500).json({ error: 'Error getting on load data' });
   }
 };
 
