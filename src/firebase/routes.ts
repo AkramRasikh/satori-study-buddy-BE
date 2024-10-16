@@ -5,7 +5,7 @@ import {
   addMyGeneratedContent,
   addSnippet,
   deleteWord,
-  getFirebaseContent,
+  getFirebaseContentType,
   removeSnippet,
 } from './init';
 import { snippets, content, words, sentences, songs } from './refs';
@@ -156,7 +156,7 @@ const firebaseRoutes = (app) => {
         res.status(500).json({ error: `Wrong ref added ${ref}` });
       }
       try {
-        const data = await getFirebaseContent({ language, ref });
+        const data = await getFirebaseContentType({ language, ref });
         res.status(200).json(data);
       } catch (error) {
         res.status(500).json({ error });

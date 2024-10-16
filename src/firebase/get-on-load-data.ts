@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import { getFirebaseContent } from './init';
-import { content } from './refs';
+import { getFirebaseContentType } from './init';
 import { checkRefsEligibilityRoute } from '../route-validation/check-eligible-is-ref';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 
@@ -14,42 +13,22 @@ export const getOnLoadDataValidation = (req, res, next) => {
   next();
 };
 
+const getFirebaseDataMap = async ({ refs, language }) => {
+  return await Promise.all(
+    refs.map(async (ref) => {
+      const refData = await getFirebaseContentType({ language, ref });
+      return {
+        [ref]: refData,
+      };
+    }),
+  );
+};
+
 const getOnLoadData = async (req: Request, res: Response) => {
   const refs = req.body.refs;
   const language = req.body.language;
-  const getFirebaseDataMap = async () => {
-    return await Promise.all(
-      refs.map(async (ref) => {
-        const refData = await getFirebaseContent({ language, ref });
-        if (ref === content) {
-          const surfaceLevelNullRemoved = refData.filter(
-            (item) => item !== null,
-          );
-          const filteredOutUndefinedNull = surfaceLevelNullRemoved.map(
-            (japaneseContentItem) => {
-              return {
-                ...japaneseContentItem,
-                content: japaneseContentItem.content.filter(
-                  (japaneseContentScript) =>
-                    japaneseContentScript !== null ||
-                    japaneseContentScript !== undefined,
-                ),
-              };
-            },
-          );
-          return {
-            [ref]: filteredOutUndefinedNull,
-          };
-        }
-        return {
-          [ref]: refData.filter((item) => item !== null),
-        };
-      }),
-    );
-  };
-
   try {
-    const data = await getFirebaseDataMap();
+    const data = await getFirebaseDataMap({ refs, language });
     res.status(200).json(data);
   } catch (error) {
     console.error('## getOnLoadData ', { error });

@@ -1,16 +1,16 @@
-import { getFirebaseContent } from '../firebase/init';
+import { getFirebaseContentType } from '../firebase/init';
 import { content, songs, words } from '../firebase/refs';
 
 const getJapaneseWords = async ({ language }) => {
-  const data = await getFirebaseContent({ language, ref: words });
+  const data = await getFirebaseContentType({ language, ref: words });
   return data;
 };
 const getJapaneseContent = async ({ language }) => {
-  const data = await getFirebaseContent({ language, ref: content });
+  const data = await getFirebaseContentType({ language, ref: content });
   return data;
 };
 const getJapaneseSongs = async ({ language }) => {
-  const data = await getFirebaseContent({ language, ref: songs });
+  const data = await getFirebaseContentType({ language, ref: songs });
   return data;
 };
 
