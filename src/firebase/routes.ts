@@ -8,7 +8,14 @@ import {
   getFirebaseContent,
   removeSnippet,
 } from './init';
-import { snippets, content, words, sentences, songs } from './refs';
+import {
+  snippets,
+  content,
+  words,
+  sentences,
+  songs,
+  adhocSentences,
+} from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
 import narakeetAudio from '../narakeet';
@@ -364,12 +371,12 @@ const firebaseRoutes = (app) => {
 
       const isValidRef = (ref) => {
         if (
-          ref === 'content' ||
-          ref === 'words' ||
-          ref === 'songs' ||
-          ref === 'sentences' ||
-          ref === 'snippets' ||
-          ref === 'adhocSentences'
+          ref === content ||
+          ref === words ||
+          ref === songs ||
+          ref === sentences ||
+          ref === snippets ||
+          ref === adhocSentences
         ) {
           return true;
         }
