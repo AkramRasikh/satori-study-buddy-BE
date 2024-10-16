@@ -355,7 +355,7 @@ const firebaseRoutes = (app) => {
     },
   );
 
-  app.post('/firebase-data-mobile', getOnLoadDataValidation, getOnLoadData);
+  app.post('/on-load-data', getOnLoadDataValidation, getOnLoadData);
 
   app.post(
     '/add-my-generated-content',
