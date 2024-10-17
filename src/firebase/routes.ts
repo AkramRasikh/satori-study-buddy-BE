@@ -16,7 +16,7 @@ import { getFirebaseAudioURL } from '../mp3-utils/get-audio-url';
 import { getLanguageContentData } from './get-language-content-data';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
-import { updateWord } from './update-word';
+import { updateWord, updateWordValidation } from './update-word';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { getOnLoadData, getOnLoadDataValidation } from './get-on-load-data';
 import { getFirebaseContentType } from './get-firebase-content-type';
@@ -303,31 +303,7 @@ const firebaseRoutes = (app) => {
     },
   );
 
-  app.post(
-    '/update-word',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const wordId = req.body?.wordId;
-      const language = req.body?.language;
-      const fieldToUpdate = req.body?.fieldToUpdate;
-
-      try {
-        const fieldToUpdateRes = await updateWord({
-          language,
-          wordId,
-          fieldToUpdate,
-        });
-        if (fieldToUpdateRes) {
-          res.status(200).json(fieldToUpdateRes);
-        } else {
-          res.status(400).json({ message: 'Not found' });
-        }
-      } catch (error) {
-        res.status(400).json();
-        console.log('## /update-word Err', { error });
-      }
-    },
-  );
+  app.post('/update-word', updateWordValidation, updateWord);
 
   app.post(
     '/update-adhoc-sentence',

@@ -13,6 +13,7 @@
     "@vitalets/google-translate-api": "^9.2.0",
     "cheerio": "^1.0.0-rc.12",
     "express": "^4.19.2",
+    "express-validator": "^7.2.0",
     "ffmpeg": "^0.0.4",
     "firebase": "^10.11.1",
     "fluent-ffmpeg": "^2.1.3",

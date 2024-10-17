@@ -1,6 +1,9 @@
 import { Response, NextFunction, Request } from 'express';
+import { eligibleLanguages } from '../eligible-languages';
 
-const eligibleLanguages = ['japanese'];
+export const defaultLanguageErrorMsg = `Language is required in the request body. Eligible languages: ${eligibleLanguages.join(
+  ',',
+)}`;
 
 const checkMandatoryLanguage = (
   req: Request,

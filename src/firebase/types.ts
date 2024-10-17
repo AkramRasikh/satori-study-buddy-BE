@@ -32,3 +32,24 @@ interface AdhocSentenceType {
   tags?: TagsType;
   reviewData?: ReviewDataType;
 }
+interface WordType {
+  id: string;
+  baseForm: string;
+  definition: string;
+  contexts: string[];
+  reviewData?: ReviewDataType;
+  surfaceForm: string;
+  transliteration: string;
+  phonetic: string;
+}
+
+export const wordKeysRouteValidation = [
+  'id',
+  'baseForm',
+  'definition',
+  'contexts',
+  'reviewData',
+  'surfaceForm',
+  'transliteration',
+  'phonetic',
+];
