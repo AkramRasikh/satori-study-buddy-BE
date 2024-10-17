@@ -1,7 +1,9 @@
+import { body } from 'express-validator';
 import { languageValidation } from '../../route-validation/check-mandatory-language';
 
-// language
-// contentEntry
-const addSnippetValidation = [...languageValidation];
+const addSnippetValidation = [
+  ...languageValidation,
+  body('snippet').notEmpty().withMessage('Snippet data was not passed'),
+];
 
 export { addSnippetValidation };

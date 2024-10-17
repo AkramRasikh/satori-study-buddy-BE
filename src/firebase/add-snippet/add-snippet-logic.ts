@@ -1,32 +1,34 @@
+import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
 
-const addSnippetLogic = async ({ ref, language, contentEntry }) => {
+const addSnippetLogic = async ({ language, snippet }) => {
   try {
-    // Fetch the existing array
     const refPath = getRefPath({
-      ref,
+      ref: snippet,
       language,
     });
-    const snapshot = await db.ref(refPath).once('value');
-    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
 
-    // Check if the new item's ID already exists in the array
-    const entryID = contentEntry.id; // Assuming each entry has a unique 'id' property
-    const isDuplicate = newArray.some((item) => item.id === entryID);
+    const snapshotArr =
+      (await getContentTypeSnapshot({
+        language,
+        ref: snippet,
+        db,
+      })) || [];
+
+    const snippetId = snippet.id;
+    const isDuplicate =
+      snapshotArr.length !== 0 &&
+      snapshotArr.some((item) => item.id === snippetId);
 
     if (!isDuplicate) {
-      // Add the new item to the array
-      newArray.push(contentEntry);
-
-      // Update the entire array
-      await db.ref(ref).set(newArray);
+      snapshotArr.push(snippet);
+      await db.ref(refPath).set(snapshotArr);
     } else {
-      console.log('## Item already exists in DB');
+      throw new Error(`Error snippet already exists ${language}`);
     }
   } catch (error) {
-    console.error('## Error updating database structure:', error);
-    return error;
+    throw new Error(`Error adding snippets for ${language}`);
   }
 };
 
