@@ -16,10 +16,11 @@ import { getFirebaseAudioURL } from '../mp3-utils/get-audio-url';
 import { getLanguageContentData } from './get-language-content-data';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
-import { updateWord, updateWordValidation } from './update-word';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { getOnLoadData, getOnLoadDataValidation } from './get-on-load-data';
 import { getFirebaseContentType } from './get-firebase-content-type';
+import { updateWordValidation } from './update-word/validation';
+import { updateWord } from './update-word/route';
 
 const firebaseRoutes = (app) => {
   app.post(
