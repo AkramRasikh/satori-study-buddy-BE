@@ -1,9 +1,18 @@
 import { Response, NextFunction, Request } from 'express';
 import { eligibleLanguages } from '../eligible-languages';
+import { body } from 'express-validator';
 
 export const defaultLanguageErrorMsg = `Language is required in the request body. Eligible languages: ${eligibleLanguages.join(
   ',',
 )}`;
+
+const languageValidation = [
+  body('language')
+    .notEmpty()
+    .withMessage('Language is required')
+    .isIn(eligibleLanguages)
+    .withMessage(defaultLanguageErrorMsg),
+];
 
 const checkMandatoryLanguage = (
   req: Request,
@@ -22,4 +31,4 @@ const checkMandatoryLanguage = (
   next?.();
 };
 
-export { checkMandatoryLanguage };
+export { languageValidation, checkMandatoryLanguage };

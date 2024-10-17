@@ -3,19 +3,14 @@ import {
   updateWordObj,
   wordKeysRouteValidationArr,
 } from '../body-validation-types';
-import { eligibleLanguages } from '../../eligible-languages';
-import { defaultLanguageErrorMsg } from '../../route-validation/check-mandatory-language';
+import { languageValidation } from '../../route-validation/check-mandatory-language';
 
 const updateWordValidation = [
+  ...languageValidation,
   body(updateWordObj.wordId)
     .notEmpty()
     .isString()
     .withMessage('wordId is required for an update'),
-  body(updateWordObj.language)
-    .notEmpty()
-    .withMessage('Language is required')
-    .isIn(eligibleLanguages)
-    .withMessage(defaultLanguageErrorMsg),
   body(updateWordObj.fieldToUpdate).custom((value) => {
     if (!value || typeof value !== 'object') {
       throw new Error(

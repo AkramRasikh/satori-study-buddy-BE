@@ -13,3 +13,12 @@ export enum ContentTypes {
   AdhocSentences = 'adhocSentences',
   Snippets = 'snippets',
 }
+
+export const eligibleRefs = [
+  content,
+  words,
+  songs,
+  sentences,
+  snippets,
+  adhocSentences,
+];
