@@ -1,7 +1,6 @@
 import { FirebaseCoreQueryParams } from '../firebase/types';
 
-const getRefPath = ({ language, ref }: FirebaseCoreQueryParams) => {
-  return `${language}/${ref}`;
-};
+const getRefPath = ({ language, ref }: FirebaseCoreQueryParams) =>
+  `${language}/${ref}`;
 
 export { getRefPath };
