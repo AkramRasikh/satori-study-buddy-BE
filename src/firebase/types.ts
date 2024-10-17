@@ -42,14 +42,3 @@ interface WordType {
   transliteration: string;
   phonetic: string;
 }
-
-export const wordKeysRouteValidation = [
-  'id',
-  'baseForm',
-  'definition',
-  'contexts',
-  'reviewData',
-  'surfaceForm',
-  'transliteration',
-  'phonetic',
-];

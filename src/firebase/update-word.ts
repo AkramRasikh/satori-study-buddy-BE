@@ -6,36 +6,39 @@ import { words } from './refs';
 import { defaultLanguageErrorMsg } from '../route-validation/check-mandatory-language';
 import { body, validationResult } from 'express-validator';
 import { eligibleLanguages } from '../eligible-languages';
-import { wordKeysRouteValidation } from './types';
 import {
   getThisItemsIndex,
   getThisItemsViaValues,
 } from '../utils/get-this-items-index';
+import {
+  updateWordObj,
+  wordKeysRouteValidationArr,
+} from './body-validation-types';
 
 const updateWordValidation = [
-  body('wordId')
+  body(updateWordObj.wordId)
     .notEmpty()
     .isString()
     .withMessage('wordId is required for an update'),
-  body('language')
+  body(updateWordObj.language)
     .notEmpty()
     .withMessage('Language is required')
     .isIn(eligibleLanguages)
     .withMessage(defaultLanguageErrorMsg),
-  body('fieldToUpdate').custom((value) => {
+  body(updateWordObj.fieldToUpdate).custom((value) => {
     if (!value || typeof value !== 'object') {
       throw new Error(
         `fieldToUpdate must be an object of: 
-        ${wordKeysRouteValidation.join(', ')}`,
+        ${wordKeysRouteValidationArr.join(', ')}`,
       );
     }
 
     const hasValidField = Object.keys(value).some((key) =>
-      wordKeysRouteValidation.includes(key),
+      wordKeysRouteValidationArr.includes(key),
     );
     if (!hasValidField) {
       throw new Error(
-        `fieldToUpdate must contain at least one of the following: ${wordKeysRouteValidation.join(
+        `fieldToUpdate must contain at least one of the following: ${wordKeysRouteValidationArr.join(
           ', ',
         )}`,
       );
