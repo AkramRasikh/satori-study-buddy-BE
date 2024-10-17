@@ -24,6 +24,9 @@ import { getOnLoadDataValidation } from './get-on-load-data/validation';
 import { getOnLoadData } from './get-on-load-data/route';
 
 const firebaseRoutes = (app) => {
+  app.post('/update-word', updateWordValidation, updateWord);
+  app.post('/on-load-data', getOnLoadDataValidation, getOnLoadData);
+
   app.post(
     '/add-snippet',
     checkMandatoryLanguage,
@@ -305,8 +308,6 @@ const firebaseRoutes = (app) => {
     },
   );
 
-  app.post('/update-word', updateWordValidation, updateWord);
-
   app.post(
     '/update-adhoc-sentence',
     checkMandatoryLanguage,
@@ -332,8 +333,6 @@ const firebaseRoutes = (app) => {
       }
     },
   );
-
-  app.post('/on-load-data', getOnLoadDataValidation, getOnLoadData);
 
   app.post(
     '/add-my-generated-content',
