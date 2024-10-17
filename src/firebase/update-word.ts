@@ -1,16 +1,17 @@
+import { getContentTypeSnapshot } from '../utils/get-content-type-snapshot';
 import { getRefPath } from '../utils/get-ref-path';
 import { db } from './init';
 import { words } from './refs';
 
 const updateWord = async ({ wordId, language, fieldToUpdate }) => {
   try {
-    const refPath = getRefPath({ language, ref: words });
-    const refObj = db.ref(refPath);
-    const snapshot = await refObj.once('value');
-    const wordData = snapshot.val();
-
-    const wordDataObjValues = Object.values(wordData);
-    const keys = Object.keys(wordData);
+    const wordSnapshot = await getContentTypeSnapshot({
+      language,
+      ref: words,
+      db,
+    });
+    const wordDataObjValues = Object.values(wordSnapshot);
+    const keys = Object.keys(wordSnapshot);
 
     // Find the index of the object to update
     const index = wordDataObjValues.findIndex((item) => {
@@ -19,6 +20,8 @@ const updateWord = async ({ wordId, language, fieldToUpdate }) => {
 
     if (index !== -1) {
       const wordKeyInWordDB = keys[index];
+      const refPath = getRefPath({ language, ref: words });
+      const refObj = db.ref(refPath);
       const wordObjectRef = refObj.child(wordKeyInWordDB);
       await wordObjectRef.update(fieldToUpdate);
       return fieldToUpdate;
