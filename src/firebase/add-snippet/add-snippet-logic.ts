@@ -26,7 +26,7 @@ const addSnippetLogic = async ({ language, snippet }: AddSnippetLogicTypes) => {
     const snippetId = snippet.id;
     const isDuplicate =
       snapshotArr.length !== 0 &&
-      snapshotArr.some((item) => item.id === snippetId);
+      snapshotArr.some((item: SnippetType) => item.id === snippetId);
 
     if (!isDuplicate) {
       snapshotArr.push(snippet);

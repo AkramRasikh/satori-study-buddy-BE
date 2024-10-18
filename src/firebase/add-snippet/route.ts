@@ -16,10 +16,10 @@ const addSnippet = async (req: Request, res: Response) => {
       snippet,
     });
     res.status(200).json(data);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: error.message || `Error adding snippet for ${language}` });
+  } catch (error: any) {
+    res.status(500).json({
+      error: error?.message || `Error adding snippet for ${language}`,
+    });
   }
 };
 
