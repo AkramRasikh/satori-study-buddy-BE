@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, Express } from 'express';
 import {
   addContentArr,
   addJapaneseWord,
@@ -25,7 +25,7 @@ import { addSnippetValidation } from './add-snippet/validation';
 import { deleteSnippet } from './delete-snippet/route';
 import { deleteSnippetValidation } from './delete-snippet/validation';
 
-const firebaseRoutes = (app) => {
+const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
   app.post('/on-load-data', getOnLoadDataValidation, getOnLoadData);
   app.post('/add-snippet', addSnippetValidation, addSnippet);

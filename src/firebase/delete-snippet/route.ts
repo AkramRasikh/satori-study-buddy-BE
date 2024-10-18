@@ -7,8 +7,8 @@ const deleteSnippet = async (req: Request, res: Response) => {
   try {
     const data = await deleteSnippetLogic({ language, id });
     res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error });
+  } catch (error: any) {
+    res.status(500).json({ error: error?.message || 'Error deleting snippet' });
   }
 };
 
