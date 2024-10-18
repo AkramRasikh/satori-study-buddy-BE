@@ -173,7 +173,7 @@ const removeSnippet = async ({ ref, language, snippetId }) => {
     newArray = newArray.filter((item) => item.id !== entryID);
 
     // Update the entire array
-    await db.ref(ref).set(newArray);
+    await db.ref(refPath).set(newArray);
   } catch (error) {
     console.error('## Error updating database structure:', error);
     return error;
