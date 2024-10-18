@@ -1,5 +1,5 @@
-import { getContentTypeSnapshot } from './get-content-type-snapshot';
-import { getRefPath } from './get-ref-path';
+import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
+import { getRefPath } from '../../utils/get-ref-path';
 
 const removeFromSnapshot = async ({ ref, language, id, db }) => {
   try {

@@ -1,4 +1,4 @@
-import { removeFromSnapshot } from '../../utils/remove-item-from-snapshot';
+import { removeFromSnapshot } from '../firebase-utils/remove-item-from-snapshot';
 import { db } from '../init';
 import { words } from '../refs';
 
