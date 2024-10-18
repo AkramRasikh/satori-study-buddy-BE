@@ -1,5 +1,5 @@
 import { Request, Response, Express } from 'express';
-import { addContentArr, addJapaneseWord, addMyGeneratedContent } from './init';
+import { addJapaneseWord, addMyGeneratedContent } from './init';
 import { snippets, content, words, sentences, songs } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -21,6 +21,8 @@ import { deleteSnippet } from './delete-snippet/route';
 import { deleteSnippetValidation } from './delete-snippet/validation';
 import { deleteWordValidation } from './delete-word/validation';
 import { deleteWord } from './delete-word/route';
+import { addContent } from './add-content/route';
+import { addContentValidation } from './add-content/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -28,29 +30,7 @@ const firebaseRoutes = (app: Express) => {
   app.post('/add-snippet', addSnippetValidation, addSnippet);
   app.post('/delete-snippet', deleteSnippetValidation, deleteSnippet);
   app.post('/delete-word', deleteWordValidation, deleteWord);
-
-  app.post(
-    '/update-content',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const ref = req.body?.ref;
-      const language = req.body?.language;
-      const contentEntry = req.body?.contentEntry;
-
-      if (content !== ref) {
-        res.status(500).json({ error: `Wrong ref added ${ref}` });
-        return;
-      }
-      try {
-        await addContentArr({ ref, language, contentEntry });
-        res
-          .status(200)
-          .json({ message: 'Successfully updated entry', contentEntry });
-      } catch (error) {
-        res.status(500).json({ error });
-      }
-    },
-  );
+  app.post('/add-content', addContentValidation, addContent);
 
   app.post(
     '/add-word',

@@ -156,43 +156,6 @@ const addMyGeneratedContent = async ({ ref, language, contentEntry }) => {
   }
 };
 
-// array!
-const addEntry = async ({ ref, contentEntry }) => {
-  console.log('## addEntry ref: ', { ref, contentEntry });
-  try {
-    await db.ref(ref).update(contentEntry);
-  } catch (error) {
-    console.error('## Error updating database structure:', error);
-    return error;
-  }
-};
-
-const addContentArr = async ({ ref, language, contentEntry }) => {
-  try {
-    // Fetch the existing array
-    const refPath = getRefPath({ language, ref });
-    const snapshot = await db.ref(refPath).once('value');
-    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
-
-    // Check if the new item's ID already exists in the array
-    const entryTitle = contentEntry.title;
-    const isDuplicate = newArray.some((item) => item.title === entryTitle);
-
-    if (!isDuplicate) {
-      // Add the new item to the array
-      newArray.push(contentEntry);
-
-      // Update the entire array
-      await db.ref(refPath).set(newArray);
-    } else {
-      console.log('## Item already exists in DB');
-    }
-  } catch (error) {
-    console.error('## Error updating database structure:', error);
-    return error;
-  }
-};
-
 const uploadBufferToFirebase = async ({ buffer, filePath }) => {
   const metadata = {
     contentType: 'audio/mpeg',
@@ -218,10 +181,8 @@ const uploadBufferToFirebase = async ({ buffer, filePath }) => {
 
 export {
   uploadBufferToFirebase,
-  addEntry,
   addMyGeneratedContent,
   addJapaneseWord,
   getContent,
   addLyricsToFirestore,
-  addContentArr,
 };

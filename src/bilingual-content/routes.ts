@@ -3,11 +3,7 @@ import fs from 'fs';
 import { Request, Response } from 'express';
 import { combineFromYoutubeSRTData, combineSRTData } from './combine-srt-data';
 import { content, songs } from '../firebase/refs';
-import {
-  addContentArr,
-  addLyricsToFirestore,
-  uploadBufferToFirebase,
-} from '../firebase/init';
+import { addLyricsToFirestore, uploadBufferToFirebase } from '../firebase/init';
 import { extractYoutubeAudio } from './extract-youtube-audio';
 import { extractSrtData } from './extract-srt-data';
 import {
@@ -18,6 +14,7 @@ import {
 } from './output/youtube-txt-file';
 import { getRefPath } from '../utils/get-ref-path';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
+import { addContentLogic } from '../firebase/add-content/add-content-logic';
 
 const folderPath = 'japanese-songs';
 
@@ -136,10 +133,9 @@ const bilingualContentRoutes = (app) => {
           });
 
           // Add content metadata to Firebase
-          await addContentArr({
-            ref: refPath,
+          await addContentLogic({
             language,
-            contentEntry: {
+            content: {
               title: item.title,
               hasAudio: item.hasAudio,
               origin: 'youtube',
