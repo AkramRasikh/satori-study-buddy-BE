@@ -1,18 +1,25 @@
 import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
+import { snippets } from '../refs';
+import { FirebaseCoreQueryParams, SnippetType } from '../types';
 
-const addSnippetLogic = async ({ language, snippet }) => {
+interface AddSnippetLogicTypes {
+  snippet: SnippetType;
+  language: FirebaseCoreQueryParams['language'];
+}
+
+const addSnippetLogic = async ({ language, snippet }: AddSnippetLogicTypes) => {
   try {
     const refPath = getRefPath({
-      ref: snippet,
+      ref: snippets,
       language,
     });
 
     const snapshotArr =
       (await getContentTypeSnapshot({
         language,
-        ref: snippet,
+        ref: snippets,
         db,
       })) || [];
 

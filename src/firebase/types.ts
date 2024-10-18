@@ -42,3 +42,14 @@ interface WordType {
   transliteration: string;
   phonetic: string;
 }
+
+export interface SnippetType {
+  id: string;
+  sentenceId: string;
+  duration: number;
+  pointInAudio: number;
+  topicName: string;
+  url: string;
+  targetLang?: string;
+  isIsolated?: boolean;
+}
