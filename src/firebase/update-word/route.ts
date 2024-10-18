@@ -18,7 +18,7 @@ const updateWord = async (req: Request, res: Response) => {
     if (fieldToUpdateRes) {
       res.status(200).json(fieldToUpdateRes);
     } else {
-      res.status(400).json({ message: 'Not found' });
+      res.status(400).json({ message: 'Word not found' });
     }
   } catch (error) {
     res.status(400).json({ error: error.message || 'Error updating word' });
