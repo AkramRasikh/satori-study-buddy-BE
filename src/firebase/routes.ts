@@ -4,7 +4,6 @@ import {
   addJapaneseWord,
   addMyGeneratedContent,
   deleteWord,
-  removeSnippet,
 } from './init';
 import { snippets, content, words, sentences, songs } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
@@ -23,31 +22,14 @@ import { getOnLoadDataValidation } from './get-on-load-data/validation';
 import { getOnLoadData } from './get-on-load-data/route';
 import { addSnippet } from './add-snippet/route';
 import { addSnippetValidation } from './add-snippet/validation';
+import { deleteSnippet } from './delete-snippet/route';
+import { deleteSnippetValidation } from './delete-snippet/validation';
 
 const firebaseRoutes = (app) => {
   app.post('/update-word', updateWordValidation, updateWord);
   app.post('/on-load-data', getOnLoadDataValidation, getOnLoadData);
   app.post('/add-snippet', addSnippetValidation, addSnippet);
-
-  app.post(
-    '/delete-snippet',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const ref = req.body?.ref;
-      const snippetId = req.body?.snippetId;
-      const language = req.body?.language;
-      const allowedRefs = [snippets];
-      if (!allowedRefs.includes(ref)) {
-        res.status(500).json({ error: `Wrong ref added ${ref}` });
-      }
-      try {
-        const data = await removeSnippet({ ref, language, snippetId });
-        res.status(200).json(data);
-      } catch (error) {
-        res.status(500).json({ error });
-      }
-    },
-  );
+  app.post('/delete-snippet', deleteSnippetValidation, deleteSnippet);
 
   app.post(
     '/delete-word',

@@ -156,30 +156,6 @@ const addMyGeneratedContent = async ({ ref, language, contentEntry }) => {
   }
 };
 
-const removeSnippet = async ({ ref, language, snippetId }) => {
-  try {
-    // Fetch the existing array
-    const refPath = getRefPath({
-      ref,
-      language,
-    });
-    const snapshot = await db.ref(refPath).once('value');
-    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
-
-    // Get the ID of the content entry to be removed
-    const entryID = snippetId; // Assuming each entry has a unique 'id' property
-
-    // Remove the item with the specified ID
-    newArray = newArray.filter((item) => item.id !== entryID);
-
-    // Update the entire array
-    await db.ref(refPath).set(newArray);
-  } catch (error) {
-    console.error('## Error updating database structure:', error);
-    return error;
-  }
-};
-
 const deleteWord = async ({ language, wordId }) => {
   try {
     // Fetch the existing array
@@ -269,7 +245,6 @@ export {
   addEntry,
   addMyGeneratedContent,
   addJapaneseWord,
-  removeSnippet,
   getContent,
   addLyricsToFirestore,
   addContentArr,
