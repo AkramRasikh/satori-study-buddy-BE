@@ -1,10 +1,5 @@
 import { Request, Response, Express } from 'express';
-import {
-  addContentArr,
-  addJapaneseWord,
-  addMyGeneratedContent,
-  deleteWord,
-} from './init';
+import { addContentArr, addJapaneseWord, addMyGeneratedContent } from './init';
 import { snippets, content, words, sentences, songs } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -24,31 +19,15 @@ import { addSnippet } from './add-snippet/route';
 import { addSnippetValidation } from './add-snippet/validation';
 import { deleteSnippet } from './delete-snippet/route';
 import { deleteSnippetValidation } from './delete-snippet/validation';
+import { deleteWordValidation } from './delete-word/validation';
+import { deleteWord } from './delete-word/route';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
   app.post('/on-load-data', getOnLoadDataValidation, getOnLoadData);
   app.post('/add-snippet', addSnippetValidation, addSnippet);
   app.post('/delete-snippet', deleteSnippetValidation, deleteSnippet);
-
-  app.post(
-    '/delete-word',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const wordId = req.body?.wordId;
-      const language = req.body?.language;
-
-      if (!wordId) {
-        res.status(500).json({ error: 'No wordId (/delete-word)' });
-      }
-      try {
-        const data = await deleteWord({ language, wordId });
-        res.status(200).json(data);
-      } catch (error) {
-        res.status(500).json({ error });
-      }
-    },
-  );
+  app.post('/delete-word', deleteWordValidation, deleteWord);
 
   app.post(
     '/update-content',
