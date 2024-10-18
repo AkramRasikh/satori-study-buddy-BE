@@ -3,5 +3,6 @@
     "typeRoots": ["src/language-script-helpers"],
     "esModuleInterop": true,
     "resolveJsonModule": true
+    // "strict": true
   }
 }
