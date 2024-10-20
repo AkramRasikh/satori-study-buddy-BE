@@ -3,7 +3,6 @@ import config from '../../config';
 import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
 import { words } from './refs';
-import kanjiToHiragana from '../language-script-helpers/kanji-to-hiragana';
 import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
 import { getRefPath } from '../utils/get-ref-path';
@@ -16,8 +15,9 @@ const bucketName = config.firebaseBucketName;
 
 export const db = admin.database();
 
-const getJapaneseWordDefinition = async (word) => {
+const getJapaneseWordDefinition = async (word, contextSentence) => {
   try {
+    throw new Error('Intentional error thrown. Too Many Requests');
     const { text: definition, raw } = (await translate(word, {
       from: 'ja',
       to: 'en',
@@ -38,9 +38,16 @@ const getJapaneseWordDefinition = async (word) => {
     const tooManyRequestsOrVerifyIssues =
       message?.includes('Too Many Requests') ||
       message?.includes('unable to verify');
+
     if (tooManyRequestsOrVerifyIssues) {
       const openAIKey = process.env.OPENAI_API_KEY;
-      return await chatGPTTranslator({ word, model: 'gpt-4', openAIKey });
+      const chatgptRes = await chatGPTTranslator({
+        word,
+        model: 'gpt-4',
+        openAIKey,
+        context: contextSentence,
+      });
+      return chatgptRes;
     }
     throw error;
   }
@@ -57,7 +64,12 @@ const getContent = async ({ language, ref }) => {
   }
 };
 
-const addJapaneseWord = async ({ word, language, contexts }) => {
+const addJapaneseWord = async ({
+  word,
+  language,
+  contexts,
+  contextSentence,
+}) => {
   try {
     // Fetch the existing array
     const refPath = getRefPath({
@@ -73,20 +85,13 @@ const addJapaneseWord = async ({ word, language, contexts }) => {
     const isDuplicate = newArray.some((item) => item.baseForm === baseForm);
 
     if (!isDuplicate) {
-      const { definition, transliteration } = await getJapaneseWordDefinition(
-        word,
-      );
-
-      const phonetic = await kanjiToHiragana({ sentence: word });
+      const chatGptRes = await getJapaneseWordDefinition(word, contextSentence);
 
       const wordData = {
         id: uuidv4(),
-        baseForm,
-        surfaceForm: word,
-        phonetic,
-        definition,
-        transliteration,
         contexts,
+        surfaceForm: word,
+        ...chatGptRes,
       };
       // Add the new item to the array
       newArray.push(wordData);

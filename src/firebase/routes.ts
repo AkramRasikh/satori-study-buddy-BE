@@ -39,12 +39,14 @@ const firebaseRoutes = (app: Express) => {
       const word = req.body?.word;
       const language = req.body?.language;
       const contexts = req.body?.contexts;
+      const contextSentence = req.body?.contextSentence;
 
       try {
         const japaneseWordRes = await addJapaneseWord({
           word,
           language,
           contexts,
+          contextSentence,
         });
         if (japaneseWordRes.status === 409) {
           return res
