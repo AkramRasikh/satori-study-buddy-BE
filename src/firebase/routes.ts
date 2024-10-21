@@ -22,6 +22,7 @@ import { addWordValidation } from './add-word/validation';
 import { updateContentMetaData } from './update-content-review/route';
 import { updateContentMetaDataValidation } from './update-content-review/validation';
 import { updateSentence } from './update-sentence/route';
+import { updateSentenceValidation } from './update-sentence/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -36,7 +37,7 @@ const firebaseRoutes = (app: Express) => {
     updateContentMetaDataValidation,
     updateContentMetaData,
   );
-  app.post('/update-sentence', checkMandatoryLanguage, updateSentence);
+  app.post('/update-sentence', updateSentenceValidation, updateSentence);
 
   app.post(
     '/add-adhoc-sentence',
