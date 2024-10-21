@@ -13,7 +13,8 @@ const jsonFormatBasicExample = {
   note: '豆',
   baseForm: '豆',
   surfaceForm: '豆',
-  notes: '',
+  notes:
+    'beans here is flexible ranging from coffee beans to beans cooked for food such as lentils/fava beans, etc',
 };
 
 const jsonFormatVerbExample = {
