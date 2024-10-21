@@ -1,11 +1,7 @@
 import admin from 'firebase-admin';
 import config from '../../config';
-import { v4 as uuidv4 } from 'uuid';
 import { words } from './refs';
-import { translate } from '@vitalets/google-translate-api';
-import { chatGPTTranslator } from '../open-ai/translator';
 import { getRefPath } from '../utils/get-ref-path';
-import { getContentTypeSnapshot } from '../utils/get-content-type-snapshot';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
@@ -14,23 +10,6 @@ admin.initializeApp({
 const bucketName = config.firebaseBucketName;
 
 export const db = admin.database();
-
-const getGoogleTranslate = async (word) => {
-  const { text: definition, raw } = (await translate(word, {
-    from: 'ja',
-    to: 'en',
-  })) as any;
-
-  let transliteration: string[] = [];
-  raw.sentences?.forEach((sentence) => {
-    if (sentence?.src_translit) {
-      transliteration.push(sentence.src_translit);
-    }
-  });
-  const finalTransliteration = transliteration?.join(' ');
-
-  return { definition, transliteration: finalTransliteration };
-};
 
 const getContent = async ({ language, ref }) => {
   try {
