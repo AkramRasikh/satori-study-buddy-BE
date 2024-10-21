@@ -42,7 +42,7 @@ const firebaseRoutes = (app: Express) => {
 
   // only for when the targetLang is being updated
   app.post(
-    '/update-content-item-correction',
+    '/fix-content-item',
     checkMandatoryLanguage,
     async (req: Request, res: Response) => {
       const sentenceId = req.body?.sentenceId;
