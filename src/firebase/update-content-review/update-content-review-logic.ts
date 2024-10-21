@@ -1,35 +1,40 @@
+import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
 import { content } from '../refs';
 import { getThisContentsIndex } from '../update-and-create-review';
 
-const updateAndCreateReview = async ({ title, language, fieldToUpdate }) => {
+const updateContentMetaDataLogic = async ({
+  title,
+  language,
+  fieldToUpdate,
+}) => {
   try {
     const refPath = getRefPath({ language, ref: content });
-    const refObj = db.ref(refPath);
-    const snapshot = await refObj.once('value');
-    const data = snapshot.val();
+    const contentSnapshotArr = await getContentTypeSnapshot({
+      language,
+      ref: content,
+      db,
+    });
 
-    const { keys, index } = getThisContentsIndex({ data, title });
+    const { keys, index } = getThisContentsIndex({
+      data: contentSnapshotArr,
+      title,
+    });
 
     if (index !== -1) {
-      // Firebase paths should be strings
       const key = keys[index];
+      const refObj = db.ref(refPath);
       const objectRef = refObj.child(key);
 
       await objectRef.update(fieldToUpdate);
-      console.log('## Data successfully updated!', {
-        title,
-        fieldToUpdate,
-      });
       return fieldToUpdate;
     } else {
-      console.log('## updateAndCreateReview Object not found');
-      return false;
+      throw new Error("Couldn't find content to update");
     }
   } catch (error) {
-    console.error('## updateAndCreateReview error:', error);
+    throw new Error('Error updating content metadata');
   }
 };
 
-export { updateAndCreateReview };
+export { updateContentMetaDataLogic };

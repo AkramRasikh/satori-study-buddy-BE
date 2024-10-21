@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import {} from '../update-and-create-review';
-import { updateAndCreateReview } from './update-content-review-logic';
+import { updateContentMetaDataLogic } from './update-content-review-logic';
 
-const updateContentReview = async (req: Request, res: Response) => {
+const updateContentMetaData = async (req: Request, res: Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -11,20 +10,17 @@ const updateContentReview = async (req: Request, res: Response) => {
   const { language, title, fieldToUpdate } = req.body;
 
   try {
-    const fieldToUpdateRes = await updateAndCreateReview({
+    const fieldToUpdateRes = await updateContentMetaDataLogic({
       title,
       fieldToUpdate,
       language,
     });
-    if (fieldToUpdateRes) {
-      res.status(200).json(fieldToUpdateRes);
-    } else {
-      res.status(400).json({ message: 'Not found' });
-    }
+    res.status(200).json(fieldToUpdateRes);
   } catch (error) {
-    res.status(400).json();
-    console.log('## /update-review Err', { error });
+    res
+      .status(400)
+      .json({ message: error?.message || 'Error updating content' });
   }
 };
 
-export { updateContentReview };
+export { updateContentMetaData };

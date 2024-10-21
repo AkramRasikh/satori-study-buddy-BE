@@ -11,7 +11,7 @@ import {
   useFFmpeg,
 } from './get-audio-duration';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
-import { updateAndCreateReview } from '../firebase/update-content-review/update-content-review-logic';
+import { updateContentMetaDataLogic } from '../firebase/update-content-review/update-content-review-logic';
 
 const folderPath = 'japanese-audio';
 
@@ -126,7 +126,7 @@ const mp3Utils = (app) => {
               filePath: formattedFirebaseName,
             });
 
-            const fieldToUpdateRes = await updateAndCreateReview({
+            const fieldToUpdateRes = await updateContentMetaDataLogic({
               title: topicName,
               fieldToUpdate: { hasAudio: true },
               language,

@@ -18,7 +18,7 @@ const updateContentKeysRouteValidationArr = Object.keys(
 const updateFieldForContentValidation = (value: object) => {
   if (!value || typeof value !== 'object') {
     throw new Error(
-      `fieldToUpdate must be an object of: 
+      `${fieldToUpdatePrefix} must be an object of: 
       ${updateContentKeysRouteValidationArr.join(', ')}`,
     );
   }
@@ -28,7 +28,7 @@ const updateFieldForContentValidation = (value: object) => {
   );
   if (!hasValidField) {
     throw new Error(
-      `fieldToUpdate must contain at least one of the following: ${updateContentKeysRouteValidationArr.join(
+      `${fieldToUpdatePrefix} must contain at least one of the following: ${updateContentKeysRouteValidationArr.join(
         ', ',
       )}`,
     );
@@ -37,7 +37,7 @@ const updateFieldForContentValidation = (value: object) => {
   return true;
 };
 
-const updateContentValidation = [
+const updateContentMetaDataValidation = [
   checkMandatoryLanguage,
   body(fieldToUpdatePrefix).notEmpty().custom(updateFieldForContentValidation),
   body(updateContentKeysRouteValidationObj.reviewData).optional(),
@@ -48,4 +48,4 @@ const updateContentValidation = [
   body(updateContentKeysRouteValidationObj.hasAudio).optional().isBoolean(),
 ];
 
-export { updateContentValidation };
+export { updateContentMetaDataValidation };

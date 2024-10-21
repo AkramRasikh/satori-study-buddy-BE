@@ -1,11 +1,7 @@
 import { Request, Response, Express } from 'express';
 import { addMyGeneratedContent } from './init';
-import { content, words, sentences, songs } from './refs';
+import { content, words, sentences } from './refs';
 import { updateContentItem } from './update-content-item';
-import narakeetAudio from '../narakeet';
-import { combineAudio } from '../mp3-utils/combine-audio';
-import { getFirebaseAudioURL } from '../mp3-utils/get-audio-url';
-import { getLanguageContentData } from './get-language-content-data';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
@@ -23,8 +19,9 @@ import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
 import { addWord } from './add-word/route';
 import { addWordValidation } from './add-word/validation';
-import { updateContentReview } from './update-content-review/route';
-import { updateContentValidation } from './update-content-review/validation';
+import { updateContentMetaData } from './update-content-review/route';
+import { updateContentMetaDataValidation } from './update-content-review/validation';
+import { updateSentence } from './update-sentence/route';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -35,68 +32,11 @@ const firebaseRoutes = (app: Express) => {
   app.post('/add-content', addContentValidation, addContent);
   app.post('/add-word', addWordValidation, addWord);
   app.post(
-    '/update-content-review',
-    updateContentValidation,
-    updateContentReview,
+    '/update-content',
+    updateContentMetaDataValidation,
+    updateContentMetaData,
   );
-
-  // only for when the targetLang is being updated
-  app.post(
-    '/update-sentence',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const sentenceId = req.body?.sentenceId;
-      const topicName = req.body?.topicName;
-      const fieldToUpdate = req.body?.fieldToUpdate;
-      const withAudio = req.body?.withAudio;
-      const apiKey = process.env.NARAKEET_KEY;
-      const voice = req.body?.voice;
-      const language = req.body?.language;
-      const sentence = fieldToUpdate?.targetLang;
-      try {
-        const fieldToUpdateRes = await updateContentItem({
-          sentenceId,
-          topicName,
-          fieldToUpdate,
-          language,
-        });
-        if (withAudio) {
-          const naraKeetRes = await narakeetAudio({
-            id: sentenceId,
-            apiKey,
-            sentence,
-            voice,
-          });
-          if (naraKeetRes) {
-            const languageContent = await getLanguageContentData({
-              language,
-              topicName,
-            });
-            const audioFiles = languageContent.map((item) =>
-              getFirebaseAudioURL(item.id),
-            );
-            const combineAudioRes = combineAudio({
-              audioFiles,
-              mp3Name: topicName,
-            }); // returns fluentpackage object
-            // delete snippets if they exists
-            if (combineAudioRes) {
-              res.status(200).json(fieldToUpdateRes);
-            } else {
-              res.status(400).json({ message: 'Issue combining' });
-            }
-          } else {
-            res.status(400).json({ message: 'Not found' });
-          }
-        } else {
-          res.status(200).json(fieldToUpdateRes);
-        }
-      } catch (error) {
-        res.status(400).json();
-        console.log('## /update-content-item-correction Err', { error });
-      }
-    },
-  );
+  app.post('/update-sentence', checkMandatoryLanguage, updateSentence);
 
   app.post(
     '/add-adhoc-sentence',
