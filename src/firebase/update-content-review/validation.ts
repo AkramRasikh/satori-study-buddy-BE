@@ -1,6 +1,5 @@
 import { body } from 'express-validator';
 import { checkMandatoryLanguage } from '../../route-validation/check-mandatory-language';
-import { updateWordObj } from '../body-validation-types';
 
 const fieldToUpdatePrefix = 'fieldToUpdate';
 const updateContentKeysRouteValidationObj = {
