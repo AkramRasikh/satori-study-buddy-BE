@@ -34,34 +34,6 @@ const firebaseRoutes = (app: Express) => {
   app.post('/delete-word', deleteWordValidation, deleteWord);
   app.post('/add-content', addContentValidation, addContent);
   app.post('/add-word', addWordValidation, addWord);
-
-  app.post(
-    '/firebase-data',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const ref = req.body?.ref;
-      const language = req.body?.language;
-
-      if (
-        !(
-          ref === content ||
-          ref === words ||
-          ref === songs ||
-          ref === sentences ||
-          ref === snippets
-        )
-      ) {
-        res.status(500).json({ error: `Wrong ref added ${ref}` });
-      }
-      try {
-        const data = await getFirebaseContentType({ language, ref });
-        res.status(200).json(data);
-      } catch (error) {
-        res.status(500).json({ error });
-      }
-    },
-  );
-
   app.post(
     '/update-review',
     checkMandatoryLanguage,
