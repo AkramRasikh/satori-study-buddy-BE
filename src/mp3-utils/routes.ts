@@ -10,8 +10,8 @@ import {
   saveBufferToFile,
   useFFmpeg,
 } from './get-audio-duration';
-import { updateAndCreateReview } from '../firebase/update-and-create-review';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
+import { updateAndCreateReview } from '../firebase/update-content-review/update-content-review-logic';
 
 const folderPath = 'japanese-audio';
 
@@ -127,8 +127,7 @@ const mp3Utils = (app) => {
             });
 
             const fieldToUpdateRes = await updateAndCreateReview({
-              ref: content,
-              contentEntry: topicName,
+              title: topicName,
               fieldToUpdate: { hasAudio: true },
               language,
             });

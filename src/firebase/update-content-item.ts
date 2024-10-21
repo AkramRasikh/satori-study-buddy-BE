@@ -20,7 +20,7 @@ const updateContentItem = async ({
 
     const { index, keys } = getThisContentsIndex({
       data,
-      contentEntry: topicName,
+      title: topicName,
     });
 
     if (index !== -1) {

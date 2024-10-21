@@ -15,7 +15,7 @@ const getLanguageContentData = async ({ language, topicName }) => {
 
     const { index, keys } = getThisContentsIndex({
       data,
-      contentEntry: topicName,
+      title: topicName,
     });
 
     if (index !== -1) {

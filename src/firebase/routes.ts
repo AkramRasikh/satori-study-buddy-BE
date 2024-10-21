@@ -1,7 +1,6 @@
 import { Request, Response, Express } from 'express';
 import { addMyGeneratedContent } from './init';
-import { snippets, content, words, sentences, songs } from './refs';
-import { updateAndCreateReview } from './update-and-create-review';
+import { content, words, sentences, songs } from './refs';
 import { updateContentItem } from './update-content-item';
 import narakeetAudio from '../narakeet';
 import { combineAudio } from '../mp3-utils/combine-audio';
@@ -10,7 +9,6 @@ import { getLanguageContentData } from './get-language-content-data';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
-import { getFirebaseContentType } from './get-firebase-content-type';
 import { updateWordValidation } from './update-word/validation';
 import { updateWord } from './update-word/route';
 import { getOnLoadDataValidation } from './get-on-load-data/validation';
@@ -25,6 +23,8 @@ import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
 import { addWord } from './add-word/route';
 import { addWordValidation } from './add-word/validation';
+import { updateContentReview } from './update-content-review/route';
+import { updateContentValidation } from './update-content-review/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -36,30 +36,8 @@ const firebaseRoutes = (app: Express) => {
   app.post('/add-word', addWordValidation, addWord);
   app.post(
     '/update-content-review',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const ref = req.body?.ref;
-      const language = req.body?.language;
-      const contentEntry = req.body?.contentEntry;
-      const fieldToUpdate = req.body?.fieldToUpdate;
-
-      try {
-        const fieldToUpdateRes = await updateAndCreateReview({
-          ref,
-          contentEntry,
-          fieldToUpdate,
-          language,
-        });
-        if (fieldToUpdateRes) {
-          res.status(200).json(fieldToUpdateRes);
-        } else {
-          res.status(400).json({ message: 'Not found' });
-        }
-      } catch (error) {
-        res.status(400).json();
-        console.log('## /update-review Err', { error });
-      }
-    },
+    updateContentValidation,
+    updateContentReview,
   );
 
   // only for when the targetLang is being updated
