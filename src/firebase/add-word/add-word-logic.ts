@@ -4,8 +4,21 @@ import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
 import { words } from '../refs';
+import { FirebaseCoreQueryParams, WordType } from '../types';
 
-const addWordLogic = async ({ word, language, context, contextSentence }) => {
+interface AddWordLogicType {
+  word: string;
+  language: FirebaseCoreQueryParams['language'];
+  context: string;
+  contextSentence: string;
+}
+
+const addWordLogic = async ({
+  word,
+  language,
+  context,
+  contextSentence,
+}: AddWordLogicType) => {
   try {
     const refPath = getRefPath({
       language,
@@ -19,7 +32,7 @@ const addWordLogic = async ({ word, language, context, contextSentence }) => {
       })) || [];
 
     const isDuplicate = wordSnapShotArr.some(
-      (item) => item.baseForm === word || item.surfaceForm === word,
+      (item: WordType) => item.baseForm === word || item.surfaceForm === word,
     );
 
     if (!isDuplicate) {

@@ -20,8 +20,10 @@ const addWord = async (req: Request, res: Response) => {
       message: `Successfully added word ${addedWordData.baseForm} added`,
       word: addedWordData,
     });
-  } catch (error) {
-    res.status(500).json({ error: error?.message || 'Error adding word' });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ error: error?.message || `Error adding ${word} in ${language}` });
   }
 };
 

@@ -32,7 +32,7 @@ interface AdhocSentenceType {
   tags?: TagsType;
   reviewData?: ReviewDataType;
 }
-interface WordType {
+export interface WordType {
   id: string;
   baseForm: string;
   definition: string;
@@ -40,7 +40,9 @@ interface WordType {
   reviewData?: ReviewDataType;
   surfaceForm: string;
   transliteration: string;
+  transliterationSurfaceForm?: string;
   phonetic: string;
+  notes?: string;
 }
 
 export interface SnippetType {
