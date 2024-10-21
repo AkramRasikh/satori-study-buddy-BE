@@ -1,9 +1,9 @@
 import OpenAI from 'openai';
+import config from '../../config';
 
 interface chatGPTTranslatorParams {
   word: string;
   model: string;
-  openAIKey: string;
   context?: string;
 }
 
@@ -60,11 +60,10 @@ const formatTranslationPrompt = (japaneseWord, context) => {
 const chatGPTTranslator = async ({
   word,
   model,
-  openAIKey,
   context,
 }: chatGPTTranslatorParams) => {
   const openai = new OpenAI({
-    apiKey: openAIKey,
+    apiKey: config.openAIKey,
   });
 
   const formattedTranslationPrompt = formatTranslationPrompt(word, context);
@@ -83,10 +82,15 @@ const chatGPTTranslator = async ({
     const content = completion.choices[0].message.content;
 
     const parsed = JSON.parse(content);
-
     return parsed;
   } catch (error) {
-    console.log('## Error OpenAI: ', error);
+    const message = error?.message;
+    const tooManyRequestsOrVerifyIssues =
+      message?.includes('quota') || message?.includes('Quota');
+    if (tooManyRequestsOrVerifyIssues) {
+      throw new Error('Open AI quota error');
+    }
+    throw new Error('Error using OpenAI translation');
   }
 };
 

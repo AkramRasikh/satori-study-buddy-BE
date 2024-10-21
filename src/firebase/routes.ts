@@ -1,5 +1,5 @@
 import { Request, Response, Express } from 'express';
-import { addJapaneseWord, addMyGeneratedContent } from './init';
+import { addMyGeneratedContent } from './init';
 import { snippets, content, words, sentences, songs } from './refs';
 import { updateAndCreateReview } from './update-and-create-review';
 import { updateContentItem } from './update-content-item';
@@ -23,6 +23,8 @@ import { deleteWordValidation } from './delete-word/validation';
 import { deleteWord } from './delete-word/route';
 import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
+import { addWord } from './add-word/route';
+import { addWordValidation } from './add-word/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -31,41 +33,7 @@ const firebaseRoutes = (app: Express) => {
   app.post('/delete-snippet', deleteSnippetValidation, deleteSnippet);
   app.post('/delete-word', deleteWordValidation, deleteWord);
   app.post('/add-content', addContentValidation, addContent);
-
-  app.post(
-    '/add-word',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const word = req.body?.word;
-      const language = req.body?.language;
-      const contexts = req.body?.contexts;
-      const contextSentence = req.body?.contextSentence;
-
-      try {
-        const japaneseWordRes = await addJapaneseWord({
-          word,
-          language,
-          contexts,
-          contextSentence,
-        });
-        if (japaneseWordRes.status === 409) {
-          return res
-            .status(409)
-            .json({ message: 'Entry already exists', word: {} });
-        }
-        if (japaneseWordRes.status === 200) {
-          res.status(200).json({
-            message: 'Successfully added entry',
-            word: japaneseWordRes.wordData,
-          });
-        }
-      } catch (error) {
-        res
-          .status(500)
-          .json({ error: 'Failed to add item', word: req.body?.word });
-      }
-    },
-  );
+  app.post('/add-word', addWordValidation, addWord);
 
   app.post(
     '/firebase-data',

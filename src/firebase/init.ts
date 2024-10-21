@@ -1,11 +1,11 @@
 import admin from 'firebase-admin';
 import config from '../../config';
-import getBaseForm from '../language-script-helpers/get-base-form';
 import { v4 as uuidv4 } from 'uuid';
 import { words } from './refs';
 import { translate } from '@vitalets/google-translate-api';
 import { chatGPTTranslator } from '../open-ai/translator';
 import { getRefPath } from '../utils/get-ref-path';
+import { getContentTypeSnapshot } from '../utils/get-content-type-snapshot';
 
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(config.googleServiceAccount)),
@@ -15,42 +15,21 @@ const bucketName = config.firebaseBucketName;
 
 export const db = admin.database();
 
-const getJapaneseWordDefinition = async (word, contextSentence) => {
-  try {
-    throw new Error('Intentional error thrown. Too Many Requests');
-    const { text: definition, raw } = (await translate(word, {
-      from: 'ja',
-      to: 'en',
-    })) as any;
+const getGoogleTranslate = async (word) => {
+  const { text: definition, raw } = (await translate(word, {
+    from: 'ja',
+    to: 'en',
+  })) as any;
 
-    let transliteration: string[] = [];
-    raw.sentences?.forEach((sentence) => {
-      if (sentence?.src_translit) {
-        transliteration.push(sentence.src_translit);
-      }
-    });
-    const finalTransliteration = transliteration?.join(' ');
-
-    return { definition, transliteration: finalTransliteration };
-  } catch (error) {
-    const message = error?.message;
-
-    const tooManyRequestsOrVerifyIssues =
-      message?.includes('Too Many Requests') ||
-      message?.includes('unable to verify');
-
-    if (tooManyRequestsOrVerifyIssues) {
-      const openAIKey = process.env.OPENAI_API_KEY;
-      const chatgptRes = await chatGPTTranslator({
-        word,
-        model: 'gpt-4',
-        openAIKey,
-        context: contextSentence,
-      });
-      return chatgptRes;
+  let transliteration: string[] = [];
+  raw.sentences?.forEach((sentence) => {
+    if (sentence?.src_translit) {
+      transliteration.push(sentence.src_translit);
     }
-    throw error;
-  }
+  });
+  const finalTransliteration = transliteration?.join(' ');
+
+  return { definition, transliteration: finalTransliteration };
 };
 
 const getContent = async ({ language, ref }) => {
@@ -61,50 +40,6 @@ const getContent = async ({ language, ref }) => {
     return data;
   } catch (error) {
     console.error('## getContent', error);
-  }
-};
-
-const addJapaneseWord = async ({
-  word,
-  language,
-  contexts,
-  contextSentence,
-}) => {
-  try {
-    // Fetch the existing array
-    const refPath = getRefPath({
-      language,
-      ref: words,
-    });
-    const snapshot = await db.ref(refPath).once('value');
-
-    let newArray = snapshot.val() || []; // If 'satoriContent' doesn't exist, create an empty array
-    const baseForm = await getBaseForm(word);
-
-    // Check if the new item's ID already exists in the array
-    const isDuplicate = newArray.some((item) => item.baseForm === baseForm);
-
-    if (!isDuplicate) {
-      const chatGptRes = await getJapaneseWordDefinition(word, contextSentence);
-
-      const wordData = {
-        id: uuidv4(),
-        contexts,
-        surfaceForm: word,
-        ...chatGptRes,
-      };
-      // Add the new item to the array
-      newArray.push(wordData);
-
-      // Update the entire array
-      await db.ref(refPath).set(newArray);
-      return { status: 200, wordData };
-    } else {
-      return { status: 409 };
-    }
-  } catch (error) {
-    console.error('## Error adding item (addJapaneseWord): ', error);
-    throw new Error();
   }
 };
 
@@ -187,7 +122,6 @@ const uploadBufferToFirebase = async ({ buffer, filePath }) => {
 export {
   uploadBufferToFirebase,
   addMyGeneratedContent,
-  addJapaneseWord,
   getContent,
   addLyricsToFirestore,
 };
