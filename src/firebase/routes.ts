@@ -35,7 +35,7 @@ const firebaseRoutes = (app: Express) => {
   app.post('/add-content', addContentValidation, addContent);
   app.post('/add-word', addWordValidation, addWord);
   app.post(
-    '/update-review',
+    '/update-content-review',
     checkMandatoryLanguage,
     async (req: Request, res: Response) => {
       const ref = req.body?.ref;
