@@ -70,3 +70,15 @@ export interface SnippetType {
   targetLang?: string;
   isIsolated?: boolean;
 }
+
+type MediaOriginTypes = 'netflix' | 'youtube';
+
+export interface ContentType {
+  title: string;
+  content: SentenceType[];
+  hasAudio?: boolean;
+  isCore?: boolean;
+  url?: string;
+  interval: number;
+  origin?: MediaOriginTypes;
+}
