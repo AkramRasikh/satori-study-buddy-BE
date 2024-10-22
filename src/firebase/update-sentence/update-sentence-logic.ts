@@ -74,11 +74,11 @@ const updateSentenceAudio = async ({
     const audioFiles = languageContent.map((item) =>
       getFirebaseAudioURL(item.id),
     );
-    const successfullyRecombinedFiles = combineAudio({
+    const successfullyRecombinedFiles = await combineAudio({
       audioFiles,
       mp3Name: title,
-    }); // wrap in promise
-
+      language,
+    });
     // delete snippets if they exists
     if (successfullyRecombinedFiles) {
       return true;
