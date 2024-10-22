@@ -39,8 +39,7 @@ export const combineAudio = ({ audioFiles, mp3Name }) => {
         // res.status(200).send({ url });
         return true;
       } catch (error) {
-        console.error('Error uploading to Firebase Storage:', error);
-        return false;
+        throw new Error('Error uploading to Firebase Storage');
         // res.status(500).send('Error uploading to Firebase Storage');
       } finally {
         fs.unlinkSync(outputFilePath); // Clean up the temporary file

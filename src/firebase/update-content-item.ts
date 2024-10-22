@@ -6,12 +6,7 @@ import {
   getThisSentenceIndex,
 } from './update-and-create-review';
 
-const updateContentItem = async ({
-  id,
-  language,
-  topicName,
-  fieldToUpdate,
-}) => {
+const updateContentItem = async ({ id, language, title, fieldToUpdate }) => {
   try {
     const refPath = getRefPath({ language, ref: content });
     const refObj = db.ref(refPath);
@@ -20,7 +15,7 @@ const updateContentItem = async ({
 
     const { index, keys } = getThisContentsIndex({
       data,
-      title: topicName,
+      title,
     });
 
     if (index !== -1) {

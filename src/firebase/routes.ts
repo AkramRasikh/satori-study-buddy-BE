@@ -77,7 +77,7 @@ const firebaseRoutes = (app: Express) => {
         const fieldToUpdateRes = await updateContentItem({
           language,
           id: sentenceId,
-          topicName,
+          title: topicName,
           fieldToUpdate,
         });
         if (fieldToUpdateRes) {
