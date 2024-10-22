@@ -14,11 +14,10 @@ const updateSentence = async (req: Request, res: Response) => {
   const id = req.body.id;
   const topicName = req.body.title;
   const fieldToUpdate = req.body.fieldToUpdate;
-  const withAudio = req.body.withAudio;
-  const apiKey = process.env.NARAKEET_KEY;
-  const voice = req.body.voice;
-  const language = req.body.language;
   const sentence = fieldToUpdate.targetLang;
+  const voice = req.body?.voice;
+  const language = req.body.language;
+  const withAudio = req.body?.withAudio;
   try {
     const fieldToUpdateRes = await updateContentItem({
       id,
@@ -29,7 +28,6 @@ const updateSentence = async (req: Request, res: Response) => {
     if (withAudio) {
       const naraKeetRes = await narakeetAudio({
         id,
-        apiKey,
         sentence,
         voice,
       });

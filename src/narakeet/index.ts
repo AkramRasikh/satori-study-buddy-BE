@@ -32,17 +32,12 @@ const getRandomVoice = () => {
 
 interface NarakeetProps {
   sentence: string;
-  apiKey: string;
   id: string;
   voice?: string;
 }
 
-const narakeetAudio = async ({
-  sentence,
-  apiKey,
-  id,
-  voice,
-}: NarakeetProps) => {
+const narakeetAudio = async ({ sentence, id, voice }: NarakeetProps) => {
+  const apiKey = process.env.NARAKEET_KEY;
   const nameToSaveUnder = id || sentence;
   const voiceSelected = voice || getRandomVoice();
   const fileNameWithMP3Ending = nameToSaveUnder + '.mp3';

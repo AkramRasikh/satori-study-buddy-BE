@@ -71,7 +71,6 @@ const addAdhocSentence = async ({
       try {
         const naraKeetRes = await narakeetAudio({
           id: sentenceId,
-          apiKey: narakeetKey,
           sentence: resultContent.targetLang,
         });
 

@@ -6,14 +6,12 @@ const narakeetRoutes = (app) => {
     const { body } = req;
 
     const id = body?.id;
-    const apiKey = body?.apiKey;
     const sentence = body?.sentence;
     const voice = body?.voice;
 
     try {
       const availableMP3Files = await narakeetAudio({
         id,
-        apiKey,
         sentence,
         voice,
       });
