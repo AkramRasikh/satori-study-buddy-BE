@@ -10,6 +10,7 @@ const updateSentenceKeys = {
   voice: 'voice',
   targetLang: `${fieldToUpdatePrefix}.targetLang`,
   time: `${fieldToUpdatePrefix}.time`,
+  notes: `${fieldToUpdatePrefix}.notes`,
 };
 
 const updateSentenceValidation = [
@@ -38,8 +39,14 @@ const updateSentenceValidation = [
     .withMessage(
       `Validation error passing ${updateSentenceKeys.withAudio} for update sentence. Should be a boolean`,
     ),
+  body(updateSentenceKeys.notes)
+    .optional()
+    .isString()
+    .withMessage(
+      `Validation error passing ${updateSentenceKeys.notes} for update sentence. Should be string.`,
+    ),
   body(updateSentenceKeys.voice)
-    .notEmpty()
+    .optional()
     .isString()
     .withMessage(
       `Validation error passing ${updateSentenceKeys.voice} for update sentence. Should be string. Check narakeet voices available`,

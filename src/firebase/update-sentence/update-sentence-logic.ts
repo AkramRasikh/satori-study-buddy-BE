@@ -11,6 +11,7 @@ import { updateContentItem } from '../update-content-item';
 interface SentenceFieldToUpdateType {
   targetLang?: SentenceType['targetLang'];
   time?: SentenceType['time'];
+  notes?: SentenceType['notes'];
 }
 
 interface UpdateSentenceLogicTypes {
