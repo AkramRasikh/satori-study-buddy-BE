@@ -1,6 +1,8 @@
 import { Readable } from 'stream';
 import fetch from 'node-fetch'; // or import axios from 'axios';
 import { uploadBufferToFirebase } from '../firebase/init';
+import { getAudioFolderViaLang } from '../eligible-languages';
+import { FirebaseCoreQueryParams } from '../firebase/types';
 
 // 'Kasumi',
 // 'Kei',
@@ -23,8 +25,6 @@ const japaneseVoices = [
   'Kuniko', // the best!
 ];
 
-const folderPath = 'japanese-audio';
-
 const getRandomVoice = () => {
   const randomIndex = Math.floor(Math.random() * japaneseVoices.length);
   return japaneseVoices[randomIndex];
@@ -33,10 +33,16 @@ const getRandomVoice = () => {
 interface NarakeetProps {
   sentence: string;
   id: string;
+  language: FirebaseCoreQueryParams['language'];
   voice?: string;
 }
 
-const narakeetAudio = async ({ sentence, id, voice }: NarakeetProps) => {
+const narakeetAudio = async ({
+  sentence,
+  id,
+  voice,
+  language,
+}: NarakeetProps) => {
   const apiKey = process.env.NARAKEET_KEY;
   const nameToSaveUnder = id || sentence;
   const voiceSelected = voice || getRandomVoice();
@@ -64,7 +70,7 @@ const narakeetAudio = async ({ sentence, id, voice }: NarakeetProps) => {
 
     await uploadBufferToFirebase({
       buffer,
-      filePath: folderPath + '/' + fileNameWithMP3Ending,
+      filePath: getAudioFolderViaLang(language) + '/' + fileNameWithMP3Ending,
     });
 
     console.log('File saved successfully: ', { sentence, voiceSelected });

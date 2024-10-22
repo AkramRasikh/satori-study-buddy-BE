@@ -72,6 +72,7 @@ const addAdhocSentence = async ({
         const naraKeetRes = await narakeetAudio({
           id: sentenceId,
           sentence: resultContent.targetLang,
+          language,
         });
 
         if (naraKeetRes) {

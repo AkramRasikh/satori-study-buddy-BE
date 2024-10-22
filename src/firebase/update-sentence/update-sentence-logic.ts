@@ -65,6 +65,7 @@ const updateSentenceAudio = async ({
     id,
     sentence,
     voice,
+    language,
   });
   if (naraKeetRes) {
     const languageContent = await getLanguageContentData({

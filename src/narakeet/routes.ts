@@ -8,12 +8,14 @@ const narakeetRoutes = (app) => {
     const id = body?.id;
     const sentence = body?.sentence;
     const voice = body?.voice;
+    const language = body?.language;
 
     try {
       const availableMP3Files = await narakeetAudio({
         id,
         sentence,
         voice,
+        language,
       });
       if (availableMP3Files) {
         return res.status(200).json({ mp3FilesOnServer: availableMP3Files });

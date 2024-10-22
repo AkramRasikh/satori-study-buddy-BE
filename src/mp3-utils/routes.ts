@@ -12,8 +12,7 @@ import {
 } from './get-audio-duration';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { updateContentMetaDataLogic } from '../firebase/update-content-review/update-content-review-logic';
-
-const folderPath = 'japanese-audio';
+import { getAudioFolderViaLang } from '../eligible-languages';
 
 const mp3Utils = (app) => {
   // check the relevance of this
@@ -97,7 +96,8 @@ const mp3Utils = (app) => {
       const mp3Name = req?.body?.mp3Name;
       const language = req?.body?.language;
       const topicName = req?.body?.topicName;
-      const formattedFirebaseName = folderPath + '/' + mp3Name + '.mp3';
+      const formattedFirebaseName =
+        getAudioFolderViaLang(language) + '/' + mp3Name + '.mp3';
 
       const outputFilePath = path.join(__dirname, 'output.mp3');
 
