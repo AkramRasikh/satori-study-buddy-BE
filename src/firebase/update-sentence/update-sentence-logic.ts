@@ -74,6 +74,9 @@ const updateSentenceAudio = async ({
   }
 };
 
+const getPathToSentenceInContent = ({ contentKey, sentenceKey }) =>
+  `${contentKey}/${contentRef}/${sentenceKey}`;
+
 const updateSentenceInContent = async ({
   id,
   language,
@@ -88,30 +91,25 @@ const updateSentenceInContent = async ({
       db,
     });
 
-    const { index, keys } = getThisContentsIndex({
+    const { index: contentKey, keys } = getThisContentsIndex({
       data: contentSnapshotArr,
       title,
     });
 
-    if (index && index !== -1) {
-      const key = keys[index];
+    if (isFinite(contentKey) && contentKey !== -1) {
+      const key = keys[contentKey];
       const thisTopicContent = contentSnapshotArr[key].content;
       const { sentenceKeys, sentenceIndex } = getThisSentenceIndex({
         data: thisTopicContent,
         id,
       });
 
-      if (sentenceIndex && sentenceIndex !== -1) {
-        const thisSentenceKey = sentenceKeys[sentenceIndex];
-        const refObj = db.ref(refPath); // can this be refactored
-        const objectRef = refObj.child(
-          `${index}/${contentRef}/${thisSentenceKey}`,
-        );
-        await objectRef.update(fieldToUpdate);
-        console.log('## Data successfully updated!', {
-          id,
-          fieldToUpdate,
-        });
+      if (isFinite(sentenceIndex) && sentenceIndex !== -1) {
+        const sentenceKey = sentenceKeys[sentenceIndex];
+        const refObj = db
+          .ref(refPath)
+          .child(getPathToSentenceInContent({ contentKey, sentenceKey }));
+        await refObj.update(fieldToUpdate);
         return { updatedFields: fieldToUpdate, content: thisTopicContent };
       } else {
         throw new Error('Error cannot find sentence index');
@@ -154,7 +152,7 @@ const updateSentenceLogic = async ({
       return updatedFields;
     }
   } catch (error) {
-    throw new Error('Issue with updating sentence');
+    throw new Error(error || 'Issue with updating sentence');
   }
 };
 
