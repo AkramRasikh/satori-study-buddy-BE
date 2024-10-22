@@ -12,7 +12,7 @@ import {
 } from './get-audio-duration';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { updateContentMetaDataLogic } from '../firebase/update-content-review/update-content-review-logic';
-import { getAudioFolderViaLang } from '../eligible-languages';
+import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 
 const mp3Utils = (app) => {
   // check the relevance of this

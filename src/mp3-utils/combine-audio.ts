@@ -2,7 +2,7 @@ import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import { uploadBufferToFirebase } from '../firebase/init';
-import { getAudioFolderViaLang } from '../eligible-languages';
+import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 
 const getFirebasePathName = ({ language, mp3Name }) =>
   getAudioFolderViaLang(language) + '/' + mp3Name + '.mp3';

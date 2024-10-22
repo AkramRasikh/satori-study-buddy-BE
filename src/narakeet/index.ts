@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
 import fetch from 'node-fetch'; // or import axios from 'axios';
 import { uploadBufferToFirebase } from '../firebase/init';
-import { getAudioFolderViaLang } from '../eligible-languages';
 import { FirebaseCoreQueryParams } from '../firebase/types';
+import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 
 // 'Kasumi',
 // 'Kei',
