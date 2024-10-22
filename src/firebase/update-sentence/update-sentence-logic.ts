@@ -1,37 +1,55 @@
 import { combineAudio } from '../../mp3-utils/combine-audio';
 import { getFirebaseAudioURL } from '../../mp3-utils/get-audio-url';
 import narakeetAudio from '../../narakeet';
-import { getRefPath } from '../../utils/get-ref-path';
+import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { db } from '../init';
 import { content } from '../refs';
+import { SentenceType } from '../types';
 import { getThisContentsIndex } from '../update-and-create-review';
 import { updateContentItem } from '../update-content-item';
 
+interface SentenceFieldToUpdateType {
+  targetLang?: SentenceType['targetLang'];
+  time?: SentenceType['time'];
+}
+
+interface UpdateSentenceLogicTypes {
+  id: string;
+  title: string;
+  language: string;
+  fieldToUpdate: SentenceFieldToUpdateType;
+  withAudio?: boolean;
+  sentence?: string;
+  voice?: string;
+}
+
 const getLanguageContentData = async ({ language, title }) => {
   try {
-    const refPath = getRefPath({
+    const contentSnapshotArr = await getContentTypeSnapshot({
       language,
       ref: content,
+      db,
     });
-    const refObj = db.ref(refPath);
-    const snapshot = await refObj.once('value');
-    const data = snapshot.val();
 
     const { index, keys } = getThisContentsIndex({
-      data,
+      data: contentSnapshotArr,
       title,
     });
 
     if (index !== -1) {
       const key = keys[index];
-      const languageContent = data[key].content.filter((i) => i !== null);
+      const languageContent = contentSnapshotArr[key].content.filter(
+        (i) => i !== null,
+      );
 
       return languageContent;
     } else {
-      return null;
+      throw new Error(`Can't find ${language} ${content} index for ${title}`);
     }
   } catch (error) {
-    console.error('## updateContentItem error:', error);
+    throw new Error(
+      `Error querying getting language content data. ${language}, ${content}, ${title}`,
+    );
   }
 };
 
@@ -77,7 +95,7 @@ const updateSentenceLogic = async ({
   voice,
   language,
   withAudio,
-}) => {
+}: UpdateSentenceLogicTypes) => {
   try {
     const fieldToUpdateRes = await updateContentItem({
       id,
@@ -93,6 +111,8 @@ const updateSentenceLogic = async ({
         language,
         title,
       });
+      return fieldToUpdateRes;
+    } else {
       return fieldToUpdateRes;
     }
   } catch (error) {
