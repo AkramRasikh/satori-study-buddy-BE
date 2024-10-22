@@ -1,7 +1,7 @@
-import { getRefPath } from '../utils/get-ref-path';
-import { db } from './init';
-import { content } from './refs';
-import { getThisContentsIndex } from './update-and-create-review';
+import { getRefPath } from '../../utils/get-ref-path';
+import { db } from '../init';
+import { content } from '../refs';
+import { getThisContentsIndex } from '../update-and-create-review';
 
 const getLanguageContentData = async ({ language, topicName }) => {
   try {
@@ -31,4 +31,6 @@ const getLanguageContentData = async ({ language, topicName }) => {
   }
 };
 
-export { getLanguageContentData };
+const updateSentenceLogic = async () => {};
+
+export { getLanguageContentData, updateSentenceLogic };

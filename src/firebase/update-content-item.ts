@@ -7,7 +7,7 @@ import {
 } from './update-and-create-review';
 
 const updateContentItem = async ({
-  sentenceId,
+  id,
   language,
   topicName,
   fieldToUpdate,
@@ -30,7 +30,7 @@ const updateContentItem = async ({
 
       const { sentenceKeys, sentenceIndex } = getThisSentenceIndex({
         data: thisTopicContent,
-        id: sentenceId,
+        id,
       });
 
       const thisSentenceKey = sentenceKeys[sentenceIndex];
@@ -39,7 +39,7 @@ const updateContentItem = async ({
       const objectRef = refObj.child(`${key}/content/${thisSentenceKey}`);
       await objectRef.update(fieldToUpdate);
       console.log('## Data successfully updated!', {
-        sentenceId,
+        id,
         fieldToUpdate,
       });
       return fieldToUpdate;

@@ -7,6 +7,11 @@ interface TagsType {
   tags: string[];
 }
 
+interface LegacyReviewTypes {
+  nextReview?: string;
+  reviewHistory?: string[];
+}
+
 interface ReviewDataType {
   difficulty: number;
   due: Date;
@@ -21,7 +26,7 @@ interface ReviewDataType {
   state: number;
 }
 
-interface AdhocSentenceType {
+export interface AdhocSentenceType extends TagsType {
   id: string;
   baseLang: string;
   hasAudio: string;
@@ -29,9 +34,19 @@ interface AdhocSentenceType {
   topic: string;
   notes?: string;
   context?: string;
-  tags?: TagsType;
   reviewData?: ReviewDataType;
 }
+
+export interface SentenceType extends LegacyReviewTypes {
+  id: string;
+  baseLang: string;
+  hasAudio: string;
+  targetLang: string;
+  notes?: string;
+  time?: number;
+  reviewData?: ReviewDataType;
+}
+
 export interface WordType {
   id: string;
   baseForm: string;
