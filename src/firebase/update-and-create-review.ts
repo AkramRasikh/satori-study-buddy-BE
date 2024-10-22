@@ -1,7 +1,3 @@
-import { getRefPath } from '../utils/get-ref-path';
-import { db } from './init';
-import { content } from './refs';
-
 export const getThisContentsIndex = ({ data, title }) => {
   // Convert object of objects to an array
   const values = Object.values(data);
