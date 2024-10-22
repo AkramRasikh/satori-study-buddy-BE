@@ -1,11 +1,10 @@
 import { combineAudio } from '../../mp3-utils/combine-audio';
 import { getFirebaseAudioURL } from '../../mp3-utils/get-audio-url';
 import narakeetAudio from '../../narakeet';
-import { filterOutNestedNulls } from '../../utils/filter-out-nested-nulls';
 import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
-import { content } from '../refs';
+import { content as contentRef } from '../refs';
 import { SentenceType } from '../types';
 import {
   getThisContentsIndex,
@@ -28,34 +27,21 @@ interface UpdateSentenceLogicTypes {
   voice?: string;
 }
 
-const getLanguageContentData = async ({ language, title }) => {
-  try {
-    const contentSnapshotArr = await getContentTypeSnapshot({
-      language,
-      ref: content,
-      db,
-    });
+interface UpdateSentenceInContentTypes {
+  id: string;
+  title: string;
+  language: string;
+  fieldToUpdate: SentenceFieldToUpdateType;
+}
 
-    const { index, keys } = getThisContentsIndex({
-      data: contentSnapshotArr,
-      title,
-    });
-
-    if (index !== -1) {
-      const key = keys[index];
-      const languageContent = filterOutNestedNulls(
-        contentSnapshotArr[key].content,
-      );
-      return languageContent;
-    } else {
-      throw new Error(`Can't find ${language} ${content} index for ${title}`);
-    }
-  } catch (error) {
-    throw new Error(
-      `Error querying getting language content data. ${language}, ${content}, ${title}`,
-    );
-  }
-};
+interface UpdateSentenceAudioTypes {
+  id: string;
+  title: string;
+  language: string;
+  sentence: string;
+  voice?: string;
+  content: SentenceType[];
+}
 
 const updateSentenceAudio = async ({
   id,
@@ -64,7 +50,7 @@ const updateSentenceAudio = async ({
   language,
   title,
   content,
-}) => {
+}: UpdateSentenceAudioTypes) => {
   const naraKeetRes = await narakeetAudio({
     id,
     sentence,
@@ -72,7 +58,9 @@ const updateSentenceAudio = async ({
     language,
   });
   if (naraKeetRes) {
-    const audioFiles = content.map((item) => getFirebaseAudioURL(item.id));
+    const audioFiles = content.map((item: SentenceType) =>
+      getFirebaseAudioURL(item.id),
+    );
     const successfullyRecombinedFiles = await combineAudio({
       audioFiles,
       mp3Name: title,
@@ -91,13 +79,12 @@ const updateSentenceInContent = async ({
   language,
   title,
   fieldToUpdate,
-}) => {
+}: UpdateSentenceInContentTypes) => {
   try {
-    const refPath = getRefPath({ language, ref: content });
-    const refObj = db.ref(refPath);
+    const refPath = getRefPath({ language, ref: contentRef });
     const contentSnapshotArr = await getContentTypeSnapshot({
       language,
-      ref: content,
+      ref: contentRef,
       db,
     });
 
@@ -106,26 +93,31 @@ const updateSentenceInContent = async ({
       title,
     });
 
-    if (index !== -1) {
+    if (index && index !== -1) {
       const key = keys[index];
       const thisTopicContent = contentSnapshotArr[key].content;
-      // two in one refactor needed
-
       const { sentenceKeys, sentenceIndex } = getThisSentenceIndex({
         data: thisTopicContent,
         id,
       });
 
-      const thisSentenceKey = sentenceKeys[sentenceIndex];
-      const objectRef = refObj.child(`${refPath}/${thisSentenceKey}`);
-      await objectRef.update(fieldToUpdate);
-      console.log('## Data successfully updated!', {
-        id,
-        fieldToUpdate,
-      });
-      return { updatedFields: fieldToUpdate, content: thisTopicContent };
+      if (sentenceIndex && sentenceIndex !== -1) {
+        const thisSentenceKey = sentenceKeys[sentenceIndex];
+        const refObj = db.ref(refPath); // can this be refactored
+        const objectRef = refObj.child(
+          `${index}/${contentRef}/${thisSentenceKey}`,
+        );
+        await objectRef.update(fieldToUpdate);
+        console.log('## Data successfully updated!', {
+          id,
+          fieldToUpdate,
+        });
+        return { updatedFields: fieldToUpdate, content: thisTopicContent };
+      } else {
+        throw new Error('Error cannot find sentence index');
+      }
     } else {
-      throw new Error('Error cannot find sentence/content');
+      throw new Error('Error cannot find content index');
     }
   } catch (error) {
     throw new Error('Error updating sentence via content');
@@ -148,7 +140,7 @@ const updateSentenceLogic = async ({
       fieldToUpdate,
       language,
     });
-    if (withAudio) {
+    if (withAudio && sentence) {
       await updateSentenceAudio({
         id,
         sentence,
@@ -166,4 +158,4 @@ const updateSentenceLogic = async ({
   }
 };
 
-export { getLanguageContentData, updateSentenceLogic };
+export { updateSentenceLogic };
