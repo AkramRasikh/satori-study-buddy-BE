@@ -118,7 +118,7 @@ const updateSentenceInContent = async ({
       throw new Error('Error cannot find content index');
     }
   } catch (error) {
-    throw new Error('Error updating sentence via content');
+    throw new Error(error || 'Error updating sentence via content');
   }
 };
 
