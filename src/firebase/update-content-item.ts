@@ -4,7 +4,7 @@ import { content } from './refs';
 import {
   getThisContentsIndex,
   getThisSentenceIndex,
-} from './update-and-create-review';
+} from './get-content-sentence-index-keys';
 
 const updateContentItem = async ({ id, language, title, fieldToUpdate }) => {
   try {
