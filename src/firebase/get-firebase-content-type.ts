@@ -1,22 +1,20 @@
 import { content } from './refs';
-
-import { getRefPath } from '../utils/get-ref-path';
 import { filterOutNestedNulls } from '../utils/filter-out-nested-nulls';
 import { FirebaseCoreQueryParams } from './types';
 import { db } from './init';
+import { getContentTypeSnapshot } from '../utils/get-content-type-snapshot';
 
 const getFirebaseContentType = async ({
   language,
   ref,
 }: FirebaseCoreQueryParams) => {
   try {
-    const refPath = getRefPath({
+    const thisContentTypeSnapShot = await getContentTypeSnapshot({
       language,
       ref,
+      db,
     });
-    const postsRef = db.ref(refPath);
-    const refResults = await postsRef.once('value');
-    const realValues = filterOutNestedNulls(refResults.val());
+    const realValues = filterOutNestedNulls(thisContentTypeSnapShot);
     if (ref === content) {
       const filteredOutUndefinedNull = realValues.map(
         (thisLangaugeContentItem) => {
