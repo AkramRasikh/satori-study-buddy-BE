@@ -31,9 +31,9 @@ const getFirebaseContentType = async ({
       return realValues;
     }
   } catch (error) {
-    // specfificy what ref
-    console.error('Error getFirebaseContentType:', { error });
-    return error;
+    throw new Error(
+      error || `Failed to get contentType ${ref} for ${language}`,
+    );
   }
 };
 
