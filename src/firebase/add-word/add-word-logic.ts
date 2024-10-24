@@ -5,6 +5,9 @@ import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
 import { words } from '../refs';
 import { FirebaseCoreQueryParams, WordType } from '../types';
+import { languageKey } from '../../eligible-languages';
+import { japaneseformatTranslationPrompt } from '../../open-ai/open-ai-translate-prompts/japanese';
+import { chineseformatTranslationPrompt } from '../../open-ai/open-ai-translate-prompts/chinese';
 
 interface AddWordLogicType {
   word: string;
@@ -12,6 +15,25 @@ interface AddWordLogicType {
   context: string;
   contextSentence: string;
 }
+
+interface GetThisLanguagePromptTypes {
+  word: string;
+  language: FirebaseCoreQueryParams['language'];
+  context: string;
+}
+
+const getThisLanguagePrompt = ({
+  word,
+  language,
+  context,
+}: GetThisLanguagePromptTypes) => {
+  if (language === languageKey.japanese) {
+    return japaneseformatTranslationPrompt(word, context);
+  } else if (language === languageKey.chinese) {
+    return chineseformatTranslationPrompt(word, context);
+  }
+  throw new Error('Error matching language keys for prompt');
+};
 
 const addWordLogic = async ({
   word,
@@ -36,10 +58,15 @@ const addWordLogic = async ({
     );
 
     if (!isDuplicate) {
-      const chatGptRes = await chatGPTTranslator({
+      const formattedTranslationPrompt = getThisLanguagePrompt({
         word,
-        model: 'gpt-4',
+        language,
         context: contextSentence,
+      });
+
+      const chatGptRes = await chatGPTTranslator({
+        model: 'gpt-4',
+        prompt: formattedTranslationPrompt,
       });
 
       const wordData = {
