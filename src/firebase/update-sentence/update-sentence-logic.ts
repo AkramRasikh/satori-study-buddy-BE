@@ -9,7 +9,7 @@ import { SentenceType } from '../types';
 import {
   getThisContentsIndex,
   getThisSentenceIndex,
-} from '../get-content-sentence-index-keys';
+} from '../firebase-utils/get-content-sentence-index-keys';
 
 interface SentenceFieldToUpdateType {
   targetLang?: SentenceType['targetLang'];

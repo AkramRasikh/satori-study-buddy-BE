@@ -4,7 +4,7 @@ import { content } from './refs';
 import {
   getThisContentsIndex,
   getThisSentenceIndex,
-} from './get-content-sentence-index-keys';
+} from './firebase-utils/get-content-sentence-index-keys';
 
 const updateContentItem = async ({ id, language, title, fieldToUpdate }) => {
   try {

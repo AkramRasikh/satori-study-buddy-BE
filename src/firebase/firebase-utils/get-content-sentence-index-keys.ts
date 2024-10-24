@@ -1,4 +1,4 @@
-import { ContentType, SentenceType } from './types';
+import { ContentType, SentenceType } from '../types';
 
 export const getThisContentsIndex = ({ data, title }) => {
   // Convert object of objects to an array

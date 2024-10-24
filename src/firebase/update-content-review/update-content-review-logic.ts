@@ -2,7 +2,7 @@ import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
 import { content } from '../refs';
-import { getThisContentsIndex } from '../get-content-sentence-index-keys';
+import { getThisContentsIndex } from '../firebase-utils/get-content-sentence-index-keys';
 
 const updateContentMetaDataLogic = async ({
   title,
