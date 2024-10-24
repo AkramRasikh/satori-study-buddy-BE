@@ -156,4 +156,4 @@ const updateSentenceLogic = async ({
   }
 };
 
-export { updateSentenceLogic };
+export { updateSentenceInContent, updateSentenceLogic };

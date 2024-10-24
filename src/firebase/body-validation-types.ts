@@ -18,3 +18,11 @@ export const updateWordObj = {
   language: 'language',
   fieldToUpdate: 'fieldToUpdate',
 };
+
+const fieldToUpdatePrefix = 'fieldToUpdate';
+
+export const validationRouteKeys = {
+  reviewData: `${fieldToUpdatePrefix}.reviewData`,
+  nextReview: `${fieldToUpdatePrefix}.nextReview`,
+  reviewHistory: `${fieldToUpdatePrefix}.reviewHistory`,
+};

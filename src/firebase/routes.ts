@@ -1,7 +1,6 @@
 import { Request, Response, Express } from 'express';
 import { addMyGeneratedContent } from './init';
 import { content, words, sentences } from './refs';
-import { updateContentItem } from './update-content-item';
 import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
@@ -25,6 +24,8 @@ import { updateSentence } from './update-sentence/route';
 import { updateSentenceValidation } from './update-sentence/validation';
 import { deleteContent } from './delete-content/route';
 import { deleteContentValidation } from './delete-content/validation';
+import { updateSentenceReview } from './update-sentence-review/route';
+import { updateSentenceReviewValidation } from './update-sentence-review/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -68,31 +69,9 @@ const firebaseRoutes = (app: Express) => {
   );
 
   app.post(
-    '/update-content-item',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const sentenceId = req.body?.sentenceId;
-      const language = req.body?.language;
-      const topicName = req.body?.topicName;
-      const fieldToUpdate = req.body?.fieldToUpdate;
-
-      try {
-        const fieldToUpdateRes = await updateContentItem({
-          language,
-          id: sentenceId,
-          title: topicName,
-          fieldToUpdate,
-        });
-        if (fieldToUpdateRes) {
-          res.status(200).json(fieldToUpdateRes);
-        } else {
-          res.status(400).json({ message: 'Not found' });
-        }
-      } catch (error) {
-        res.status(400).json();
-        console.log('## /update-review Err', { error });
-      }
-    },
+    '/update-sentence-review',
+    updateSentenceReviewValidation,
+    updateSentenceReview,
   );
 
   app.post(
