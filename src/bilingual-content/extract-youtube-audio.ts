@@ -29,11 +29,11 @@ const extractYoutubeAudio = async ({ url, title }) => {
     }
     const fileNameWithMP3Ending = outputFilePath + '.mp3';
 
-    const fileBuffer = fs.readFileSync(fileNameWithMP3Ending);
+    const buffer = fs.readFileSync(fileNameWithMP3Ending);
 
     console.log(`## stdout: ${stdout}`);
     console.log(`## Audio has been extracted and saved to ${outputFilePath}`);
-    return fileBuffer; // Optionally return the path to the saved file
+    return { extractedBaseFilePath: fileNameWithMP3Ending, buffer }; // Optionally return the path to the saved file
   } catch (error) {
     console.error(`## extractYoutubeAudio Error: ${error.message}`);
     throw error; // Re-throw the error to handle it elsewhere if needed

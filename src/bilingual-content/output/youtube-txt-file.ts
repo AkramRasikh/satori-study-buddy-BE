@@ -1,10 +1,10 @@
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
+import { timeToSeconds } from '../../utils/time-string-to-seconds';
+import { replaceStringSpaces } from '../../utils/replace-string-space';
 
 // if you cut the duration by 60, this could cut through a line
-
 // Function to extract specific part of the mp3
 function extractMP3Section(inputFilePath, outputFilePath, fromTime, toTime) {
   return new Promise((resolve, reject) => {
@@ -30,18 +30,6 @@ function extractMP3Section(inputFilePath, outputFilePath, fromTime, toTime) {
   });
 }
 
-// Helper function to convert time in HH:MM:SS to seconds
-const timeToSeconds = (time) => {
-  const [hours, minutes, seconds] = time.split(':').map(Number);
-  return hours * 3600 + minutes * 60 + seconds;
-};
-
-function replaceSpaces(str, replacement = '') {
-  if (str === '') {
-    return str;
-  }
-  return str?.replace(/\s+/g, replacement);
-}
 const getTheNextFromValueForThisTo = (thisChunk, nextChunk) => {
   const thisProvChunkTo = thisChunk.to;
   const nextChunksFirstEl = nextChunk.content[0].time;
@@ -69,9 +57,11 @@ const getUpdateToAndFromValues = (outputJSONDefaultToAndFrom) => {
   return updatedValues;
 };
 
-function splitSubtitlesByInterval(filePath) {
+function splitSubtitlesByInterval(filePath, start, finish) {
   const data = fs.readFileSync(filePath, 'utf8');
   const lines = data.split('\n');
+  const startTimeSeconds = timeToSeconds(start);
+  const finishTimeSeconds = timeToSeconds(finish);
 
   let results = [];
 
@@ -79,18 +69,24 @@ function splitSubtitlesByInterval(filePath) {
     const parts = line.trim().split('\t');
     if (parts.length >= 3) {
       const time = parts[0].trim(); // Time in HH:MM:SS format
+      const thisTimeStamp = timeToSeconds(time);
+      const hasDesiginatedTimeRange = start && finish;
+      const isInRange = hasDesiginatedTimeRange
+        ? thisTimeStamp >= startTimeSeconds &&
+          thisTimeStamp <= finishTimeSeconds
+        : true;
 
-      if (time !== 'Time') {
-        const targetLang = parts[2]; // Japanese (original language)
-        const targetLangTrim = replaceSpaces(targetLang, ''); // Replaces spaces with underscores
+      if (time !== 'Time' && isInRange) {
+        const targetLang = parts[2]; // targetLang (original language)
+        const targetLangTrim = replaceStringSpaces(targetLang, ''); // Replaces spaces with underscores
         const baseLang = parts[4].trim(); // English (translation)
 
         // Push the extracted data into the results array
         results.push({
           id: uuidv4(),
           baseLang: baseLang, // English translation
-          targetLang: targetLangTrim, // Japanese text
-          time: timeToSeconds(time), // Convert time to seconds
+          targetLang: targetLangTrim, // targetLang text
+          time: thisTimeStamp - startTimeSeconds, // Convert time to seconds
         });
       }
     }
