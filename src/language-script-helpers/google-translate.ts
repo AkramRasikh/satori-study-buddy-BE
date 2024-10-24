@@ -1,5 +1,6 @@
 import { translate } from '@vitalets/google-translate-api';
-import { googleLanguagesKey } from '../eligible-languages';
+import { googleLanguagesKey, languageKey } from '../eligible-languages';
+import kanjiToHiragana from './kanji-to-hiragana';
 
 const getGoogleTranslate = async ({ word, language }) => {
   const fromLanguage = googleLanguagesKey[language];
@@ -18,8 +19,11 @@ const getGoogleTranslate = async ({ word, language }) => {
         }
       });
       const finalTransliteration = transliteration?.join(' ');
-
-      return { definition, transliteration: finalTransliteration };
+      let phonetic;
+      if (language === languageKey.japanese) {
+        phonetic = await kanjiToHiragana({ sentence: word });
+      }
+      return { definition, transliteration: finalTransliteration, phonetic };
     } else {
       throw new Error(`No viable language key found for ${language}`);
     }

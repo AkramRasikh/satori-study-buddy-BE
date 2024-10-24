@@ -1,17 +1,50 @@
 import OpenAI from 'openai';
 import config from '../../config';
+import { japaneseformatTranslationPrompt } from './open-ai-translate-prompts/japanese';
+import { FirebaseCoreQueryParams } from '../firebase/types';
+import { languageKey } from '../eligible-languages';
+import { chineseformatTranslationPrompt } from './open-ai-translate-prompts/chinese';
 
 interface chatGPTTranslatorParams {
-  prompt: string;
+  word: string;
   model: string;
+  language: string;
+  context?: string;
 }
 
+interface GetThisLanguagePromptTypes {
+  word: string;
+  language: FirebaseCoreQueryParams['language'];
+  context: string;
+}
+
+const getThisLanguagePrompt = ({
+  word,
+  language,
+  context,
+}: GetThisLanguagePromptTypes) => {
+  if (language === languageKey.japanese) {
+    return japaneseformatTranslationPrompt(word, context);
+  } else if (language === languageKey.chinese) {
+    return chineseformatTranslationPrompt(word, context);
+  }
+  throw new Error('Error matching language keys for prompt');
+};
+
 const chatGPTTranslator = async ({
+  word,
   model,
-  prompt,
+  context,
+  language,
 }: chatGPTTranslatorParams) => {
   const openai = new OpenAI({
     apiKey: config.openAIKey,
+  });
+
+  const formattedTranslationPrompt = getThisLanguagePrompt({
+    word,
+    context,
+    language,
   });
 
   try {
@@ -19,7 +52,7 @@ const chatGPTTranslator = async ({
       messages: [
         {
           role: 'user',
-          content: prompt,
+          content: formattedTranslationPrompt,
         },
       ],
       model,

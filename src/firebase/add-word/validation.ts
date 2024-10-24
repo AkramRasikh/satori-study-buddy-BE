@@ -5,6 +5,7 @@ const addWordKey = {
   word: 'word',
   context: 'context',
   contextSentence: 'contextSentence',
+  isGoogle: 'isGoogle',
 };
 
 const addWordValidation = [
@@ -23,6 +24,10 @@ const addWordValidation = [
     .withMessage(
       `A ${addWordKey.contextSentence} needs to be passed for translation`,
     ),
+  body(addWordKey.isGoogle)
+    .optional()
+    .isBoolean()
+    .withMessage(`A ${addWordKey.isGoogle} should be a boolean`),
 ];
 
 export { addWordValidation };

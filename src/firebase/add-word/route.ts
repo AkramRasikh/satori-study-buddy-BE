@@ -7,7 +7,7 @@ const addWord = async (req: Request, res: Response) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { word, language, context, contextSentence } = req.body;
+  const { word, language, context, contextSentence, isGoogle } = req.body;
 
   try {
     const addedWordData = await addWordLogic({
@@ -15,6 +15,7 @@ const addWord = async (req: Request, res: Response) => {
       language,
       context,
       contextSentence,
+      isGoogle,
     });
     res.status(200).json({
       message: `Successfully added word ${addedWordData.baseForm} added`,
