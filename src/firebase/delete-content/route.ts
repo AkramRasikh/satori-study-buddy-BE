@@ -6,6 +6,7 @@ import { deleteContentLogic } from './delete-content-logic';
 // 2. delete content that has snippets - will they be reviewable?
 // 3. delete content that has reviewed sentences - transfer to seperate sentences?
 // 4. delete content that has words
+// 5. media assets
 
 const deleteContent = async (req: Request, res: Response) => {
   const { title, language } = req.body;

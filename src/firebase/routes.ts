@@ -23,6 +23,8 @@ import { updateContentMetaData } from './update-content-review/route';
 import { updateContentMetaDataValidation } from './update-content-review/validation';
 import { updateSentence } from './update-sentence/route';
 import { updateSentenceValidation } from './update-sentence/validation';
+import { deleteContent } from './delete-content/route';
+import { deleteContentValidation } from './delete-content/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -38,6 +40,7 @@ const firebaseRoutes = (app: Express) => {
     updateContentMetaData,
   );
   app.post('/update-sentence', updateSentenceValidation, updateSentence);
+  app.post('/delete-content', deleteContentValidation, deleteContent);
 
   app.post(
     '/add-adhoc-sentence',
