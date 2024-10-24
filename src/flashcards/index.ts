@@ -143,14 +143,14 @@ const getTopicsWithFlashWordsToStudy = async ({ language }) => {
 
   const topicsForAudio = [];
 
-  japaneseWordsRes.forEach((word) => {
+  japaneseWordsRes?.forEach((word) => {
     const contexts = word.contexts;
     contexts.forEach((singleContext) => {
       contextIds.push(singleContext);
     });
   });
 
-  japaneseContentNoNulls.forEach((topic) => {
+  japaneseContentNoNulls?.forEach((topic) => {
     topic.content.forEach((sentenceData) => {
       contextIds.forEach((contextId) => {
         if (contextId === sentenceData.id) {
@@ -161,7 +161,7 @@ const getTopicsWithFlashWordsToStudy = async ({ language }) => {
   });
 
   // until no more contextIds
-  japaneseSongsRes.forEach((song) => {
+  japaneseSongsRes?.forEach((song) => {
     const lyrics = song.lyrics;
     const title = song.title;
     lyrics.forEach((sentenceData) => {
