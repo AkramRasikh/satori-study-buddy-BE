@@ -103,4 +103,5 @@ export {
   addMyGeneratedContent,
   getContent,
   addLyricsToFirestore,
+  admin,
 };
