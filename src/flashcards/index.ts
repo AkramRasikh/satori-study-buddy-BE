@@ -1,4 +1,4 @@
-import { getFirebaseContentType } from '../firebase/get-firebase-content-type';
+import { getFirebaseContentType } from '../firebase/firebase-utils/get-firebase-content-type';
 import { content, songs, words } from '../firebase/refs';
 
 const getJapaneseWords = async ({ language }) => {

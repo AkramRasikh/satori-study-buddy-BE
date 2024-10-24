@@ -1,4 +1,4 @@
-import { getFirebaseContentType } from '../get-firebase-content-type';
+import { getFirebaseContentType } from '../firebase-utils/get-firebase-content-type';
 import { FirebaseCoreQueryParams } from '../types';
 
 interface GetFirebaseDataMapTypes {
