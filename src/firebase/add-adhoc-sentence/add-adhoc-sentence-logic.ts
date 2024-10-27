@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import chatGptTextAPI from '../open-ai/chat-gpt';
-import { db } from './init';
-import narakeetAudio from '../narakeet';
-import { getRefPath } from '../utils/get-ref-path';
-import { adhocSentences } from './refs';
+import chatGptTextAPI from '../../open-ai/chat-gpt';
+import { db } from '../init';
+import narakeetAudio from '../../narakeet';
+import { getRefPath } from '../../utils/get-ref-path';
+import { adhocSentences } from '../refs';
 
 const chatgpt4 = 'gpt-4';
 const checkHasSimilarity = (item, adhocSentence) => {
@@ -33,7 +33,7 @@ const adhocPrompt = `
 `;
 
 // adhocSentence (baseLang, context)
-const addAdhocSentence = async ({
+const addAdhocSentenceLogic = async ({
   adhocSentence,
   language,
   topic,
@@ -41,7 +41,6 @@ const addAdhocSentence = async ({
   nextReview,
 }) => {
   const openAIKey = process.env.OPENAI_API_KEY;
-  const narakeetKey = process.env.NARAKEET_KEY;
   const sentenceId = uuidv4(); // maybe create on frontend?
 
   try {
@@ -114,4 +113,4 @@ const addAdhocSentence = async ({
   }
 };
 
-export { addAdhocSentence };
+export { addAdhocSentenceLogic };

@@ -1,7 +1,6 @@
 import { Request, Response, Express } from 'express';
 import { addMyGeneratedContent } from './init';
 import { content, words, sentences } from './refs';
-import { addAdhocSentence } from './adhoc-sentence';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { updateWordValidation } from './update-word/validation';
@@ -26,6 +25,8 @@ import { deleteContent } from './delete-content/route';
 import { deleteContentValidation } from './delete-content/validation';
 import { updateSentenceReview } from './update-sentence-review/route';
 import { updateSentenceReviewValidation } from './update-sentence-review/validation';
+import { addAdhocSentenceValidation } from './add-adhoc-sentence/validation';
+import { addAdhocSentence } from './add-adhoc-sentence/route';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -42,37 +43,12 @@ const firebaseRoutes = (app: Express) => {
   );
   app.post('/update-sentence', updateSentenceValidation, updateSentence);
   app.post('/delete-content', deleteContentValidation, deleteContent);
-
-  app.post(
-    '/add-adhoc-sentence',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const adhocSentence = req.body.adhocSentence;
-      const nextReview = req.body.nextReview;
-      const tags = req.body?.tags;
-      const topic = req.body?.topic;
-      const language = req.body?.language;
-
-      try {
-        const result = await addAdhocSentence({
-          language,
-          adhocSentence,
-          tags,
-          topic,
-          nextReview,
-        });
-        res.status(200).json(result);
-      } catch (error) {
-        res.status(400).json({ message: 'Failed to add sentence' });
-      }
-    },
-  );
-
   app.post(
     '/update-sentence-review',
     updateSentenceReviewValidation,
     updateSentenceReview,
   );
+  app.post('/add-adhoc-sentence', addAdhocSentenceValidation, addAdhocSentence);
 
   app.post(
     '/update-adhoc-sentence',
