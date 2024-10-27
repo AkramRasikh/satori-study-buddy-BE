@@ -26,7 +26,7 @@ const flashcardRoutes = async (app) => {
   );
 
   app.post(
-    '/get-japanese-words-topic',
+    '/get-words-topic',
     checkMandatoryLanguage,
     async (req: Request, res: Response) => {
       const topic = req.body?.topic;
@@ -38,13 +38,13 @@ const flashcardRoutes = async (app) => {
         });
         res.send(thisTopicsWords).status(200);
       } catch (error) {
-        console.log('## error /get-japanese-words-topic', error);
+        console.log('## error /get-words-topic', error);
       }
     },
   );
 
   app.post(
-    '/get-japanese-words-song',
+    '/get-words-song',
     checkMandatoryLanguage,
     async (req: Request, res: Response) => {
       const topic = req.body?.topic;
@@ -57,7 +57,7 @@ const flashcardRoutes = async (app) => {
         });
         res.send(thisTopicsWords).status(200);
       } catch (error) {
-        console.log('## error /get-japanese-words-song', error);
+        console.log('## error /get-words-song', error);
       }
     },
   );
