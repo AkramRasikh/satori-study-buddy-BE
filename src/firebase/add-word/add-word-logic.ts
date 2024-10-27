@@ -71,8 +71,7 @@ const addWordLogic = async ({
         contextSentence,
         isGoogle,
       });
-      wordSnapShotArr.push(wordData);
-      await db.ref(refPath).set(wordSnapShotArr);
+      await db.ref(refPath).set([...wordSnapShotArr, wordData]);
       return wordData;
     } else {
       throw new Error(`${word} already exists in ${language} word back`);
