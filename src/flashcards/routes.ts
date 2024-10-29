@@ -1,9 +1,5 @@
 import { Request, Response } from 'express';
-import {
-  getJapaneseWordsViaSong,
-  getJapaneseWordsViaTopic,
-  getTopicsWithFlashWordsToStudy,
-} from '.';
+import { getJapaneseWordsViaTopic, getTopicsWithFlashWordsToStudy } from '.';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 
 const flashcardRoutes = async (app) => {
@@ -39,25 +35,6 @@ const flashcardRoutes = async (app) => {
         res.send(thisTopicsWords).status(200);
       } catch (error) {
         console.log('## error /get-words-topic', error);
-      }
-    },
-  );
-
-  app.post(
-    '/get-words-song',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const topic = req.body?.topic;
-      const language = req.body?.language;
-
-      try {
-        const thisTopicsWords = await getJapaneseWordsViaSong({
-          topic,
-          language,
-        });
-        res.send(thisTopicsWords).status(200);
-      } catch (error) {
-        console.log('## error /get-words-song', error);
       }
     },
   );

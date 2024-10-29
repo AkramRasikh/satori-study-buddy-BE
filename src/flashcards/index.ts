@@ -66,54 +66,6 @@ const getJapaneseWordsViaTopic = async ({ topic, language }) => {
   return lastMap;
 };
 
-const getJapaneseWordsViaSong = async ({ topic, language }) => {
-  const japaneseWordsRes = await getJapaneseWords({ language });
-  const japaneseSongsRes = await getJapaneseSongs({ language });
-  const [thisSong] = japaneseSongsRes.filter((song) => song.title === topic);
-
-  const contextIds = [];
-  const contextData = [];
-
-  japaneseWordsRes.forEach((word) => {
-    const contexts = word.contexts;
-    contexts.forEach((singleContext) => {
-      if (!contextIds.includes(singleContext)) {
-        contextIds.push(singleContext);
-      }
-    });
-  });
-
-  const lyrics = thisSong.lyrics;
-  const title = thisSong.title;
-  lyrics.forEach((sentenceData) => {
-    if (contextIds.includes(sentenceData.id)) {
-      const contextDataObj = {
-        topic: title,
-        isMusic: true,
-        ...sentenceData,
-      };
-      contextData.push(contextDataObj);
-    }
-  });
-
-  const lastMap = [];
-  japaneseWordsRes.forEach((word) => {
-    const contexts = word.contexts;
-
-    const contextToData = contextData.filter((contextDataWidget) =>
-      contexts.includes(contextDataWidget.id),
-    );
-    if (contextToData?.length > 0) {
-      lastMap.push({
-        ...word,
-        contextToData,
-      });
-    }
-  });
-
-  return lastMap;
-};
-
 const countOccurrences = (arr) => {
   let counts = {};
 
@@ -182,5 +134,4 @@ export {
   getJapaneseSongs,
   getJapaneseWordsViaTopic,
   getTopicsWithFlashWordsToStudy,
-  getJapaneseWordsViaSong,
 };
