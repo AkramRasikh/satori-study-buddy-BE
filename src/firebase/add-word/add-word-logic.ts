@@ -35,8 +35,10 @@ const getTranslationData = async ({
     id: uuidv4(),
     contexts: [context],
     surfaceForm: word,
-    baseForm: translationDataRes?.baseForm || word,
     ...translationDataRes,
+    baseForm: translationDataRes?.baseForm || word,
+    phonetic:
+      translationDataRes?.phonetic || translationDataRes?.transliteration,
   };
 };
 
@@ -77,7 +79,7 @@ const addWordLogic = async ({
       throw new Error(`${word} already exists in ${language} word back`);
     }
   } catch (error) {
-    throw new Error('Error trying to add word into DB');
+    throw new Error(error || 'Error trying to add word into DB');
   }
 };
 
