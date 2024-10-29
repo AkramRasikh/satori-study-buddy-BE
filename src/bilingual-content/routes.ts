@@ -18,6 +18,10 @@ import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 import { cutAudioFromAudio } from '../mp3-utils/cut-audio-from-audio';
 import { timeToSeconds } from '../utils/time-string-to-seconds';
+import {
+  eligibleLanguages,
+  languageNeedsTrimming,
+} from '../eligible-languages';
 
 const folderPath = 'japanese-songs';
 const youtube = 'youtube';
@@ -106,14 +110,14 @@ const bilingualContentRoutes = (app) => {
       const refPath = getRefPath({ ref: content, language });
 
       await extractYoutubeAudio({ url, title });
-      const filePath = path.resolve(__dirname, 'output', 'what-is-sakoku.txt');
+      const filePath = path.resolve(__dirname, 'output', 'surah-an-nasr.txt');
       const mp3FileInput = path.resolve(
         __dirname,
         'output',
-        'what-is-sakoku.mp3',
+        'surah-an-nasr.mp3',
       );
 
-      const outputJson = splitSubtitlesByInterval(filePath, null, null);
+      const outputJson = splitSubtitlesByInterval(filePath, null, null, null);
       const resFromChunking = splitByInterval(outputJson, splits, title);
       const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
       try {
@@ -146,6 +150,7 @@ const bilingualContentRoutes = (app) => {
               content: item.content,
               url,
               interval: splits,
+              realStartTime: item.from,
             },
           });
         }
@@ -186,7 +191,14 @@ const bilingualContentRoutes = (app) => {
         trimStart: start,
         trimEnd: finish,
       });
-      const outputJson = splitSubtitlesByInterval(txtFilePath, start, finish);
+
+      const needsTrimmedSpaces = languageNeedsTrimming.includes(language);
+      const outputJson = splitSubtitlesByInterval(
+        txtFilePath,
+        start,
+        finish,
+        needsTrimmedSpaces,
+      );
 
       const resFromChunking = splitByInterval(outputJson, splits, title);
 

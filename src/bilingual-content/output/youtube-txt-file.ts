@@ -57,7 +57,7 @@ const getUpdateToAndFromValues = (outputJSONDefaultToAndFrom) => {
   return updatedValues;
 };
 
-function splitSubtitlesByInterval(filePath, start, finish) {
+function splitSubtitlesByInterval(filePath, start, finish, needsTrimmedSpaces) {
   const data = fs.readFileSync(filePath, 'utf8');
   const lines = data.split('\n');
   const startTimeSeconds = timeToSeconds(start);
@@ -68,7 +68,7 @@ function splitSubtitlesByInterval(filePath, start, finish) {
   lines.forEach((line) => {
     const parts = line.trim().split('\t');
     if (parts.length >= 3) {
-      const time = parts[0].trim(); // Time in HH:MM:SS format
+      const time = needsTrimmedSpaces ? parts[0].trim() : parts[0]; // Time in HH:MM:SS format
       const thisTimeStamp = timeToSeconds(time);
       const hasDesiginatedTimeRange = start && finish;
       const isInRange = hasDesiginatedTimeRange
@@ -78,8 +78,10 @@ function splitSubtitlesByInterval(filePath, start, finish) {
 
       if (time !== 'Time' && isInRange) {
         const targetLang = parts[2]; // targetLang (original language)
-        const targetLangTrim = replaceStringSpaces(targetLang, ''); // Replaces spaces with underscores
-        const baseLang = parts[4].trim(); // English (translation)
+        const targetLangTrim = needsTrimmedSpaces
+          ? replaceStringSpaces(targetLang, '')
+          : targetLang; // Replaces spaces with underscores
+        const baseLang = needsTrimmedSpaces ? parts[4].trim() : parts[4]; // English (translation)
 
         // Push the extracted data into the results array
         results.push({
