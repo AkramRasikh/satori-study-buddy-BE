@@ -110,12 +110,8 @@ const bilingualContentRoutes = (app) => {
       const refPath = getRefPath({ ref: content, language });
 
       await extractYoutubeAudio({ url, title });
-      const filePath = path.resolve(__dirname, 'output', 'surah-an-nasr.txt');
-      const mp3FileInput = path.resolve(
-        __dirname,
-        'output',
-        'surah-an-nasr.mp3',
-      );
+      const filePath = path.resolve(__dirname, 'output', `${title}.txt`);
+      const mp3FileInput = path.resolve(__dirname, 'output', `${title}.mp3`);
 
       const outputJson = splitSubtitlesByInterval(filePath, null, null, null);
       const resFromChunking = splitByInterval(outputJson, splits, title);
@@ -227,6 +223,12 @@ const bilingualContentRoutes = (app) => {
             filePath: formattedFirebaseName,
           });
 
+          // upload video
+          // await uploadBufferToFirebase({
+          //   buffer: fileBuffer,
+          //   filePath: formattedFirebaseName,
+          // });
+
           // // Add content metadata to Firebase
           await addContentLogic({
             language,
@@ -238,11 +240,30 @@ const bilingualContentRoutes = (app) => {
               url,
               interval: splits,
               realStartTime: realStartTime,
+              hasVideo: true,
             },
           });
         }
       } catch (error) {
         console.error('/youtube-to-audio-snippets-nested:', error);
+      } finally {
+        const outputDirectory = path.resolve(__dirname, 'output');
+
+        // Get all files in the output directory
+        const files = fs.readdirSync(outputDirectory);
+
+        // Filter and unlink `.mp3` files
+        files.forEach((file) => {
+          const filePath = path.join(outputDirectory, file);
+          if (file.endsWith('.mp3')) {
+            try {
+              fs.unlinkSync(filePath); // Delete the file
+              console.log(`Deleted: ${filePath}`);
+            } catch (err) {
+              console.error(`Error deleting file ${filePath}:`, err);
+            }
+          }
+        });
       }
 
       res.send(updateToAndFromValues).status(200);
