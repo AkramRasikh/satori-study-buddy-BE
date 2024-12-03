@@ -255,7 +255,7 @@ const bilingualContentRoutes = (app) => {
         // Filter and unlink `.mp3` files
         files.forEach((file) => {
           const filePath = path.join(outputDirectory, file);
-          if (file.endsWith('.mp3')) {
+          if (file.endsWith('.mp3') || file.endsWith('.txt')) {
             try {
               fs.unlinkSync(filePath); // Delete the file
               console.log(`Deleted: ${filePath}`);
