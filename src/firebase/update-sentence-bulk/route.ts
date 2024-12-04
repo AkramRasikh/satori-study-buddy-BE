@@ -15,7 +15,7 @@ const updateSentenceBulk = async (req: Request, res: Response) => {
       language,
       fieldToUpdate,
     });
-    res.status(200).json(data);
+    res.status(200).json({ content: data });
   } catch (error: any) {
     res
       .status(400)

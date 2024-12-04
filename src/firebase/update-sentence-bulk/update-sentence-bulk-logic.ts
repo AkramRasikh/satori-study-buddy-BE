@@ -33,7 +33,7 @@ const updateSentenceBulkLogic = async ({ title, language, fieldToUpdate }) => {
       const refObj = db.ref(refPath);
       const objectRef = refObj.child(key);
       await objectRef.update({ content: contentWithUpdatedReviewData });
-      return fieldToUpdate;
+      return contentWithUpdatedReviewData;
     } else {
       throw new Error("Couldn't find content to update");
     }
