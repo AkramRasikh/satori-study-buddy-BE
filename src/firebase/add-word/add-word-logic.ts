@@ -6,6 +6,7 @@ import { db } from '../init';
 import { words } from '../refs';
 import { FirebaseCoreQueryParams, WordType } from '../types';
 import { getGoogleTranslate } from '../../language-script-helpers/google-translate';
+import { filterOutNestedNulls } from '../../utils/filter-out-nested-nulls';
 
 interface AddWordLogicType {
   word: string;
@@ -62,7 +63,7 @@ const addWordLogic = async ({
       })) || [];
 
     const isDuplicate = wordSnapShotArr.some(
-      (item: WordType) => item.baseForm === word || item.surfaceForm === word,
+      (item: WordType) => item?.baseForm === word || item?.surfaceForm === word,
     );
 
     if (!isDuplicate) {
@@ -73,7 +74,8 @@ const addWordLogic = async ({
         contextSentence,
         isGoogle,
       });
-      await db.ref(refPath).set([...wordSnapShotArr, wordData]);
+      const cleanedArray = filterOutNestedNulls(wordSnapShotArr);
+      await db.ref(refPath).set([...cleanedArray, wordData]);
       return wordData;
     } else {
       throw new Error(`${word} already exists in ${language} word back`);
