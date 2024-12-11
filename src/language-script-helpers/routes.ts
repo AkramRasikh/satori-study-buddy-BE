@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import underlineTargetWords from './underline-target-words';
-import kanjiToHiragana from './kanji-to-hiragana';
+import kanjiToHiragana, { tokenizeSentence } from './kanji-to-hiragana';
+import { tokeniseContentSentences } from './tokenise-content-sentences/route';
+import { tokeniseContentValidation } from './tokenise-content-sentences/validation';
 
 const languageScriptHelpers = (app) => {
   app.post('/kanji-to-hiragana', async (req: Request, res: Response) => {
@@ -15,6 +17,25 @@ const languageScriptHelpers = (app) => {
       res.status(500).json({ error });
     }
   });
+
+  app.post('/tokenise-sentence', async (req: Request, res: Response) => {
+    const preHiraganaText = req.body?.sentence;
+    try {
+      const hiraganaTextSentence = await tokenizeSentence({
+        sentence: preHiraganaText,
+      });
+
+      res.status(200).json({ sentence: hiraganaTextSentence });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  });
+
+  app.post(
+    '/tokenise-content-sentences',
+    tokeniseContentValidation,
+    tokeniseContentSentences,
+  );
 
   app.post('/underline-target-words', async (req: Request, res: Response) => {
     // need to check body before functions
