@@ -156,4 +156,8 @@ const updateSentenceLogic = async ({
   }
 };
 
-export { updateSentenceInContent, updateSentenceLogic };
+export {
+  updateSentenceInContent,
+  updateSentenceLogic,
+  getPathToSentenceInContent,
+};

@@ -32,7 +32,7 @@ const languageScriptHelpers = (app) => {
   });
 
   app.post(
-    '/tokenise-content-sentences',
+    '/tokenise-content-segment',
     tokeniseContentValidation,
     tokeniseContentSentences,
   );
