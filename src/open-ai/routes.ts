@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import chatGptTextAPI from './chat-gpt';
 import chatGPTTextToSpeech from './chat-gpt-tts';
+import { combineWords } from './combine-words/route';
+import { combineWordsValidation } from './combine-words/validation';
+import { baseRoute } from '../shared-express-utils/base-route';
 
 const openAIRoutes = (app) => {
   app.post('/chat-gpt-text', async (req: Request, res: Response) => {
@@ -21,6 +24,8 @@ const openAIRoutes = (app) => {
       res.status(500).json({ error });
     }
   });
+
+  app.post('/combine-words', combineWordsValidation, baseRoute, combineWords);
 
   app.post('/chat-gpt-tts', async (req: Request, res: Response) => {
     const { body } = req;
