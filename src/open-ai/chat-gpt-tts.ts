@@ -1,11 +1,12 @@
 import { uploadBufferToFirebase } from '../firebase/init';
 
 import OpenAI from 'openai';
+import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 
 interface ChatGPTTextToSpeechParams {
   sentence: string;
   id: string;
-  openAIKey: string;
+  language: string;
 }
 
 const folderPath = 'japanese-audio';
@@ -26,13 +27,15 @@ const japaneseVoices = [
 const chatGPTTextToSpeech = async ({
   id,
   sentence,
-  openAIKey,
+  language,
 }: ChatGPTTextToSpeechParams) => {
   const getRandomVoice = () => {
     const randomIndex = Math.floor(Math.random() * japaneseVoices.length);
     console.log('## voice selected: ', japaneseVoices[randomIndex]);
     return japaneseVoices[randomIndex] as string;
   };
+  const openAIKey = process.env.OPENAI_API_KEY;
+
   const openai = new OpenAI({
     apiKey: openAIKey,
   });
@@ -44,13 +47,13 @@ const chatGPTTextToSpeech = async ({
     });
 
     const nameToSaveUnder = id || sentence;
-
-    const fileNameWithMP3Ending = nameToSaveUnder + '.mp3';
     const buffer = Buffer.from(await mp3.arrayBuffer());
+    const formattedFirebaseName =
+      getAudioFolderViaLang(language) + '/' + nameToSaveUnder + '.mp3';
 
     await uploadBufferToFirebase({
       buffer,
-      filePath: folderPath + '/' + fileNameWithMP3Ending,
+      filePath: formattedFirebaseName,
     });
 
     return nameToSaveUnder;
