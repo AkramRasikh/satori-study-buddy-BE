@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { filterOutNestedNulls } from '../../utils/filter-out-nested-nulls';
 import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
