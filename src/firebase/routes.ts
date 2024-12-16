@@ -29,6 +29,9 @@ import { addAdhocSentenceValidation } from './add-adhoc-sentence/validation';
 import { addAdhocSentence } from './add-adhoc-sentence/route';
 import { updateSentenceReviewBulkValidation } from './update-sentence-bulk/validation';
 import { updateSentenceBulk } from './update-sentence-bulk/route';
+import { baseRoute } from '../shared-express-utils/base-route';
+import { addWordContext } from './add-word-context/route';
+import { addWordContextValidation } from './add-word-context/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
@@ -38,6 +41,12 @@ const firebaseRoutes = (app: Express) => {
   app.post('/delete-word', deleteWordValidation, deleteWord);
   app.post('/add-content', addContentValidation, addContent);
   app.post('/add-word', addWordValidation, addWord);
+  app.post(
+    '/add-word-context',
+    addWordContextValidation,
+    baseRoute,
+    addWordContext,
+  );
   app.post(
     '/update-content',
     updateContentMetaDataValidation,
