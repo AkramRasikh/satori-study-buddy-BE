@@ -25,7 +25,6 @@ const addSentenceToDb = async ({ language, sentence }) => {
       sentencesSnapShotArr.push(sentence);
       await db.ref(refPath).set(sentencesSnapShotArr);
       console.log('## addSentenceToDb success');
-      return true;
     }
     return true;
   } catch (error) {
