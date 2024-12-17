@@ -8,6 +8,7 @@ const addWordContextValidation = [
   body('targetLang').isString().notEmpty(),
   body('matchedWords').isArray({ min: 1 }),
   body('tokenised').isArray({ min: 1 }),
+  body('reviewData').optional(),
 ];
 
 export { addWordContextValidation };

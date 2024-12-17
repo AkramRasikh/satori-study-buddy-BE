@@ -68,8 +68,15 @@ const updateWordContext = async ({ matchedWord, sentenceId, language }) => {
 };
 
 const addWordContext = async (req: Request, res: Response) => {
-  const { id, baseLang, targetLang, matchedWords, tokenised, language } =
-    req.body;
+  const {
+    id,
+    baseLang,
+    targetLang,
+    matchedWords,
+    tokenised,
+    language,
+    reviewData,
+  } = req.body;
   try {
     const sentence = {
       id,
@@ -77,6 +84,7 @@ const addWordContext = async (req: Request, res: Response) => {
       targetLang,
       matchedWords,
       tokenised,
+      reviewData,
     };
     await addSentenceToDb({ language, sentence });
     const wordsWithUpdatedContext = await Promise.all(
