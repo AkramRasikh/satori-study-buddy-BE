@@ -18,10 +18,7 @@ import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 import { cutAudioFromAudio } from '../mp3-utils/cut-audio-from-audio';
 import { timeToSeconds } from '../utils/time-string-to-seconds';
-import {
-  eligibleLanguages,
-  languageNeedsTrimming,
-} from '../eligible-languages';
+import { languageNeedsTrimming } from '../eligible-languages';
 
 const folderPath = 'japanese-songs';
 const youtube = 'youtube';

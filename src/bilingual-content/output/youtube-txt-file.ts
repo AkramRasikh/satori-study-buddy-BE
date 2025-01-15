@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ffmpeg from 'fluent-ffmpeg';
 import { timeToSeconds } from '../../utils/time-string-to-seconds';
 import { replaceStringSpaces } from '../../utils/replace-string-space';
+import { squashContent } from '../squash-content';
 
 // if you cut the duration by 60, this could cut through a line
 // Function to extract specific part of the mp3
@@ -81,7 +82,7 @@ function splitSubtitlesByInterval(filePath, start, finish, needsTrimmedSpaces) {
         const targetLangTrim = needsTrimmedSpaces
           ? replaceStringSpaces(targetLang, '')
           : targetLang; // Replaces spaces with underscores
-        const baseLang = needsTrimmedSpaces ? parts[4].trim() : parts[4]; // English (translation)
+        const baseLang = needsTrimmedSpaces ? parts[4]?.trim() : parts[4]; // English (translation)
 
         // Push the extracted data into the results array
         results.push({
@@ -94,7 +95,7 @@ function splitSubtitlesByInterval(filePath, start, finish, needsTrimmedSpaces) {
     }
   });
 
-  return results;
+  return squashContent(results);
 }
 
 function splitByInterval(data, interval, title) {
