@@ -4,6 +4,7 @@ import { checkMandatoryLanguage } from '../../route-validation/check-mandatory-l
 const fieldToUpdatePrefix = 'fieldToUpdate';
 const updateSentenceBulkReviewRouteValidationObj = {
   title: 'title',
+  removeReview: 'removeReview',
   reviewData: `${fieldToUpdatePrefix}.reviewData`,
 };
 const updateSentenceBulkReviewRouteValidationReviewData = {
@@ -38,7 +39,10 @@ const updateFieldForContentValidation = (value: object) => {
 const updateSentenceReviewBulkValidation = [
   checkMandatoryLanguage,
   body(updateSentenceBulkReviewRouteValidationObj.title).notEmpty().isString(),
-  body(fieldToUpdatePrefix).notEmpty().custom(updateFieldForContentValidation),
+  body(updateSentenceBulkReviewRouteValidationObj.removeReview)
+    .optional()
+    .isBoolean(),
+  body(fieldToUpdatePrefix).optional().custom(updateFieldForContentValidation),
 ];
 
 export { updateSentenceReviewBulkValidation };

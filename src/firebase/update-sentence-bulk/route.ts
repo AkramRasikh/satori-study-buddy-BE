@@ -7,13 +7,14 @@ const updateSentenceBulk = async (req: Request, res: Response) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { language, title, fieldToUpdate } = req.body;
+  const { language, title, fieldToUpdate, removeReview } = req.body;
 
   try {
     const data = await updateSentenceBulkLogic({
       title,
       language,
       fieldToUpdate,
+      removeReview,
     });
     res.status(200).json({ content: data });
   } catch (error: any) {

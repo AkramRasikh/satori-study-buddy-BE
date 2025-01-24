@@ -4,7 +4,12 @@ import { db } from '../init';
 import { content } from '../refs';
 import { getThisContentsIndex } from '../firebase-utils/get-content-sentence-index-keys';
 
-const updateSentenceBulkLogic = async ({ title, language, fieldToUpdate }) => {
+const updateSentenceBulkLogic = async ({
+  title,
+  language,
+  fieldToUpdate,
+  removeReview,
+}) => {
   try {
     const refPath = getRefPath({ language, ref: content });
     const contentSnapshotArr = await getContentTypeSnapshot({
@@ -24,10 +29,20 @@ const updateSentenceBulkLogic = async ({ title, language, fieldToUpdate }) => {
       const thisTopicContent = thisTopicData.content;
       const contentWithUpdatedReviewData = thisTopicContent.map(
         (sentenceWidget) => {
-          return {
-            ...sentenceWidget,
-            ...fieldToUpdate,
-          };
+          if (removeReview) {
+            if (sentenceWidget?.reviewData) {
+              const { reviewData, ...rest } = sentenceWidget;
+              return {
+                ...rest,
+              };
+            }
+            return sentenceWidget;
+          } else {
+            return {
+              ...sentenceWidget,
+              ...fieldToUpdate,
+            };
+          }
         },
       );
       const refObj = db.ref(refPath);
