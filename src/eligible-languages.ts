@@ -1,6 +1,6 @@
-const japanese = 'japanese';
-const chinese = 'chinese';
-const arabic = 'arabic';
+export const japanese = 'japanese';
+export const chinese = 'chinese';
+export const arabic = 'arabic';
 
 export const languageKey = {
   japanese,
