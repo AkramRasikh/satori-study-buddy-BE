@@ -11,10 +11,24 @@ import {
   getThisSentenceIndex,
 } from '../firebase-utils/get-content-sentence-index-keys';
 
+interface VocabTypes {
+  surfaceForm: string;
+  meaning: string;
+}
+
+interface SentenceBreakdownTypes {
+  sentenceStructure: string;
+  vocab: VocabTypes[];
+  meaning: string;
+}
+
 interface SentenceFieldToUpdateType {
   targetLang?: SentenceType['targetLang'];
   time?: SentenceType['time'];
   notes?: SentenceType['notes'];
+  sentenceStructure?: string;
+  vocab?: VocabTypes[];
+  meaning?: string;
 }
 
 interface UpdateSentenceLogicTypes {

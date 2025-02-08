@@ -5,6 +5,8 @@ import { combineWordsValidation } from './combine-words/validation';
 import { baseRoute } from '../shared-express-utils/base-route';
 import { sentenceTTSValidation } from './sentence-tts/validation';
 import { sentenceTTS } from './sentence-tts/route';
+import { breakdownSentence } from './sentence-breakdown/route';
+import { breakdownSentenceValidation } from './sentence-breakdown/validation';
 
 const openAIRoutes = (app) => {
   app.post('/chat-gpt-text', async (req: Request, res: Response) => {
@@ -27,6 +29,12 @@ const openAIRoutes = (app) => {
   });
 
   app.post('/combine-words', combineWordsValidation, baseRoute, combineWords);
+  app.post(
+    '/breakdown-sentence',
+    breakdownSentenceValidation,
+    baseRoute,
+    breakdownSentence,
+  ); // need to validate breakdown sentence
   app.post('/sentence-tts', sentenceTTSValidation, baseRoute, sentenceTTS);
 };
 
