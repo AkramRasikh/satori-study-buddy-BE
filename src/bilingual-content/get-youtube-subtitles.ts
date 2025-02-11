@@ -57,6 +57,51 @@ const getSquashedScript = async ({ baseLangUrl, targetLangUrl }) => {
   return squashedTiming;
 };
 
+const cutAudioIntoIntervals = async ({
+  updateToAndFromValues,
+  outputFilePathGrandCut,
+  url,
+  splits,
+  start,
+  language,
+}) => {
+  for (const item of updateToAndFromValues) {
+    const audioPath = outputFile(item.title);
+    await extractMP3Section(
+      outputFilePathGrandCut,
+      outputFile(item.title),
+      item.from,
+      item.to,
+    );
+
+    const fileBuffer = fs.readFileSync(audioPath);
+    const formattedFirebaseName =
+      getAudioFolderViaLang(language) + '/' + item.title + '.mp3';
+
+    const realStartTime = item.from + timeToSeconds(start);
+
+    // Upload audio snippet to Firebase
+    await uploadBufferToFirebase({
+      buffer: fileBuffer,
+      filePath: formattedFirebaseName,
+    });
+
+    // Add content metadata to Firebase
+    await addContentLogic({
+      language,
+      content: {
+        title: item.title,
+        hasAudio: item.hasAudio,
+        origin: 'youtube',
+        content: item.content,
+        url,
+        interval: splits,
+        realStartTime: realStartTime,
+      },
+    });
+  }
+};
+
 const getYoutubeSubtitles = async (req: Request, res: Response) => {
   const targetLangSubtitlesUrl = req.body.targetLangSubtitlesUrl;
   const hasEngSubs = req.body.hasEngSubs;
@@ -67,12 +112,6 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
   const timeRange = req.body?.timeRange;
   const start = timeRange?.start;
   const finish = timeRange?.finish;
-
-  console.log('## hasEngSubs', hasEngSubs);
-  console.log(
-    '## replaced',
-    targetLangSubtitlesUrl.replace(/lang=ja/, 'lang=en'),
-  );
 
   try {
     const squashTranscript = await getSquashedScript({
@@ -103,44 +142,16 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
     });
 
     const resFromChunking = splitByInterval(squashTranscript, splits, title);
-
     const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
 
-    for (const item of updateToAndFromValues) {
-      const audioPath = outputFile(item.title);
-      await extractMP3Section(
-        outputFilePathGrandCut,
-        outputFile(item.title),
-        item.from,
-        item.to,
-      );
-
-      const fileBuffer = fs.readFileSync(audioPath);
-      const formattedFirebaseName =
-        getAudioFolderViaLang(language) + '/' + item.title + '.mp3';
-
-      const realStartTime = item.from + timeToSeconds(start);
-
-      // Upload audio snippet to Firebase
-      await uploadBufferToFirebase({
-        buffer: fileBuffer,
-        filePath: formattedFirebaseName,
-      });
-
-      // Add content metadata to Firebase
-      await addContentLogic({
-        language,
-        content: {
-          title: item.title,
-          hasAudio: item.hasAudio,
-          origin: 'youtube',
-          content: item.content,
-          url,
-          interval: splits,
-          realStartTime: realStartTime,
-        },
-      });
-    }
+    await cutAudioIntoIntervals({
+      updateToAndFromValues,
+      outputFilePathGrandCut,
+      url,
+      splits,
+      start,
+      language,
+    });
     res.send(squashTranscript);
   } catch (error) {
     console.log('## ERROR getYoutubeSubtitles', error);
