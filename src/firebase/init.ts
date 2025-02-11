@@ -75,9 +75,13 @@ const addMyGeneratedContent = async ({ ref, language, contentEntry }) => {
   }
 };
 
-const uploadBufferToFirebase = async ({ buffer, filePath }) => {
+const uploadBufferToFirebase = async ({
+  buffer,
+  filePath,
+  isVideo = false,
+}) => {
   const metadata = {
-    contentType: 'audio/mpeg',
+    contentType: isVideo ? 'video/mp4' : 'audio/mpeg',
   };
 
   const storage = admin.storage();

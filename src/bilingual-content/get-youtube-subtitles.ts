@@ -11,11 +11,42 @@ import {
   splitByInterval,
 } from './output/youtube-txt-file';
 import { outputFile } from './routes';
-import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
+import {
+  getAudioFolderViaLang,
+  getvideoFolderViaLang,
+} from '../utils/get-audio-folder-via-language';
 import { timeToSeconds } from '../utils/time-string-to-seconds';
 import { uploadBufferToFirebase } from '../firebase/init';
 import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { v4 as uuidv4 } from 'uuid';
+import { exec } from 'child_process';
+
+// Function to download YouTube video with a dynamic name
+function downloadVideo({ videoUrl, title }) {
+  return new Promise((resolve, reject) => {
+    const outputFolder = path.resolve(__dirname, 'output');
+    const outputPath = path.join(outputFolder, `${title}.mp4`);
+
+    const command = `yt-dlp -f 134+140 -o "${outputPath}" ${videoUrl}`;
+
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`Error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.warn(`yt-dlp stderr: ${stderr}`);
+      }
+      console.log(`yt-dlp output: ${stdout}`);
+      console.log(`Download complete: ${title}.mp4`);
+      resolve(outputPath); // Resolve with the filename
+    });
+  });
+}
+
+// Example Usage
+// const videoUrl = 'https://www.youtube.com/watch?v=C7GwAgzYRWA';
+// const dynamicName = `video_${Date.now()}`; // Generates a unique name
 
 const getSquashedScript = async ({ baseLangUrl, targetLangUrl }) => {
   const baseLangResponse = await fetch(baseLangUrl);
@@ -64,6 +95,7 @@ const cutAudioIntoIntervals = async ({
   splits,
   start,
   language,
+  hasVideo,
 }) => {
   for (const item of updateToAndFromValues) {
     const audioPath = outputFile(item.title);
@@ -97,6 +129,7 @@ const cutAudioIntoIntervals = async ({
         url,
         interval: splits,
         realStartTime: realStartTime,
+        hasVideo,
       },
     });
   }
@@ -110,6 +143,7 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
   const splits = req.body.interval;
   const language = req.body.language;
   const timeRange = req.body?.timeRange;
+  const hasVideo = req.body?.hasVideo;
   const start = timeRange?.start;
   const finish = timeRange?.finish;
 
@@ -122,6 +156,8 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
     });
 
     const baseTitle = timeRange ? title + '-base' : title;
+    const resFromChunking = splitByInterval(squashTranscript, splits, title);
+    const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
 
     const { extractedBaseFilePath } = await extractYoutubeAudio({
       url,
@@ -141,8 +177,21 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
       trimEnd: finish,
     });
 
-    const resFromChunking = splitByInterval(squashTranscript, splits, title);
-    const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
+    if (hasVideo) {
+      await downloadVideo({ title, videoUrl: url });
+      const outputFolder = path.resolve(__dirname, 'output');
+      const videoPath = path.join(outputFolder, `${title}.mp4`);
+
+      const videoFileBuffer = fs.readFileSync(videoPath);
+      const formattedFirebaseName =
+        getvideoFolderViaLang(language) + '/' + title + '.mp4';
+
+      await uploadBufferToFirebase({
+        buffer: videoFileBuffer,
+        filePath: formattedFirebaseName,
+        isVideo: true,
+      });
+    }
 
     await cutAudioIntoIntervals({
       updateToAndFromValues,
@@ -151,6 +200,7 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
       splits,
       start,
       language,
+      hasVideo,
     });
     res.send(squashTranscript);
   } catch (error) {
@@ -164,7 +214,7 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
     // Filter and unlink `.mp3` files
     files.forEach((file) => {
       const filePath = path.join(outputDirectory, file);
-      if (file.endsWith('.mp3') || file.endsWith('.txt')) {
+      if (file.startsWith(title)) {
         try {
           fs.unlinkSync(filePath); // Delete the file
           console.log(`Deleted: ${filePath}`);
