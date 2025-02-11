@@ -44,10 +44,6 @@ function downloadVideo({ videoUrl, title }) {
   });
 }
 
-// Example Usage
-// const videoUrl = 'https://www.youtube.com/watch?v=C7GwAgzYRWA';
-// const dynamicName = `video_${Date.now()}`; // Generates a unique name
-
 const getSquashedScript = async ({ baseLangUrl, targetLangUrl }) => {
   const baseLangResponse = await fetch(baseLangUrl);
   const targetLangResponse = await fetch(targetLangUrl);
@@ -205,6 +201,7 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
     res.send(squashTranscript);
   } catch (error) {
     console.log('## ERROR getYoutubeSubtitles', error);
+    res.send().status(400);
   } finally {
     const outputDirectory = path.resolve(__dirname, 'output');
 
