@@ -1,9 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import { Request, Response } from 'express';
-import { combineSRTData } from './combine-srt-data';
-import { content, songs } from '../firebase/refs';
-import { addLyricsToFirestore, uploadBufferToFirebase } from '../firebase/init';
+import { content } from '../firebase/refs';
+import { uploadBufferToFirebase } from '../firebase/init';
 import { extractYoutubeAudio } from './extract-youtube-audio';
 import {
   extractMP3Section,
@@ -28,23 +27,6 @@ export const outputFile = (title) => {
 
 const bilingualContentRoutes = (app) => {
   app.post('/get-subtitles', youtubeVideoToBilingualText);
-  app.post(
-    '/combine',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const title = req?.body?.title;
-      const language = req?.body?.language;
-      const refPath = getRefPath({ ref: songs, language });
-
-      const japaneseSongContentEntry = await combineSRTData({ title });
-      await addLyricsToFirestore({
-        ref: refPath,
-        contentEntry: japaneseSongContentEntry,
-      });
-      res.send(japaneseSongContentEntry).status(200);
-    },
-  );
-
   app.post(
     '/youtube-to-audio-snippets',
     checkMandatoryLanguage,
