@@ -74,7 +74,7 @@ const getSquashedScript = async ({ baseLangUrl, targetLangUrl }) => {
 
     return {
       id: uuidv4(),
-      time: base.tStartMs / 1000,
+      time: Math.floor(base.tStartMs / 1000),
       baseLang,
       targetLang,
     };
