@@ -3,10 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { squashContent } from './squash-content';
 import { Request, Response } from 'express';
-import { extractYoutubeAudio } from './extract-youtube-audio';
+import { extractYoutubeAudioFromVideo } from './extract-youtube-audio-from-video';
 import { cutAudioFromAudio } from '../mp3-utils/cut-audio-from-audio';
 import {
-  extractMP3Section,
   getUpdateToAndFromValues,
   splitByInterval,
 } from './output/youtube-txt-file';
@@ -19,6 +18,7 @@ import { uploadBufferToFirebase } from '../firebase/init';
 import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { v4 as uuidv4 } from 'uuid';
 import { downloadYoutubeVideo } from './download-youtube-video';
+import { extractAudioFromBaseAudio } from './extract-audio-from-base-audio';
 
 const outputFile = (title) => {
   return path.resolve(__dirname, 'output', `${title}.mp3`);
@@ -78,7 +78,7 @@ const cutAudioIntoIntervals = async ({
 }) => {
   for (const item of updateToAndFromValues) {
     const audioPath = outputFile(item.title);
-    await extractMP3Section(
+    await extractAudioFromBaseAudio(
       outputFilePathGrandCut,
       outputFile(item.title),
       item.from,
@@ -141,7 +141,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
     const resFromChunking = splitByInterval(squashTranscript, interval, title);
     const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
 
-    const { extractedBaseFilePath } = await extractYoutubeAudio({
+    const { extractedBaseFilePath } = await extractYoutubeAudioFromVideo({
       url,
       title: baseTitle,
     });
