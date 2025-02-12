@@ -10,7 +10,6 @@ import {
   getUpdateToAndFromValues,
   splitByInterval,
 } from './output/youtube-txt-file';
-import { outputFile } from './routes';
 import {
   getAudioFolderViaLang,
   getvideoFolderViaLang,
@@ -20,6 +19,10 @@ import { uploadBufferToFirebase } from '../firebase/init';
 import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { v4 as uuidv4 } from 'uuid';
 import { exec } from 'child_process';
+
+const outputFile = (title) => {
+  return path.resolve(__dirname, 'output', `${title}.mp3`);
+};
 
 const youtube = 'youtube';
 // Function to download YouTube video with a dynamic name
@@ -133,27 +136,30 @@ const cutAudioIntoIntervals = async ({
 };
 
 const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
-  const targetLangSubtitlesUrl = req.body.targetLangSubtitlesUrl;
-  const hasEngSubs = req.body.hasEngSubs;
-  const url = req.body.url;
-  const title = req.body.title;
-  const splits = req.body.interval;
-  const language = req.body.language;
-  const timeRange = req.body?.timeRange;
-  const hasVideo = req.body?.hasVideo;
-  const start = timeRange?.start;
-  const finish = timeRange?.finish;
+  const {
+    language,
+    timeRange,
+    subtitleUrl,
+    hasEngSubs,
+    url,
+    title,
+    interval,
+    hasVideo,
+  } = req.body;
+
+  const start = timeRange.start;
+  const finish = timeRange.finish;
 
   try {
     const squashTranscript = await getSquashedScript({
-      targetLangUrl: targetLangSubtitlesUrl,
+      targetLangUrl: subtitleUrl,
       baseLangUrl: hasEngSubs
-        ? targetLangSubtitlesUrl.replace(/lang=ja/, 'lang=en')
-        : targetLangSubtitlesUrl + `&tlang=en`,
+        ? subtitleUrl.replace(/lang=ja/, 'lang=en')
+        : subtitleUrl + `&tlang=en`,
     });
 
     const baseTitle = timeRange ? title + '-base' : title;
-    const resFromChunking = splitByInterval(squashTranscript, splits, title);
+    const resFromChunking = splitByInterval(squashTranscript, interval, title);
     const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
 
     const { extractedBaseFilePath } = await extractYoutubeAudio({
@@ -194,7 +200,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
       updateToAndFromValues,
       outputFilePathGrandCut,
       url,
-      splits,
+      splits: interval,
       start,
       language,
       hasVideo,
