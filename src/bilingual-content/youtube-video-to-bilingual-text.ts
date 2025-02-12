@@ -18,7 +18,7 @@ import { timeToSeconds } from '../utils/time-string-to-seconds';
 import { uploadBufferToFirebase } from '../firebase/init';
 import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { v4 as uuidv4 } from 'uuid';
-import { exec } from 'child_process';
+import { downloadYoutubeVideo } from './download-youtube-video';
 
 const outputFile = (title) => {
   return path.resolve(__dirname, 'output', `${title}.mp3`);
@@ -26,27 +26,6 @@ const outputFile = (title) => {
 
 const youtube = 'youtube';
 // Function to download YouTube video with a dynamic name
-function downloadVideo({ videoUrl, title }) {
-  return new Promise((resolve, reject) => {
-    const outputFolder = path.resolve(__dirname, 'output');
-    const outputPath = path.join(outputFolder, `${title}.mp4`);
-
-    const command = `yt-dlp -f 134+140 -o "${outputPath}" ${videoUrl}`;
-
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.warn(`yt-dlp stderr: ${stderr}`);
-      }
-      console.log(`yt-dlp output: ${stdout}`);
-      console.log(`Download complete: ${title}.mp4`);
-      resolve(outputPath); // Resolve with the filename
-    });
-  });
-}
 
 const getSquashedScript = async ({ baseLangUrl, targetLangUrl }) => {
   const baseLangResponse = await fetch(baseLangUrl);
@@ -181,7 +160,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
     });
 
     if (hasVideo) {
-      await downloadVideo({ title, videoUrl: url });
+      await downloadYoutubeVideo({ title, videoUrl: url });
       const outputFolder = path.resolve(__dirname, 'output');
       const videoPath = path.join(outputFolder, `${title}.mp4`);
 
