@@ -7,7 +7,6 @@ import { languageScriptHelpers } from './language-script-helpers/routes';
 import { narakeetRoutes } from './narakeet/routes';
 import { mp3Utils } from './mp3-utils/routes';
 import { bilingualContentRoutes } from './bilingual-content/routes';
-import { flashcardRoutes } from './flashcards/routes';
 
 const app = express();
 
@@ -24,7 +23,6 @@ languageScriptHelpers(app);
 narakeetRoutes(app);
 mp3Utils(app);
 bilingualContentRoutes(app);
-flashcardRoutes(app);
 
 app.listen(port, () => {
   console.log(`## Server is running at http://localhost:${port}`);
