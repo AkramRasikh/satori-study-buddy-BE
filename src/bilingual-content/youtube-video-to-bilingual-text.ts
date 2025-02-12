@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
-import { squashContent } from './squash-content';
+import { squashContent } from './format-transcript-based-on-time';
 import { Request, Response } from 'express';
 import { extractYoutubeAudioFromVideo } from './extract-youtube-audio-from-video';
 import { cutAudioFromAudio } from '../mp3-utils/cut-audio-from-audio';

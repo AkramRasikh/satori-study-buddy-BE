@@ -1,4 +1,4 @@
-import { squashContent } from './squash-content';
+import { squashContent } from './format-transcript-based-on-time';
 
 // const baseMockData = [
 //   {
