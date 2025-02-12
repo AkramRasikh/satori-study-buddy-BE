@@ -131,7 +131,7 @@ const cutAudioIntoIntervals = async ({
   }
 };
 
-const getYoutubeSubtitles = async (req: Request, res: Response) => {
+const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
   const targetLangSubtitlesUrl = req.body.targetLangSubtitlesUrl;
   const hasEngSubs = req.body.hasEngSubs;
   const url = req.body.url;
@@ -200,7 +200,7 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
     });
     res.send(squashTranscript);
   } catch (error) {
-    console.log('## ERROR getYoutubeSubtitles', error);
+    console.log('## ERROR youtubeVideoToBilingualText', error);
     res.send().status(400);
   } finally {
     const outputDirectory = path.resolve(__dirname, 'output');
@@ -223,4 +223,4 @@ const getYoutubeSubtitles = async (req: Request, res: Response) => {
   }
 };
 
-export { getYoutubeSubtitles };
+export { youtubeVideoToBilingualText };

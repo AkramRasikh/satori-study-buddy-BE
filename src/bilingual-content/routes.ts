@@ -19,7 +19,7 @@ import { getAudioFolderViaLang } from '../utils/get-audio-folder-via-language';
 import { cutAudioFromAudio } from '../mp3-utils/cut-audio-from-audio';
 import { timeToSeconds } from '../utils/time-string-to-seconds';
 import { languageNeedsTrimming } from '../eligible-languages';
-import { getYoutubeSubtitles } from './get-youtube-subtitles';
+import { youtubeVideoToBilingualText } from './youtube-video-to-bilingual-text';
 
 const folderPath = 'japanese-songs';
 const youtube = 'youtube';
@@ -29,7 +29,7 @@ export const outputFile = (title) => {
 };
 
 const bilingualContentRoutes = (app) => {
-  app.post('/get-subtitles', getYoutubeSubtitles);
+  app.post('/get-subtitles', youtubeVideoToBilingualText);
   app.post(
     '/combine-with-url',
     checkMandatoryLanguage,
