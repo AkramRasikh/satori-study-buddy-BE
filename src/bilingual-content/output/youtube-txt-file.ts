@@ -1,13 +1,8 @@
-import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import ffmpeg from 'fluent-ffmpeg';
-import { timeToSeconds } from '../../utils/time-string-to-seconds';
-import { replaceStringSpaces } from '../../utils/replace-string-space';
-import { squashContent } from '../squash-content';
 
 // if you cut the duration by 60, this could cut through a line
 // Function to extract specific part of the mp3
-function extractMP3Section(inputFilePath, outputFilePath, fromTime, toTime) {
+const extractMP3Section = (inputFilePath, outputFilePath, fromTime, toTime) => {
   return new Promise((resolve, reject) => {
     const duration = toTime - fromTime;
 
@@ -29,7 +24,7 @@ function extractMP3Section(inputFilePath, outputFilePath, fromTime, toTime) {
       })
       .run();
   });
-}
+};
 
 const getTheNextFromValueForThisTo = (thisChunk, nextChunk) => {
   const thisProvChunkTo = thisChunk.to;
@@ -58,47 +53,7 @@ const getUpdateToAndFromValues = (outputJSONDefaultToAndFrom) => {
   return updatedValues;
 };
 
-function splitSubtitlesByInterval(filePath, start, finish, needsTrimmedSpaces) {
-  const data = fs.readFileSync(filePath, 'utf8');
-  const lines = data.split('\n');
-  const startTimeSeconds = timeToSeconds(start);
-  const finishTimeSeconds = timeToSeconds(finish);
-
-  let results = [];
-
-  lines.forEach((line) => {
-    const parts = line.trim().split('\t');
-    if (parts.length >= 3) {
-      const time = needsTrimmedSpaces ? parts[0].trim() : parts[0]; // Time in HH:MM:SS format
-      const thisTimeStamp = timeToSeconds(time);
-      const hasDesiginatedTimeRange = start && finish;
-      const isInRange = hasDesiginatedTimeRange
-        ? thisTimeStamp >= startTimeSeconds &&
-          thisTimeStamp <= finishTimeSeconds
-        : true;
-
-      if (time !== 'Time' && isInRange) {
-        const targetLang = parts[2]; // targetLang (original language)
-        const targetLangTrim = needsTrimmedSpaces
-          ? replaceStringSpaces(targetLang, '')
-          : targetLang; // Replaces spaces with underscores
-        const baseLang = needsTrimmedSpaces ? parts[4]?.trim() : parts[4]; // English (translation)
-
-        // Push the extracted data into the results array
-        results.push({
-          id: uuidv4(),
-          baseLang: baseLang, // English translation
-          targetLang: targetLangTrim, // targetLang text
-          time: thisTimeStamp - startTimeSeconds, // Convert time to seconds
-        });
-      }
-    }
-  });
-
-  return squashContent(results);
-}
-
-function splitByInterval(data, interval, title) {
+const splitByInterval = (data, interval, title) => {
   const result = [];
   let currentChunk = [];
   let currentStartTime = 0;
@@ -147,11 +102,6 @@ function splitByInterval(data, interval, title) {
       time: sentence.time - interval * index,
     })),
   }));
-}
-
-export {
-  splitSubtitlesByInterval,
-  splitByInterval,
-  extractMP3Section,
-  getUpdateToAndFromValues,
 };
+
+export { splitByInterval, extractMP3Section, getUpdateToAndFromValues };
