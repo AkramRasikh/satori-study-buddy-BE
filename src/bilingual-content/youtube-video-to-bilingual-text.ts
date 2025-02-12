@@ -21,6 +21,7 @@ import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { v4 as uuidv4 } from 'uuid';
 import { exec } from 'child_process';
 
+const youtube = 'youtube';
 // Function to download YouTube video with a dynamic name
 function downloadVideo({ videoUrl, title }) {
   return new Promise((resolve, reject) => {
@@ -120,7 +121,7 @@ const cutAudioIntoIntervals = async ({
       content: {
         title: item.title,
         hasAudio: item.hasAudio,
-        origin: 'youtube',
+        origin: youtube,
         content: item.content,
         url,
         interval: splits,
