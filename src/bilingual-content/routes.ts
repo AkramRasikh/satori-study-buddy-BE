@@ -1,11 +1,10 @@
 import path from 'path';
 import fs from 'fs';
 import { Request, Response } from 'express';
-import { combineFromYoutubeSRTData, combineSRTData } from './combine-srt-data';
+import { combineSRTData } from './combine-srt-data';
 import { content, songs } from '../firebase/refs';
 import { addLyricsToFirestore, uploadBufferToFirebase } from '../firebase/init';
 import { extractYoutubeAudio } from './extract-youtube-audio';
-import { extractSrtData } from './extract-srt-data';
 import {
   extractMP3Section,
   getUpdateToAndFromValues,
@@ -21,7 +20,6 @@ import { timeToSeconds } from '../utils/time-string-to-seconds';
 import { languageNeedsTrimming } from '../eligible-languages';
 import { youtubeVideoToBilingualText } from './youtube-video-to-bilingual-text';
 
-const folderPath = 'japanese-songs';
 const youtube = 'youtube';
 
 export const outputFile = (title) => {
@@ -30,57 +28,6 @@ export const outputFile = (title) => {
 
 const bilingualContentRoutes = (app) => {
   app.post('/get-subtitles', youtubeVideoToBilingualText);
-  app.post(
-    '/combine-with-url',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const title = req?.body?.title;
-      const youtubeId = req?.body?.youtubeId;
-      const language = req?.body?.language;
-      const targetLang = req?.body?.targetLang || 'ja';
-      const outputDir = path.join(__dirname, 'output');
-
-      const refPath = getRefPath({ ref: songs, language });
-      const url = 'https://www.youtube.com/watch?v=' + youtubeId;
-
-      try {
-        const { buffer } = await extractYoutubeAudio({ url, title });
-        console.log('## extracted video');
-        const englishContent = await extractSrtData({ youtubeId, lang: 'en' });
-        console.log('## extracted english Subs');
-        const extractedTargetLangContent = await extractSrtData({
-          youtubeId,
-          lang: targetLang,
-        });
-        console.log('## extracted target lang subs');
-        const japaneseSongContentEntry = await combineFromYoutubeSRTData({
-          title,
-          englishSRT: englishContent,
-          japaneseSRT: extractedTargetLangContent,
-        });
-        console.log('## combined subs');
-        await uploadBufferToFirebase({
-          buffer,
-          filePath: folderPath + '/' + title + '.mp3',
-        });
-        console.log('## uploading to firestore');
-        await addLyricsToFirestore({
-          ref: refPath,
-          contentEntry: japaneseSongContentEntry,
-        });
-        res.send(japaneseSongContentEntry).status(200);
-      } catch (error) {
-        console.log('## Error combine-with-url: ', error);
-        res.send().status(401);
-      } finally {
-        if (fs.existsSync(outputDir)) {
-          await fs.rm(outputDir, (res) => {
-            console.log('## remove output res', res);
-          });
-        }
-      }
-    },
-  );
   app.post(
     '/combine',
     checkMandatoryLanguage,
