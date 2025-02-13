@@ -1,4 +1,4 @@
-export const squashContent = (content) => {
+export const formatTranscriptBasedOnTime = (content) => {
   // Sort the content by time to ensure it is in the correct order
   const sortedContent = [...content].sort((a, b) => a.time - b.time);
 

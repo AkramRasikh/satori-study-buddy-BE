@@ -1,4 +1,4 @@
-import { squashContent } from './format-transcript-based-on-time';
+import { formatTranscriptBasedOnTime } from './format-transcript-based-on-time';
 
 // const baseMockData = [
 //   {
@@ -161,9 +161,13 @@ const post2secondSpacing = [
 ];
 
 test('should squash content that is on the same timestamp', () => {
-  expect(squashContent(preTimeNeedsSquashing)).toEqual(postTimeNeedsSquashing);
+  expect(formatTranscriptBasedOnTime(preTimeNeedsSquashing)).toEqual(
+    postTimeNeedsSquashing,
+  );
 });
 
 test('should squash content if the following line is inside a 2 second range', () => {
-  expect(squashContent(pre2secondSpacing)).toEqual(post2secondSpacing);
+  expect(formatTranscriptBasedOnTime(pre2secondSpacing)).toEqual(
+    post2secondSpacing,
+  );
 });

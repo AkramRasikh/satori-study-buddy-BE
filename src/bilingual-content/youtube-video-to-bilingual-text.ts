@@ -1,14 +1,14 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
-import { squashContent } from './format-transcript-based-on-time';
+import { formatTranscriptBasedOnTime } from './format-transcript-based-on-time';
 import { Request, Response } from 'express';
 import { extractYoutubeAudioFromVideo } from './extract-youtube-audio-from-video';
 import { cutAudioFromAudio } from '../mp3-utils/cut-audio-from-audio';
 import {
   getUpdateToAndFromValues,
   splitByInterval,
-} from './output/youtube-txt-file';
+} from './format-youtube-transcript';
 import {
   getAudioFolderViaLang,
   getvideoFolderViaLang,
@@ -25,44 +25,94 @@ const outputFile = (title) => {
 };
 
 const youtube = 'youtube';
+
+const getBaseLangScript = async (subtitleUrl) => {
+  const hasBaseLangCCUrl = subtitleUrl.replace(/lang=ja/, 'lang=en');
+  const machineAutoTranslatedUrl = subtitleUrl + `&tlang=en`;
+
+  try {
+    console.log('## Attempting CC subs');
+    const baseLangResponse = await fetch(hasBaseLangCCUrl);
+    return { hasCC: true, baseLangContent: await baseLangResponse.json() };
+  } catch (error) {
+    console.log('## Error getting base subtitles CC');
+    try {
+      console.log('## Attempting machine auto-subs');
+      const baseLangResponse = await fetch(machineAutoTranslatedUrl);
+      if (!baseLangResponse.ok) {
+        throw new Error(`Failed to subtitles: ${baseLangResponse.statusText}`);
+      }
+
+      return { hasCC: false, baseLangContent: await baseLangResponse.json() };
+    } catch (error) {
+      console.log('## Failed to get Machine subs');
+    }
+  }
+};
+
 // Function to download YouTube video with a dynamic name
 
-const getSquashedScript = async ({ baseLangUrl, targetLangUrl }) => {
-  const baseLangResponse = await fetch(baseLangUrl);
-  const targetLangResponse = await fetch(targetLangUrl);
-  if (!baseLangResponse.ok) {
-    throw new Error(`Failed to subtitles: ${baseLangResponse.statusText}`);
+const getSquashedScript = async (subtitleUrl) => {
+  const targetLangResponse = await fetch(subtitleUrl);
+  if (!targetLangResponse.ok) {
+    throw new Error(`Failed to subtitles: ${targetLangResponse.statusText}`);
   }
-  const baseLangContent = await baseLangResponse.json();
   const targetLangContent = await targetLangResponse.json();
 
-  const squashedArr = baseLangContent.events.map((base) => {
-    const target = targetLangContent.events.find(
-      (t) => t.tStartMs === base.tStartMs,
+  const { hasCC, baseLangContent } = await getBaseLangScript(subtitleUrl);
+
+  const squashedArr = targetLangContent.events.map((target, index) => {
+    const base = baseLangContent.events.find(
+      (b) => b.tStartMs === target.tStartMs,
     );
 
-    const targetLang = target
-      ? target.segs
-          .map((seg) => seg.utf8)
-          .join('')
-          .replace(/\n/g, ' ')
-          .replaceAll(/\s/g, '')
-      : '';
-
-    const baseLang = base.segs
+    const targetLang = target.segs
       .map((seg) => seg.utf8)
-      .join(' ')
+      .join('')
       .replace(/\n/g, ' ')
-      .trim();
+      .replaceAll(/\s/g, '');
+
+    let baseLang = '';
+    if (base) {
+      baseLang = base.segs
+        ?.map((seg) => seg.utf8)
+        .join(' ')
+        .replace(/\n/g, ' ')
+        .trim();
+    } else if (baseLangContent.events[index] && !hasCC) {
+      baseLang = `**${baseLangContent.events[index]?.segs
+        ?.map((seg) => seg.utf8)
+        .join(' ')
+        .replace(/\n/g, ' ')
+        .trim()}`;
+    } else if (baseLangContent.events[index] && hasCC) {
+      const foundInRange = baseLangContent.events?.find((b, nestedIndex) => {
+        if (
+          Math.abs(b.tStartMs - target.tStartMs) <= 300 ||
+          (Math.abs(b.tStartMs - target.tStartMs) <= 1000 &&
+            Math.abs(nestedIndex - index) <= 2)
+        ) {
+          return true;
+        }
+      })?.segs;
+
+      baseLang = foundInRange
+        ? foundInRange
+            ?.map((seg) => seg?.utf8)
+            .join(' ')
+            .replace(/\n/g, ' ')
+            .trim()
+        : '';
+    }
 
     return {
       id: uuidv4(),
-      time: Math.floor(base.tStartMs / 1000),
+      time: Math.floor(target.tStartMs / 1000),
       baseLang,
       targetLang,
     };
   });
-  const squashedTiming = squashContent(squashedArr);
+  const squashedTiming = formatTranscriptBasedOnTime(squashedArr);
 
   return squashedTiming;
 };
@@ -115,27 +165,18 @@ const cutAudioIntoIntervals = async ({
 };
 
 const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
-  const {
-    language,
-    timeRange,
-    subtitleUrl,
-    hasEngSubs,
-    url,
-    title,
-    interval,
-    hasVideo,
-  } = req.body;
+  const { language, timeRange, subtitleUrl, title, interval, hasVideo } =
+    req.body;
 
   const start = timeRange.start;
   const finish = timeRange.finish;
 
+  const urlParams = new URLSearchParams(new URL(subtitleUrl).search);
+  const videoId = urlParams.get('v');
+  const url = 'https://www.youtube.com/watch?v=' + videoId;
+
   try {
-    const squashTranscript = await getSquashedScript({
-      targetLangUrl: subtitleUrl,
-      baseLangUrl: hasEngSubs
-        ? subtitleUrl.replace(/lang=ja/, 'lang=en')
-        : subtitleUrl + `&tlang=en`,
-    });
+    const squashTranscript = await getSquashedScript(subtitleUrl);
 
     const baseTitle = timeRange ? title + '-base' : title;
     const resFromChunking = splitByInterval(squashTranscript, interval, title);

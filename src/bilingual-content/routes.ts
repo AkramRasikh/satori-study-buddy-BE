@@ -6,9 +6,7 @@ import { baseRoute } from '../shared-express-utils/base-route';
 const youtubeVideoToBilingualTextValidation = [
   ...languageValidation,
   body('subtitleUrl').notEmpty().isString(),
-  body('url').notEmpty().isString(),
   body('title').notEmpty().isString(),
-  body('hasEngSubs').notEmpty().isBoolean(),
   body('hasVideo').notEmpty().isBoolean(),
   body('timeRange.start').notEmpty().isString(),
   body('timeRange.finish').notEmpty().isString(),
