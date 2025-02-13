@@ -19,6 +19,7 @@ import { addContentLogic } from '../firebase/add-content/add-content-logic';
 import { v4 as uuidv4 } from 'uuid';
 import { downloadYoutubeVideo } from './download-youtube-video';
 import { extractAudioFromBaseAudio } from './extract-audio-from-base-audio';
+import { checkYoutubeVideoCaptionStatus } from './check-youtube-video-caption-status';
 
 const outputFile = (title) => {
   return path.resolve(__dirname, 'output', `${title}.mp3`);
@@ -26,23 +27,30 @@ const outputFile = (title) => {
 
 const youtube = 'youtube';
 
-const replaceLangKey = (subtitleUrl) => {
+const replaceLangKey = (subtitleUrl, closedCaptionLangCode) => {
   const url = new URL(subtitleUrl);
   const urlParams = new URLSearchParams(url.search);
-  urlParams.set('lang', 'en');
+  urlParams.set('lang', closedCaptionLangCode);
   url.search = urlParams.toString();
   const updatedUrl = url.toString();
   return updatedUrl;
 };
 
-const getBaseLangScript = async (subtitleUrl) => {
-  const hasBaseLangCCUrl = replaceLangKey(subtitleUrl);
+const getBaseLangScript = async (subtitleUrl, youtubeId) => {
   const machineAutoTranslatedUrl = subtitleUrl + `&tlang=en`;
-
   try {
-    console.log('## Attempting CC subs');
-    const baseLangResponse = await fetch(hasBaseLangCCUrl);
-    return { hasCC: true, baseLangContent: await baseLangResponse.json() };
+    const baseLangClosedCaption = await checkYoutubeVideoCaptionStatus(
+      youtubeId,
+    );
+    if (baseLangClosedCaption) {
+      console.log('## Attempting CC subs');
+      const hasBaseLangCCUrl = replaceLangKey(
+        subtitleUrl,
+        baseLangClosedCaption,
+      );
+      const baseLangResponse = await fetch(hasBaseLangCCUrl);
+      return { hasCC: true, baseLangContent: await baseLangResponse.json() };
+    }
   } catch (error) {
     console.log('## Error getting base subtitles CC');
     try {
@@ -61,14 +69,17 @@ const getBaseLangScript = async (subtitleUrl) => {
 
 // Function to download YouTube video with a dynamic name
 
-const getSquashedScript = async (subtitleUrl) => {
+const getSquashedScript = async (subtitleUrl, youtubeId) => {
   const targetLangResponse = await fetch(subtitleUrl);
   if (!targetLangResponse.ok) {
     throw new Error(`Failed to subtitles: ${targetLangResponse.statusText}`);
   }
   const targetLangContent = await targetLangResponse.json();
 
-  const { hasCC, baseLangContent } = await getBaseLangScript(subtitleUrl);
+  const { hasCC, baseLangContent } = await getBaseLangScript(
+    subtitleUrl,
+    youtubeId,
+  );
 
   const squashedArr = targetLangContent.events.map((target, index) => {
     const base = baseLangContent.events.find(
@@ -185,7 +196,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
   const url = 'https://www.youtube.com/watch?v=' + videoId;
 
   try {
-    const squashTranscript = await getSquashedScript(subtitleUrl);
+    const squashTranscript = await getSquashedScript(subtitleUrl, videoId);
 
     const baseTitle = timeRange ? title + '-base' : title;
     const resFromChunking = splitByInterval(squashTranscript, interval, title);
