@@ -26,8 +26,17 @@ const outputFile = (title) => {
 
 const youtube = 'youtube';
 
+const replaceLangKey = (subtitleUrl) => {
+  const url = new URL(subtitleUrl);
+  const urlParams = new URLSearchParams(url.search);
+  urlParams.set('lang', 'en');
+  url.search = urlParams.toString();
+  const updatedUrl = url.toString();
+  return updatedUrl;
+};
+
 const getBaseLangScript = async (subtitleUrl) => {
-  const hasBaseLangCCUrl = subtitleUrl.replace(/lang=ja/, 'lang=en');
+  const hasBaseLangCCUrl = replaceLangKey(subtitleUrl);
   const machineAutoTranslatedUrl = subtitleUrl + `&tlang=en`;
 
   try {
@@ -225,7 +234,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
       language,
       hasVideo,
     });
-    res.send(squashTranscript);
+    res.send(updateToAndFromValues);
   } catch (error) {
     console.log('## ERROR youtubeVideoToBilingualText', error);
     res.send().status(400);
