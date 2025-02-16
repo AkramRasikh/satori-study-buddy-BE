@@ -6,6 +6,7 @@ const addWordKey = {
   context: 'context',
   contextSentence: 'contextSentence',
   isGoogle: 'isGoogle',
+  reviewData: 'reviewData',
 };
 
 const addWordValidation = [
@@ -28,6 +29,10 @@ const addWordValidation = [
     .optional()
     .isBoolean()
     .withMessage(`A ${addWordKey.isGoogle} should be a boolean`),
+  body(addWordKey.reviewData)
+    .optional()
+    .isObject()
+    .withMessage(`A ${addWordKey.reviewData} should be an srs object`),
 ];
 
 export { addWordValidation };

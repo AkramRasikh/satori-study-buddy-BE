@@ -14,6 +14,7 @@ interface AddWordLogicType {
   context: string;
   contextSentence: string;
   isGoogle?: boolean;
+  reviewData?: any;
 }
 
 const getTranslationData = async ({
@@ -49,6 +50,7 @@ const addWordLogic = async ({
   context,
   contextSentence,
   isGoogle,
+  reviewData,
 }: AddWordLogicType) => {
   try {
     const refPath = getRefPath({
@@ -75,7 +77,7 @@ const addWordLogic = async ({
         isGoogle,
       });
       const cleanedArray = filterOutNestedNulls(wordSnapShotArr);
-      await db.ref(refPath).set([...cleanedArray, wordData]);
+      await db.ref(refPath).set([...cleanedArray, { ...wordData, reviewData }]);
       return wordData;
     } else {
       throw new Error(`${word} already exists in ${language} word back`);
