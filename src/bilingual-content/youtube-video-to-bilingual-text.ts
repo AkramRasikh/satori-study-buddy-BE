@@ -50,6 +50,20 @@ const getBaseLangScript = async (subtitleUrl, youtubeId) => {
       );
       const baseLangResponse = await fetch(hasBaseLangCCUrl);
       return { hasCC: true, baseLangContent: await baseLangResponse.json() };
+    } else {
+      try {
+        console.log('## Attempting machine auto-subs');
+        const baseLangResponse = await fetch(machineAutoTranslatedUrl);
+        if (!baseLangResponse.ok) {
+          throw new Error(
+            `Failed to subtitles: ${baseLangResponse.statusText}`,
+          );
+        }
+
+        return { hasCC: false, baseLangContent: await baseLangResponse.json() };
+      } catch (error) {
+        console.log('## Failed to get Machine subs');
+      }
     }
   } catch (error) {
     console.log('## Error getting base subtitles CC');
