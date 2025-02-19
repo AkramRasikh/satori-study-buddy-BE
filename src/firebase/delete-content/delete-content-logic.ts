@@ -15,6 +15,39 @@ import { content } from '../refs';
 const getMediaFilePath = ({ language, fileName }) =>
   getAudioFolderViaLang(language) + '/' + fileName + '.mp3';
 
+const deleteAllContentLogic = async ({ language, url }) => {
+  try {
+    const refPath = getRefPath({
+      ref: content,
+      language,
+    });
+    const contentSnapshot = await getContentTypeSnapshot({
+      language,
+      ref: content,
+      db,
+    });
+
+    const updatedContentArr = contentSnapshot.filter(
+      (item) => item.url !== url,
+    );
+    const titlesOfFiles = contentSnapshot.filter((item) => item.url !== url);
+
+    const allDeletedSuccessful = await Promise.all(
+      titlesOfFiles.map(async (content) => {
+        const filePath = getMediaFilePath({
+          language,
+          fileName: content.title,
+        });
+        await db.ref(refPath).set(updatedContentArr);
+        await deleteFileFromFirebase(filePath);
+      }),
+    );
+    return allDeletedSuccessful;
+  } catch (error) {
+    throw new Error(error || `Error deleting content (logic) for ${language}`);
+  }
+};
+
 const deleteContentLogic = async ({ language, title }) => {
   try {
     const refPath = getRefPath({
@@ -37,4 +70,4 @@ const deleteContentLogic = async ({ language, title }) => {
   }
 };
 
-export { deleteContentLogic };
+export { deleteContentLogic, deleteAllContentLogic };

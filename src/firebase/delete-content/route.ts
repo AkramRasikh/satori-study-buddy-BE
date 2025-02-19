@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { deleteContentLogic } from './delete-content-logic';
+import {
+  deleteAllContentLogic,
+  deleteContentLogic,
+} from './delete-content-logic';
 import { validationResult } from 'express-validator';
 
 // cases (can do on FE):
@@ -23,4 +26,18 @@ const deleteContent = async (req: Request, res: Response) => {
   }
 };
 
-export { deleteContent };
+const deleteAllContent = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const { url, language } = req.body;
+  try {
+    await deleteAllContentLogic({ url, language });
+    res.status(200).json({ message: `Content of ${url} successfully deleted` });
+  } catch (error) {
+    res.status(500).json({ error: error?.message || 'Error deleting content' });
+  }
+};
+
+export { deleteContent, deleteAllContent };

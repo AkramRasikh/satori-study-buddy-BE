@@ -21,8 +21,11 @@ import { updateContentMetaData } from './update-content-review/route';
 import { updateContentMetaDataValidation } from './update-content-review/validation';
 import { updateSentence } from './update-sentence/route';
 import { updateSentenceValidation } from './update-sentence/validation';
-import { deleteContent } from './delete-content/route';
-import { deleteContentValidation } from './delete-content/validation';
+import { deleteAllContent, deleteContent } from './delete-content/route';
+import {
+  deleteAllContentValidation,
+  deleteContentValidation,
+} from './delete-content/validation';
 import { updateSentenceReview } from './update-sentence-review/route';
 import { updateSentenceReviewValidation } from './update-sentence-review/validation';
 import { addAdhocSentenceValidation } from './add-adhoc-sentence/validation';
@@ -54,6 +57,7 @@ const firebaseRoutes = (app: Express) => {
   );
   app.post('/update-sentence', updateSentenceValidation, updateSentence);
   app.post('/delete-content', deleteContentValidation, deleteContent);
+  app.post('/delete-all-content', deleteAllContentValidation, deleteAllContent);
   app.post(
     '/update-sentence-review',
     updateSentenceReviewValidation,

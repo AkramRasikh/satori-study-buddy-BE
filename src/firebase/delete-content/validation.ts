@@ -15,4 +15,12 @@ const deleteContentValidation = [
     ),
 ];
 
-export { deleteContentValidation };
+const deleteAllContentValidation = [
+  ...languageValidation,
+  body('url')
+    .notEmpty()
+    .isString()
+    .withMessage(`Validation error passing url to delete content`),
+];
+
+export { deleteContentValidation, deleteAllContentValidation };
