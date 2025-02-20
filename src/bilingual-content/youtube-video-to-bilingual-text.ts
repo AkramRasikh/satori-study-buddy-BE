@@ -22,6 +22,7 @@ import { extractAudioFromBaseAudio } from './extract-audio-from-base-audio';
 import { checkYoutubeVideoCaptionStatus } from './check-youtube-video-caption-status';
 import { simplecc } from 'simplecc-wasm';
 import { pinyin } from 'pinyin-pro';
+import { languageNeedsTrimming } from '../eligible-languages';
 
 const outputFile = (title) => {
   return path.resolve(__dirname, 'output', `${title}.mp3`);
@@ -85,7 +86,10 @@ const getBaseLangScript = async (subtitleUrl, youtubeId) => {
 
 // Function to download YouTube video with a dynamic name
 
-const getSquashedScript = async (subtitleUrl, youtubeId) => {
+const getSquashedScript = async (subtitleUrl, youtubeId, language) => {
+  const languageRequiresTrim = languageNeedsTrimming.some(
+    (i) => language === i,
+  );
   const targetLangResponse = await fetch(subtitleUrl);
   if (!targetLangResponse.ok) {
     throw new Error(`Failed to subtitles: ${targetLangResponse.statusText}`);
@@ -102,11 +106,13 @@ const getSquashedScript = async (subtitleUrl, youtubeId) => {
       (b) => b.tStartMs === target.tStartMs,
     );
 
-    const targetLang = target.segs
-      .map((seg) => seg.utf8)
-      .join('')
-      .replace(/\n/g, ' ')
-      .replaceAll(/\s/g, '');
+    const targetLang = languageRequiresTrim
+      ? target.segs
+          .map((seg) => seg.utf8)
+          .join('')
+          .replace(/\n/g, ' ')
+          .replaceAll(/\s/g, '')
+      : target.segs.map((seg) => seg.utf8).join('');
 
     let baseLang = '';
     if (base) {
@@ -220,7 +226,11 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
     const isWithinRange = (timeInSeconds) =>
       timeInSeconds >= startSeconds && timeInSeconds <= finishSeconds;
 
-    const squashTranscript = await getSquashedScript(subtitleUrl, videoId);
+    const squashTranscript = await getSquashedScript(
+      subtitleUrl,
+      videoId,
+      language,
+    );
 
     const baseTitle = timeRange ? title + '-base' : title;
 
