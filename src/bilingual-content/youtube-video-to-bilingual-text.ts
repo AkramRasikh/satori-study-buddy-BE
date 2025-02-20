@@ -20,6 +20,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { downloadYoutubeVideo } from './download-youtube-video';
 import { extractAudioFromBaseAudio } from './extract-audio-from-base-audio';
 import { checkYoutubeVideoCaptionStatus } from './check-youtube-video-caption-status';
+import { simplecc } from 'simplecc-wasm';
+import { pinyin } from 'pinyin-pro';
 
 const outputFile = (title) => {
   return path.resolve(__dirname, 'output', `${title}.mp3`);
@@ -39,9 +41,9 @@ const replaceLangKey = (subtitleUrl, closedCaptionLangCode) => {
 const getBaseLangScript = async (subtitleUrl, youtubeId) => {
   const machineAutoTranslatedUrl = subtitleUrl + `&tlang=en`;
   try {
-    const baseLangClosedCaption = await checkYoutubeVideoCaptionStatus(
+    const baseLangClosedCaption = await checkYoutubeVideoCaptionStatus({
       youtubeId,
-    );
+    });
     if (baseLangClosedCaption) {
       console.log('## Attempting CC subs');
       const hasBaseLangCCUrl = replaceLangKey(
@@ -159,6 +161,7 @@ const cutAudioIntoIntervals = async ({
   start,
   language,
   hasVideo,
+  startSeconds,
 }) => {
   for (const item of updateToAndFromValues) {
     const audioPath = outputFile(item.title);
@@ -173,8 +176,7 @@ const cutAudioIntoIntervals = async ({
     const formattedFirebaseName =
       getAudioFolderViaLang(language) + '/' + item.title + '.mp3';
 
-    const realStartTime = item.from + timeToSeconds(start);
-
+    const realStartTime = item.from + timeToSeconds(start) - startSeconds;
     // Upload audio snippet to Firebase
     await uploadBufferToFirebase({
       buffer: fileBuffer,
@@ -206,20 +208,66 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
   const finish = timeRange.finish;
 
   const urlParams = new URLSearchParams(new URL(subtitleUrl).search);
+  const isTraditonalChinese = urlParams.get('lang') === 'zh-TW';
+
   const videoId = urlParams.get('v');
   const url = 'https://www.youtube.com/watch?v=' + videoId;
 
+  const startSeconds = timeToSeconds(start);
+  const finishSeconds = timeToSeconds(finish);
+
   try {
+    const isWithinRange = (timeInSeconds) =>
+      timeInSeconds >= startSeconds && timeInSeconds <= finishSeconds;
+
     const squashTranscript = await getSquashedScript(subtitleUrl, videoId);
 
     const baseTitle = timeRange ? title + '-base' : title;
-    const resFromChunking = splitByInterval(squashTranscript, interval, title);
+
+    const snippedAccordingToTimeRange = [];
+
+    squashTranscript.forEach(async (item) => {
+      const itemIsInRange = isWithinRange(item.time);
+
+      if (itemIsInRange && isTraditonalChinese) {
+        const simplifiedChinese = simplecc(item.targetLang, 't2s');
+
+        snippedAccordingToTimeRange.push({
+          ...item,
+          time: item.time - startSeconds,
+          targetLang: simplifiedChinese,
+          originalScript: item.targetLang,
+          transliteration: pinyin(simplifiedChinese),
+        });
+      } else if (itemIsInRange) {
+        snippedAccordingToTimeRange.push({
+          ...item,
+          time: item.time - startSeconds,
+        });
+      }
+    });
+
+    const resFromChunking = splitByInterval(
+      snippedAccordingToTimeRange,
+      interval,
+      title,
+    );
+
     const updateToAndFromValues = getUpdateToAndFromValues(resFromChunking);
+
+    const segmentedAudioTitle = outputFile(title + '-segmented');
 
     const { extractedBaseFilePath } = await extractYoutubeAudioFromVideo({
       url,
       title: baseTitle,
     });
+
+    await extractAudioFromBaseAudio(
+      extractedBaseFilePath,
+      segmentedAudioTitle,
+      startSeconds,
+      finishSeconds,
+    );
 
     const outputFilePathGrandCut = path.resolve(
       __dirname,
@@ -235,7 +283,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
     });
 
     if (hasVideo) {
-      await downloadYoutubeVideo({ title, videoUrl: url });
+      await downloadYoutubeVideo({ title, videoUrl: url, start, finish });
       const outputFolder = path.resolve(__dirname, 'output');
       const videoPath = path.join(outputFolder, `${title}.mp4`);
 
@@ -258,17 +306,16 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
       start,
       language,
       hasVideo,
+      startSeconds,
     });
-    res.send(updateToAndFromValues);
+    res.send({ snippedAccordingToTimeRange });
   } catch (error) {
     console.log('## ERROR youtubeVideoToBilingualText', error);
     res.send().status(400);
   } finally {
     const outputDirectory = path.resolve(__dirname, 'output');
-
     // Get all files in the output directory
     const files = fs.readdirSync(outputDirectory);
-
     // Filter and unlink `.mp3` files
     files.forEach((file) => {
       const filePath = path.join(outputDirectory, file);
