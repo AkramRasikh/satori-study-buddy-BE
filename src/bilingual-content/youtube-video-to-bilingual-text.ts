@@ -1,6 +1,9 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
+import { simplecc } from 'simplecc-wasm';
+import { pinyin } from 'pinyin-pro';
+import arabicTransliterate from 'arabic-transliterate';
 import { formatTranscriptBasedOnTime } from './format-transcript-based-on-time';
 import { Request, Response } from 'express';
 import { extractYoutubeAudioFromVideo } from './extract-youtube-audio-from-video';
@@ -20,8 +23,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { downloadYoutubeVideo } from './download-youtube-video';
 import { extractAudioFromBaseAudio } from './extract-audio-from-base-audio';
 import { checkYoutubeVideoCaptionStatus } from './check-youtube-video-caption-status';
-import { simplecc } from 'simplecc-wasm';
-import { pinyin } from 'pinyin-pro';
 import { languageNeedsTrimming } from '../eligible-languages';
 
 const outputFile = (title) => {
@@ -215,6 +216,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
 
   const urlParams = new URLSearchParams(new URL(subtitleUrl).search);
   const isTraditonalChinese = urlParams.get('lang') === 'zh-TW';
+  const isArabic = urlParams.get('lang') === 'ar';
 
   const videoId = urlParams.get('v');
   const url = 'https://www.youtube.com/watch?v=' + videoId;
@@ -236,7 +238,7 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
 
     const snippedAccordingToTimeRange = [];
 
-    squashTranscript.forEach(async (item) => {
+    squashTranscript.forEach((item) => {
       const itemIsInRange = isWithinRange(item.time);
 
       if (itemIsInRange && isTraditonalChinese) {
@@ -248,6 +250,17 @@ const youtubeVideoToBilingualText = async (req: Request, res: Response) => {
           targetLang: simplifiedChinese,
           originalScript: item.targetLang,
           transliteration: pinyin(simplifiedChinese),
+        });
+      } else if (itemIsInRange && isArabic) {
+        const arabicTransliteration = arabicTransliterate(
+          item.targetLang,
+          'arabic2latin',
+          'Arabic',
+        );
+        snippedAccordingToTimeRange.push({
+          ...item,
+          time: item.time - startSeconds,
+          transliteration: arabicTransliteration,
         });
       } else if (itemIsInRange) {
         snippedAccordingToTimeRange.push({
