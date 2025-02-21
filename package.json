@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "@vitalets/google-translate-api": "^9.2.0",
-    "arabic-transliterate": "^1.0.1",
     "cheerio": "^1.0.0-rc.12",
     "express": "^4.19.2",
     "express-validator": "^7.2.0",
@@ -22,7 +21,6 @@
     "kuroshiro": "^1.2.0",
     "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "pinyin-pro": "^3.26.0",
-    "simplecc-wasm": "^1.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
