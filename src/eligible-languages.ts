@@ -13,4 +13,5 @@ export const languageNeedsTrimming = [japanese, chinese];
 export const googleLanguagesKey = {
   [japanese]: 'ja',
   [chinese]: 'zh-CN',
+  [arabic]: 'ar',
 };

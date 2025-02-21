@@ -1,32 +1,44 @@
-import { translate } from '@vitalets/google-translate-api';
-import { googleLanguagesKey, languageKey } from '../eligible-languages';
+import { TranslationServiceClient } from '@google-cloud/translate';
+import {
+  chinese,
+  googleLanguagesKey,
+  languageKey,
+} from '../eligible-languages';
 import kanjiToHiragana from './kanji-to-hiragana';
+import { pinyin } from 'pinyin-pro';
+import config from '../../config';
 
+const translationClient = new TranslationServiceClient({
+  credentials: JSON.parse(process.env.GOOGLE_TRANSLATE_ACCOUNT),
+});
 const getGoogleTranslate = async ({ word, language }) => {
   const fromLanguage = googleLanguagesKey[language];
+  const request = {
+    parent: `projects/${config.projectId}`,
+    contents: [word],
+    mimeType: 'text/plain',
+    sourceLanguageCode: fromLanguage,
+    targetLanguageCode: 'en',
+  };
+
+  let phonetic;
+  let transliteration;
 
   try {
-    if (fromLanguage) {
-      const { text: definition, raw } = (await translate(word, {
-        from: fromLanguage,
-        to: 'en',
-      })) as any;
+    const [translation] = await translationClient.translateText(request);
+    const definition = translation.translations[0].translatedText;
 
-      let transliteration: string[] = [];
-      raw.sentences?.forEach((sentence) => {
-        if (sentence?.src_translit) {
-          transliteration.push(sentence.src_translit);
-        }
-      });
-      const finalTransliteration = transliteration?.join(' ');
-      let phonetic;
-      if (language === languageKey.japanese) {
-        phonetic = await kanjiToHiragana({ sentence: word });
-      }
-      return { definition, transliteration: finalTransliteration, phonetic };
+    if (language !== chinese) {
+      const [romanized] = await translationClient.romanizeText(request);
+      transliteration = romanized.romanizations[0].romanizedText;
     } else {
-      throw new Error(`No viable language key found for ${language}`);
+      transliteration = pinyin(word);
     }
+
+    if (language === languageKey.japanese) {
+      phonetic = await kanjiToHiragana({ sentence: word });
+    }
+    return { definition, transliteration, phonetic };
   } catch (error) {
     throw new Error(error || 'Error getting google translation');
   }
