@@ -27,5 +27,11 @@ const initFsrs = () => {
 export const getInitSentenceCard = () => {
   const card = getEmptyCard();
   const f = initFsrs();
-  return f.repeat(card, new Date())['1'].card;
+  const hardCardData = f.repeat(card, new Date())['1'].card;
+
+  return {
+    ...hardCardData,
+    due: hardCardData.due.toISOString(),
+    last_review: hardCardData.last_review.toISOString(),
+  };
 };
