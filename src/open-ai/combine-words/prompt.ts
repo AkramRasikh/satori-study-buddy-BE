@@ -75,16 +75,18 @@ const wordCombinationPrompt = (inputDataJson, language) => `
 `;
 
 const combineWordsPrompt = ({ words, targetLanguage }) => `
-Generate creative and coherent sentences using the following words. The sentences do not need to be related to each other, but it’s great if they are. Provide the response as a JSON object with a \`sentences\` array. Each sentence should contain:
+Generate simple, creative, and coherent sentences using the following words. The sentences do not need to be related to each other, but it’s great if they are. Provide the response as a JSON object with a \`sentences\` array. Each sentence should contain:
   1. \`baseLang\`: The English sentence.
   2. \`targetLang\`: The translated sentence in ${targetLanguage}.
   3. \`matchedWordsSurface\`: An array of the words (in their original script) that appear in the sentence, even if their form is slightly altered (e.g., conjugated, pluralized, etc.).
   4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence, regardless of how the words are modified in the sentence.
 
 ### Instructions:
-- Be creative and natural in constructing sentences. If the words don't naturally fit together, use your creativity to form meaningful and engaging sentences.
-- Do not force the words into overly quirky or unnatural sentences. Prioritize coherence and memorability.
-- If a word is conjugated, pluralized, or otherwise modified in the sentence, still include it in \`matchedWordsSurface\` and \`matchedWordsId\` as long as it is derived from the original word.
+- **Simplicity First**: Use simple and straightforward sentences when the words naturally fit together. Reserve creativity for cases where the words don't easily combine.
+- **Creativity When Needed**: If the words don't naturally fit together, use creativity to form meaningful and engaging sentences.
+- **At Least Two Words per Sentence**: Each sentence should include **at least two words** from the provided list, but it’s okay if some sentences include more.
+- **Visibility per Word**: Aim for each word to appear in **approximately two sentences** across the array. This ensures good visibility and reinforcement of the vocabulary.
+- **Flexibility with Word Forms**: If a word is conjugated, pluralized, or otherwise modified in the sentence, still include it in \`matchedWordsSurface\` and \`matchedWordsId\` as long as it is derived from the original word.
 
 ### Words List:
 ${words
@@ -94,7 +96,7 @@ ${words
   )
   .join('\n')}
 
-Ensure the sentences are creative and memorable to reinforce vocabulary.
+Ensure the sentences are simple, creative, and memorable to reinforce vocabulary.
 Return only the JSON object, no additional text.
 `;
 
