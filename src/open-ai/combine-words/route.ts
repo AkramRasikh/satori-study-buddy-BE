@@ -52,7 +52,7 @@ const combineWords = async (req: Request, res: Response) => {
     );
 
     console.log('## sentencesWithTextToSpeech', sentencesWithTextToSpeech);
-    const wordsWithUpdatedContext = await Promise.all(
+    await Promise.all(
       sentencesToAddFromDB.map(async (sentence) => {
         const sentenceId = sentence.id;
         const matchedWordsId = sentence.matchedWordsId;
@@ -71,7 +71,7 @@ const combineWords = async (req: Request, res: Response) => {
       }),
     );
 
-    res.status(200).json([sentencesToAddFromDB, wordsWithUpdatedContext]);
+    res.status(200).json(sentencesToAddFromDB);
   } catch (error) {
     console.log('## /combine-words error', error);
     res.status(500).json({ error });
