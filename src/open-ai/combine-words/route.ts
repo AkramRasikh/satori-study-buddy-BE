@@ -29,7 +29,7 @@ const combineWords = async (req: Request, res: Response) => {
     const sentencesWithIds = sentencesFromResult.map((sentence) => ({
       id: uuidv4(),
       topic: 'sentence-helper',
-      hasAudio: true, // risky
+      hasAudio: true,
       ...sentence,
       reviewData: getInitSentenceCard(),
     }));
@@ -38,7 +38,7 @@ const combineWords = async (req: Request, res: Response) => {
       sentencesBulk: sentencesWithIds,
     });
 
-    const sentencesWithTextToSpeech = await Promise.all(
+    await Promise.all(
       sentencesWithIds.map(async (item) => {
         const id = item.id;
         const text = item.targetLang;
@@ -51,7 +51,6 @@ const combineWords = async (req: Request, res: Response) => {
       }),
     );
 
-    console.log('## sentencesWithTextToSpeech', sentencesWithTextToSpeech);
     await Promise.all(
       sentencesToAddFromDB.map(async (sentence) => {
         const sentenceId = sentence.id;
