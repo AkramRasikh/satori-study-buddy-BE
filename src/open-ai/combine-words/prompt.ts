@@ -84,9 +84,10 @@ Generate simple, creative, and coherent sentences using the following words. The
 ### Instructions:
 - **Simplicity First**: Use simple and straightforward sentences when the words naturally fit together. Reserve creativity for cases where the words don't easily combine.
 - **Creativity When Needed**: If the words don't naturally fit together, use creativity to form meaningful and engaging sentences.
-- **At Least Two Words per Sentence**: Each sentence should include **at least two words** from the provided list, but it’s okay if some sentences include more.
+- **At Least Two Words per Sentence**: Each sentence should include **ideally at least two words** from the provided list, but it’s okay if some sentences include more/less.
 - **Visibility per Word**: Aim for each word to appear in **approximately two sentences** across the array. This ensures good visibility and reinforcement of the vocabulary.
 - **Flexibility with Word Forms**: If a word is conjugated, pluralized, or otherwise modified in the sentence, still include it in \`matchedWordsSurface\` and \`matchedWordsId\` as long as it is derived from the original word.
+- **Override Incorrect Meanings**: If the provided meaning or definition of a word seems incorrect or unnatural, feel free to override it and use the word in a way that makes the most sense for the sentence.
 
 ### Words List:
 ${words
