@@ -30,19 +30,19 @@ const deleteAllContentLogic = async ({ language, url }) => {
     const updatedContentArr = contentSnapshot.filter(
       (item) => item.url !== url,
     );
-    const titlesOfFiles = contentSnapshot.filter((item) => item.url !== url);
 
-    const allDeletedSuccessful = await Promise.all(
+    await db.ref(refPath).set(updatedContentArr);
+    const titlesOfFiles = contentSnapshot.filter((item) => item.url === url);
+    await Promise.all(
       titlesOfFiles.map(async (content) => {
         const filePath = getMediaFilePath({
           language,
           fileName: content.title,
         });
-        await db.ref(refPath).set(updatedContentArr);
         await deleteFileFromFirebase(filePath);
       }),
     );
-    return allDeletedSuccessful;
+    return true;
   } catch (error) {
     throw new Error(error || `Error deleting content (logic) for ${language}`);
   }
