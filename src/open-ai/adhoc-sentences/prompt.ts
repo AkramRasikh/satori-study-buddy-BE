@@ -53,3 +53,59 @@ Translate "${sentence}" into natural ${targetLanguage}${
 - No markdown formatting
 - No field name variations (e.g., use "targetLang" exactly)
 `;
+
+/**
+ * Generates a prompt for cultural expression inquiries
+ * @param {Object} params - Inquiry parameters
+ * @param {string} params.inquiry - The "how do you..." question (e.g. "express doubt")
+ * @param {string} params.targetLanguage - Target language code (e.g. 'ja')
+ * @param {string} [params.context] - Situational context
+ * @param {boolean} [params.includeVariations=false] - Whether to include multiple expressions
+ * @returns {string} Formatted API prompt
+ */
+export const howToExpressPrompt = ({
+  inquiry,
+  targetLanguage,
+  context,
+  includeVariations = false,
+}) => `
+Explain how to "${inquiry}" in natural ${targetLanguage}${
+  context ? ` (context: ${context})` : ''
+}.
+
+### Strict Requirements:
+1. Provide ${
+  includeVariations
+    ? '2-3 distinct cultural expressions'
+    : 'the most common expression'
+}
+2. For each expression include:
+   - baseLang: The English equivalent
+   - targetLang: The ${targetLanguage} expression
+   - notes: When/how to use it
+
+### Response Format (ONLY JSON):
+{
+  "sentences": [
+    {
+      "baseLang": "English phrase",
+      "targetLang": "${targetLanguage} translation",
+      "notes": "Usage context"
+    }${
+      includeVariations
+        ? `,
+    {
+      "baseLang": "Alternative English",
+      "targetLang": "${targetLanguage} variant",
+      "notes": "Specific use-case"
+    }`
+        : ''
+    }
+  ]
+}
+
+### Prohibitions:
+- No additional commentary
+- No markdown formatting
+- No deviation from specified field names
+`;

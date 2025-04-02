@@ -5,7 +5,7 @@ import { deepSeekChatAPI } from '../chat-gpt';
 import { addSentencesBulkToDb } from '../../firebase/add-word-context/route';
 import { getInitSentenceCard } from '../../../create-card';
 import googleTextToSpeechAPI from '../google-text-to-speech';
-import { howToSayPrompt } from './prompt';
+import { howToExpressPrompt, howToSayPrompt } from './prompt';
 
 const adhocSentenceTTS = async (req: Request, res: Response) => {
   const deepseekKey = process.env.DEEPSEEK_KEY;
@@ -63,5 +63,61 @@ const adhocSentenceTTS = async (req: Request, res: Response) => {
     res.status(500).json({ error });
   }
 };
+const adhocExpressionTTS = async (req: Request, res: Response) => {
+  const deepseekKey = process.env.DEEPSEEK_KEY;
 
-export { adhocSentenceTTS };
+  const language = req.body.language;
+  const inquiry = req.body.inquiry;
+  const context = req.body?.context;
+  const includeVariations = req.body?.includeVariations;
+  const sentencePrompt = howToExpressPrompt({
+    inquiry,
+    targetLanguage: language,
+    context,
+    includeVariations,
+  });
+
+  try {
+    const resultContent = await deepSeekChatAPI({
+      sentence: sentencePrompt,
+      model: 'deepseek-chat',
+      openAIKey: deepseekKey,
+    });
+
+    const sentencesFromResult = resultContent.sentences;
+
+    const sentencesWithIds = sentencesFromResult.map((sentenceData) => ({
+      id: uuidv4(),
+      topic: 'sentence-helper',
+      hasAudio: true,
+      inquiry,
+      context,
+      reviewData: getInitSentenceCard(),
+      ...sentenceData,
+    }));
+    const sentencesToAddFromDB = await addSentencesBulkToDb({
+      language,
+      sentencesBulk: sentencesWithIds,
+    });
+
+    await Promise.all(
+      sentencesWithIds.map(async (item) => {
+        const id = item.id;
+        const text = item.targetLang;
+
+        return await googleTextToSpeechAPI({
+          id,
+          text,
+          language,
+        });
+      }),
+    );
+
+    res.status(200).json(sentencesToAddFromDB);
+  } catch (error) {
+    console.log('## /adhoc-expression-tts error', error);
+    res.status(500).json({ error });
+  }
+};
+
+export { adhocSentenceTTS, adhocExpressionTTS };

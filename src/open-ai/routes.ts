@@ -7,8 +7,11 @@ import { sentenceTTSValidation } from './sentence-tts/validation';
 import { sentenceTTS } from './sentence-tts/route';
 import { breakdownSentence } from './sentence-breakdown/route';
 import { breakdownSentenceValidation } from './sentence-breakdown/validation';
-import { adhocSentenceTTS } from './adhoc-sentences/route';
-import { adhocSentenceTTSValidation } from './adhoc-sentences/validation';
+import { adhocExpressionTTS, adhocSentenceTTS } from './adhoc-sentences/route';
+import {
+  adhocExpressionTTSValidation,
+  adhocSentenceTTSValidation,
+} from './adhoc-sentences/validation';
 
 const openAIRoutes = (app) => {
   app.post('/chat-gpt-text', async (req: Request, res: Response) => {
@@ -43,6 +46,12 @@ const openAIRoutes = (app) => {
     adhocSentenceTTSValidation,
     baseRoute,
     adhocSentenceTTS,
+  );
+  app.post(
+    '/adhoc-expression-tts',
+    adhocExpressionTTSValidation,
+    baseRoute,
+    adhocExpressionTTS,
   );
 };
 

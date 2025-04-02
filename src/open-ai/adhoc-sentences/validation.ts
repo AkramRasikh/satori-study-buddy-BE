@@ -7,5 +7,11 @@ const adhocSentenceTTSValidation = [
   body('context').isString().optional(),
   body('includeVariations').isBoolean().optional(),
 ];
+const adhocExpressionTTSValidation = [
+  checkMandatoryLanguage,
+  body('inquiry').isString().notEmpty(),
+  body('context').isString().optional(),
+  body('includeVariations').isBoolean().optional(),
+];
 
-export { adhocSentenceTTSValidation };
+export { adhocExpressionTTSValidation, adhocSentenceTTSValidation };
