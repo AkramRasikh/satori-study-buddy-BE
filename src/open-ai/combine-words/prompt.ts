@@ -74,7 +74,7 @@ const wordCombinationPrompt = (inputDataJson, language) => `
   NOTE: this is an integration so only respond in the JSON format as above (array of objects).
 `;
 
-const combineWordsPrompt = ({ words, targetLanguage }) => `
+const combineWordsPrompt = ({ words, targetLanguage, bonusWords = [] }) => `
 Generate simple, creative, and coherent sentences using the following words. The sentences do not need to be related to each other, but it's great if they are. Provide the response as a JSON object with a \`sentences\` array. Each sentence should contain:
   1. \`baseLang\`: The English sentence.
   2. \`targetLang\`: The translated sentence in ${targetLanguage}.
@@ -82,15 +82,14 @@ Generate simple, creative, and coherent sentences using the following words. The
   4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence, regardless of how the words are modified in the sentence.
 
 ### Instructions:
-- **Simplicity First**: Use simple and straightforward sentences when the words naturally fit together. Reserve creativity for cases where the words don't easily combine.
-- **Creativity When Needed**: If the words don't naturally fit together, use creativity to form meaningful and engaging sentences.
-- **Sentence Variety**: Where possible, include different sentence moods (questions, imperatives, subjunctive, conditional, etc.) alongside indicative sentences to provide grammatical diversity.
-- **At Least Two Words per Sentence**: Each sentence should include ideally at least two words from the provided list, but it's okay if some sentences include more/less.
-- **Visibility per Word**: Aim for each word to appear in approximately two sentences across the array. This ensures good visibility and reinforcement of the vocabulary.
-- **Flexibility with Word Forms**: If a word is conjugated, pluralized, or otherwise modified in the sentence, still include it in \`matchedWordsSurface\` and \`matchedWordsId\` as long as it is derived from the original word.
-- **Override Incorrect Meanings**: If the provided meaning or definition of a word seems incorrect or unnatural, feel free to override it and use the word in a way that makes the most sense for the sentence.
+- **Core Words First**: Prioritize sentences using at least 2 words from the **Core Words** list below. Ensure each core word appears in ~2 sentences.
+- **Bonus Words (Optional)**: Use words from the **Bonus Words** list only if they fit naturally. Do not force them.  
+- **Simplicity**: Default to straightforward sentences unless words require creative combinations.  
+- **Grammar Variety**: Include questions, imperatives, or conditionals where possible.  
+- **Word Forms**: Include modified words (e.g., "running" for "run") in \`matchedWordsSurface\` and \`matchedWordsId\`.  
+- **Override Bad Definitions**: If a word’s definition seems unnatural, use it in a more logical way.  
 
-### Words List:
+### Core Words (Priority):
 ${words
   .map(
     (w) =>
@@ -98,8 +97,21 @@ ${words
   )
   .join('\n')}
 
-Ensure the sentences are simple, creative, and memorable to reinforce vocabulary.
-Return only the JSON object, no additional text.
+${
+  bonusWords.length > 0
+    ? `
+### Bonus Words (Use Sparingly, If Natural):
+${bonusWords
+  .map(
+    (w) =>
+      `- { "id": ${w.id}, "word": "${w.word}", "definition": "${w.definition}" }`,
+  )
+  .join('\n')}
+`
+    : ''
+}
+
+Return only valid JSON. Do not include explanatory text.
 `;
 
 export { combineWordsPrompt, wordCombinationPrompt };
