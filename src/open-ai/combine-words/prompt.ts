@@ -78,7 +78,7 @@ const combineWordsPrompt = ({ words, targetLanguage, bonusWords = [] }) => `
 Generate simple, creative, and coherent sentences using the following words. The sentences do not need to be related to each other, but it's great if they are. Provide the response as a JSON object with a \`sentences\` array. Each sentence should contain:
   1. \`baseLang\`: The English sentence.
   2. \`targetLang\`: The translated sentence in ${targetLanguage}.
-  3. \`matchedWordsSurface\`: An array of the words (in their original script) that appear in the sentence, even if their form is slightly altered (e.g., conjugated, pluralized, etc.).
+  3. \`matchedWordsSurface\`: An array of the words (in their original script ${targetLanguage}) that appear in the sentence, even if their form is slightly altered (e.g., conjugated, pluralized, etc.).
   4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence, regardless of how the words are modified in the sentence.
 
 ### Instructions:
