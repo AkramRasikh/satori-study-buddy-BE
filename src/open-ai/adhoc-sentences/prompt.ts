@@ -134,60 +134,63 @@ export const grammarContrastPrompt = ({
   grammarSection,
   context,
   includeVariations = false,
+  isSubtleDiff = false, // ← New flag added here
 }) => `
 Generate ${
   includeVariations ? '2-3' : 'ONE'
-} natural ${targetLanguage} sentence(s) that:
+} ${targetLanguage} sentence(s) that:
 ${
   grammarSection
-    ? `1. Clearly illustrate "${grammarSection}"`
-    : '1. Demonstrate the target grammar'
+    ? `1. Illustrate "${grammarSection}"`
+    : '1. Demonstrate target grammar'
 }
-2. Are standalone examples (not modified from existing sentences)
-3. Show realistic usage contexts
+2. ${
+  isSubtleDiff
+    ? 'Highlight MINIMAL differences in meaning/usage. One way of this can be pairing similar grammatical patterns together. i.e. if studying "only if" we can pair it in a setence with "as long as"'
+    : 'Show natural usage'
+}
+3. Are standalone examples
 
-${baseSentence ? `Base Sentence for Reference: "${baseSentence}"\n` : ''}
-${context ? `Additional Context: ${context}\n` : ''}
+${baseSentence ? `Base Sentence: "${baseSentence}"\n` : ''}
+${context ? `Context: ${context}\n` : ''}
 
 ### Strict Requirements:
-1. ${includeVariations ? '2-3 examples MAXIMUM' : 'ONLY ONE sentence'}
-2. Use EXACTLY these JSON fields:
-   - "sentences" (array)
-   - "targetLang" (new ${targetLanguage} sentence)
-   - "baseLang" (English translation)
-   - "notes" (grammar explanation)
-   - "isGrammar" (always true)
+1. ${
+  isSubtleDiff
+    ? 'Focus on NUANCE (e.g., tone, formality, implication)'
+    : 'Prioritize clarity'
+}
+2. ${includeVariations ? '2-3 examples MAX' : 'ONLY ONE example'}
+3. Use EXACT JSON fields:
+   - "sentences"
+   - "targetLang"
+   - "baseLang"
+   - "notes" (${
+     isSubtleDiff ? 'Must explain subtle differences' : 'Explain grammar'
+   })
+   - "isGrammar": true
 
 ### Response Format (ONLY JSON):
 {
   "sentences": [
     {
-      "targetLang": "New ${targetLanguage} example 1",
+      "targetLang": "${targetLanguage} example",
       "baseLang": "English translation",
-      "notes": "How this illustrates ${grammarSection || 'the grammar'}",
+      "notes": "${isSubtleDiff ? 'Nuance comparison' : 'Grammar explanation'}",
       "isGrammar": true
-    }${
+    }${includeVariations ? ',' : ''}
+    ${
       includeVariations
-        ? `,
+        ? `
     {
-      "targetLang": "New ${targetLanguage} example 2",
+      "targetLang": "Additional ${targetLanguage} example",
       "baseLang": "English translation",
-      "notes": "Different usage context",
-      "isGrammar": true
-    },
-    {
-      "targetLang": "New ${targetLanguage} example 3",
-      "baseLang": "English translation",
-      "notes": "Alternative scenario",
+      "notes": "${
+        isSubtleDiff ? 'Subtle contrast with Example 1' : 'Alternative usage'
+      }",
       "isGrammar": true
     }`
         : ''
     }
   ]
-}
-
-### Prohibitions:
-- Never modify the baseSentence (only use as context)
-- No markdown/text outside JSON
-- No deviation from field names
-`;
+}`;

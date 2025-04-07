@@ -7,9 +7,14 @@ import { sentenceTTSValidation } from './sentence-tts/validation';
 import { sentenceTTS } from './sentence-tts/route';
 import { breakdownSentence } from './sentence-breakdown/route';
 import { breakdownSentenceValidation } from './sentence-breakdown/validation';
-import { adhocExpressionTTS, adhocSentenceTTS } from './adhoc-sentences/route';
+import {
+  adhocExpressionTTS,
+  adhocSentenceTTS,
+  grammarContrastTTS,
+} from './adhoc-sentences/route';
 import {
   adhocExpressionTTSValidation,
+  adhocGrammarTTSValidation,
   adhocSentenceTTSValidation,
 } from './adhoc-sentences/validation';
 
@@ -52,6 +57,12 @@ const openAIRoutes = (app) => {
     adhocExpressionTTSValidation,
     baseRoute,
     adhocExpressionTTS,
+  );
+  app.post(
+    '/adhoc-grammar-tts',
+    adhocGrammarTTSValidation,
+    baseRoute,
+    grammarContrastTTS,
   );
 };
 
