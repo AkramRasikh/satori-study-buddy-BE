@@ -128,86 +128,66 @@ ${
 - No deviation from specified field names
 `;
 
-/**
- * Generates a prompt to contrast grammatical constructions with nuanced differences
- * @param {Object} params - Parameters for grammar analysis
- * @param {string} params.baseSentence - Original sentence to analyze
- * @param {string} [params.grammarSection] - Highlighted section of the sentence (e.g., "were ever" in "If I were ever rich")
- * @param {string} [params.context] - Explanation of confusion (e.g., "Why use 'were ever' instead of 'were'?")
- * @param {string} params.targetLanguage - Target language for translations (e.g., 'es')
- * @param {boolean} [params.includeVariations=false] - If true, shows 2-3 contrastive constructions
- * @returns {string} Formatted API prompt
- */
 export const grammarContrastPrompt = ({
+  targetLanguage,
   baseSentence,
   grammarSection,
   context,
-  targetLanguage,
   includeVariations = false,
 }) => `
-Analyze the grammatical nuance in "${baseSentence}"${
-  grammarSection ? ` (focus: "${grammarSection}")` : ''
-}${context ? `\nContext: ${context}` : ''}.
+Generate ${
+  includeVariations ? '2-3' : 'ONE'
+} natural ${targetLanguage} sentence(s) that:
+${
+  grammarSection
+    ? `1. Clearly illustrate "${grammarSection}"`
+    : '1. Demonstrate the target grammar'
+}
+2. Are standalone examples (not modified from existing sentences)
+3. Show realistic usage contexts
 
-### Key Task:
-Compare ${
-  includeVariations
-    ? '2-3 near-synonymous or antagonistic constructions'
-    : 'the original against ONE alternative construction'
-} in ${targetLanguage} to highlight:
-1. Subtle differences in meaning, tone, or usage
-2. Why a native speaker might choose one over the other
+${baseSentence ? `Base Sentence for Reference: "${baseSentence}"\n` : ''}
+${context ? `Additional Context: ${context}\n` : ''}
 
 ### Strict Requirements:
-1. ${
-  includeVariations
-    ? 'Provide 2-3 variants MAXIMUM'
-    : 'Provide ONLY ONE contrastive example'
-}
-2. Use these exact JSON fields: 
+1. ${includeVariations ? '2-3 examples MAXIMUM' : 'ONLY ONE sentence'}
+2. Use EXACTLY these JSON fields:
    - "sentences" (array)
-   - "targetLang" (translation)
-   - "baseLang" (original phrase if applicable)
-   - "notes" (nuance explanation)
-   - "isGrammar" (ALWAYS true)
+   - "targetLang" (new ${targetLanguage} sentence)
+   - "baseLang" (English translation)
+   - "notes" (grammar explanation)
+   - "isGrammar" (always true)
 
 ### Response Format (ONLY JSON):
 {
   "sentences": [
     {
-      ${grammarSection ? `"baseLang": "${grammarSection}",` : ''}
-      "targetLang": "Original construction",
-      "notes": "Default meaning/usage",
+      "targetLang": "New ${targetLanguage} example 1",
+      "baseLang": "English translation",
+      "notes": "How this illustrates ${grammarSection || 'the grammar'}",
       "isGrammar": true
     }${
       includeVariations
         ? `,
     {
-      "baseLang": ${grammarSection ? `"${grammarSection}"` : 'null'},
-      "targetLang": "Variant 1",
-      "notes": "Key difference: e.g., stronger doubt, formality, etc.",
+      "targetLang": "New ${targetLanguage} example 2",
+      "baseLang": "English translation",
+      "notes": "Different usage context",
       "isGrammar": true
     },
     {
-      "baseLang": ${grammarSection ? `"${grammarSection}"` : 'null'},
-      "targetLang": "Variant 2 (if applicable)",
-      "notes": "Specific context where this is preferred",
+      "targetLang": "New ${targetLanguage} example 3",
+      "baseLang": "English translation",
+      "notes": "Alternative scenario",
       "isGrammar": true
     }`
-        : `,
-    {
-      "baseLang": ${grammarSection ? `"${grammarSection}"` : 'null'},
-      "targetLang": "Contrastive example",
-      "notes": "Why this alternative changes meaning/tone",
-      "isGrammar": true
-    }`
+        : ''
     }
   ]
 }
 
 ### Prohibitions:
-- Never omit "isGrammar": true
-- No additional commentary outside JSON
-- No markdown formatting
-- No deviation from specified field names
+- Never modify the baseSentence (only use as context)
+- No markdown/text outside JSON
+- No deviation from field names
 `;
