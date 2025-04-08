@@ -22,8 +22,18 @@ const adhocGrammarTTSValidation = [
   body('isSubtleDiff').isBoolean().optional(),
 ];
 
+const adhocMinimalPairingWordTTSValidation = [
+  checkMandatoryLanguage,
+  body('inputWord.id').isString().notEmpty(),
+  body('inputWord.word').isString().notEmpty(),
+  body('inputWord.definition').isString().optional(),
+  body('isMeaning').isString().optional(),
+  body('isVisual').isBoolean().optional(),
+];
+
 export {
   adhocExpressionTTSValidation,
   adhocSentenceTTSValidation,
   adhocGrammarTTSValidation,
+  adhocMinimalPairingWordTTSValidation,
 };

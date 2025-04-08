@@ -194,3 +194,121 @@ ${context ? `Context: ${context}\n` : ''}
     }
   ]
 }`;
+
+export const adhocSentenceMinimalPairingWordsPrompt = ({
+  targetLanguage,
+  word,
+}) => `
+  Generate a natural-sounding phrase that creates a minimal pair with the given word in ${targetLanguage},
+  highlighting phonetic similarities while maintaining clear meaning.
+
+  ### Input Word:
+  ${JSON.stringify(word, null, 2)}
+
+  ### Requirements:
+  1. Create a 2-4 word phrase in ${targetLanguage} containing:
+     - The input word (may be modified grammatically)
+     - At least one phonetically similar word
+  2. Must form a coherent, non-abstract phrase
+  3. Should sound natural in ${targetLanguage}
+  4. Phonetic similarity should be immediately noticeable
+
+  ### Constraints:
+  - Prioritize natural usage over forced wordplay
+  - Allow conjugation/declension as needed
+  - Include original script + romanization for non-Latin scripts
+  - Avoid obscure vocabulary unless necessary
+
+  ### Response Format (strict JSON):
+  {
+    "sentences": [{
+      "targetLang": "${targetLanguage} phrase (with original script if applicable)",
+      "baseLang": "Literal English translation",
+      "notes": "Brief explanation of phonetic connection and usage"
+    }]
+  }
+
+  ### Example Output for Japanese:
+  {
+    "sentences": [{
+      "targetLang": "自転車で実家へ",
+      "baseLang": "To parents' house by bicycle",
+      "notes": "(OPTIONAL) Phonetic link: jitensha → jikka (shared ji-/jik- sounds). any missed "
+    }]
+  }
+`;
+
+export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
+  targetLanguage,
+  word,
+  pairingType = 'any', // "antonym" | "synonym" | "functional" | "any"
+}) => `
+  Generate a short natural phrase or short sentence in ${targetLanguage} that pairs:
+  ${
+    pairingType === 'any'
+      ? '• Either an antonym, synonym or functional partner'
+      : ''
+  }
+  ${pairingType === 'antonym' ? '• An antonym' : ''}
+  ${pairingType === 'synonym' ? '• A synonym' : ''}
+  ${pairingType === 'functional' ? '• A functional partner' : ''}
+
+  ### Input Word:
+  ${JSON.stringify(word)}
+
+  ### Requirements:
+  1. Complete, natural phrase or short sentence in ${targetLanguage}
+  2. Original script + romanization if non-Latin
+  3. Words may be grammatically modified
+
+  ### Response Format (strict JSON):
+  {
+    "sentences": [{
+      "targetLang": "${targetLanguage} phrase",
+      "baseLang": "English translation",
+      "notes": "Optional explanation"
+    }]
+  }
+
+  ### Examples:
+  {
+    "sentences": [{
+      "targetLang": "自転車ではなく自動車",
+      "baseLang": "Not a bicycle but a car"
+    }]
+  }
+`;
+
+export const visualCharacterPairingPrompt = ({
+  language,
+  word, // {id, word, definition}
+}) => `
+  Create a short phrase/sentence in ${language} that visually pairs with "${word.word}" by:
+  • Overlapping use of characters/radicals
+  • Shared characters/radicals
+  • Similar-looking characters
+
+
+  ### Requirements:
+  1. Prioritize visual character relationships
+  2. Keep the phrase/sentence natural in ${language}
+  3. Highlight character connections in notes
+
+  ### Response Format (strict JSON):
+  {
+    "sentences": [{
+      "targetLang": "[phrase/sentence]",
+      "baseLang": "English translation",
+      "notes": "Optional explanation",
+    }]
+  }
+
+  ### Examples:
+  {
+    "sentences": [{
+      "targetLang": "学校で校長に会う",
+      "baseLang": "Meet the principal at school",
+      "notes": "Visual relationship: Shared 校 character in different positions"
+    }]
+  }
+`;

@@ -9,12 +9,14 @@ import { breakdownSentence } from './sentence-breakdown/route';
 import { breakdownSentenceValidation } from './sentence-breakdown/validation';
 import {
   adhocExpressionTTS,
+  adhocSentenceMinimalPairingWords,
   adhocSentenceTTS,
   grammarContrastTTS,
 } from './adhoc-sentences/route';
 import {
   adhocExpressionTTSValidation,
   adhocGrammarTTSValidation,
+  adhocMinimalPairingWordTTSValidation,
   adhocSentenceTTSValidation,
 } from './adhoc-sentences/validation';
 
@@ -63,6 +65,12 @@ const openAIRoutes = (app) => {
     adhocGrammarTTSValidation,
     baseRoute,
     grammarContrastTTS,
+  );
+  app.post(
+    '/minimal-pair-sound',
+    adhocMinimalPairingWordTTSValidation,
+    baseRoute,
+    adhocSentenceMinimalPairingWords,
   );
 };
 
