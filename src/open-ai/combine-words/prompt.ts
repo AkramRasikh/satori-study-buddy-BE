@@ -52,28 +52,6 @@ const additionalMoodPromptNote = (language: string) =>
     ? 'Also mix up the moods i.e. formal, informal, etc'
     : '';
 
-const wordCombinationPrompt = (inputDataJson, language) => `
-  I am learning ${language}. The JSON below of “word” and “context”. 
-  Combine the words to give me new sentences that is easy to understand. The goal is to make the words understandable and the context provided are only there to help you understand the way in which the words are used.
-  If possible, provide more interesting - still simple - and quirky responses.
-  If combining all words becomes too much, then they don't all need to be together in the same sentence. Give me multiple if possible
-  ${additionalMoodPromptNote(language)}
-
-  As shown in the above example out, return it in JSON format with properties:
-  
-  1. baseLang - (string) english translation
-  2. targetLang - (string) ${language} text
-  3. matchedWords - an array of the words used. Note here that the word may be conjugated differently compared to how it is initially provided so use the initially provided word here
-
-  example input ${exampleJapaneseInput}
-  example output an array of objects ${exampleJapaneseResponse}
-
-  Real input:
-  ${JSON.stringify(inputDataJson)}
-
-  NOTE: this is an integration so only respond in the JSON format as above (array of objects).
-`;
-
 const combineWordsPrompt = ({ words, targetLanguage, bonusWords = [] }) => `
 Generate simple, creative, and coherent sentences using the following words. The sentences do not need to be related to each other, but it's great if they are. Provide the response as a JSON object with a \`sentences\` array. Each sentence should contain:
   1. \`baseLang\`: The English sentence.
@@ -82,7 +60,7 @@ Generate simple, creative, and coherent sentences using the following words. The
   4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence, regardless of how the words are modified in the sentence.
 
 ### Instructions:
-- **Core Words First**: Prioritize sentences using at least 2 words from the **Core Words** list below. Ensure each core word appears in ~2 sentences.
+- **Core Words First**: Prioritize sentences using at least 2 words from the **Core Words** list below. Ensure each core word appears in ideally 1 sentences but 2 if necessary.
 - **Bonus Words (Optional)**: Use words from the **Bonus Words** list only if they fit naturally. Do not force them.  
 - **Simplicity**: Default to straightforward sentences unless words require creative combinations.  
 - **Grammar Variety**: Include questions, imperatives, or conditionals where possible.  
@@ -114,4 +92,4 @@ ${bonusWords
 Return only valid JSON. Do not include explanatory text.
 `;
 
-export { combineWordsPrompt, wordCombinationPrompt };
+export { combineWordsPrompt };
