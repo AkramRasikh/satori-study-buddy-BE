@@ -241,7 +241,7 @@ export const adhocSentenceMinimalPairingWordsPrompt = ({
 export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
   targetLanguage,
   word,
-  pairingType = 'any', // "antonym" | "synonym" | "functional" | "any"
+  pairingType = 'any', // "antonym" | "synonym" | "functional" | "rhyme/haiku" | "trivia" |"any"
 }) => `
   Generate a short natural phrase or short sentence in ${targetLanguage} that pairs:
   ${
@@ -251,6 +251,16 @@ export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
   }
   ${pairingType === 'antonym' ? '• An antonym' : ''}
   ${pairingType === 'synonym' ? '• A synonym' : ''}
+  ${
+    pairingType === 'trivia'
+      ? '• A trivia fact that uses the word (even if the word is incidental to the word). This should still use easy to understand language'
+      : ''
+  }
+  ${
+    pairingType === 'rhyme' || pairingType === 'haiku'
+      ? '• A rhyme or short haiku'
+      : ''
+  }
   ${pairingType === 'functional' ? '• A functional partner' : ''}
 
   ### Input Word:
@@ -266,7 +276,8 @@ export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
     "sentences": [{
       "targetLang": "${targetLanguage} phrase",
       "baseLang": "English translation",
-      "notes": "Optional explanation"
+      "notes": "Optional explanation",
+      "pairingType": "["antonym" | "synonym" | "functional" | "rhyme" | "haiku" | "trivia" |"any"]"
     }]
   }
 
@@ -274,7 +285,8 @@ export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
   {
     "sentences": [{
       "targetLang": "自転車ではなく自動車",
-      "baseLang": "Not a bicycle but a car"
+      "baseLang": "Not a bicycle but a car",
+      "pairingType": "antonym"
     }]
   }
 `;
