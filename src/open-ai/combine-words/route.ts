@@ -16,6 +16,7 @@ const combineWords = async (req: Request, res: Response) => {
   const deepseekKey = process.env.DEEPSEEK_KEY;
   const inputWords = req.body.inputWords;
   const language = req.body.language;
+  const myCombinedSentence = req.body?.myCombinedSentence;
 
   const getDueItems = (items) => {
     const now = new Date(); // Current time
@@ -45,6 +46,7 @@ const combineWords = async (req: Request, res: Response) => {
     words: inputWords,
     targetLanguage: language,
     bonusWords: first25,
+    myCombinedSentence,
   });
   try {
     const resultContent = await deepSeekChatAPI({

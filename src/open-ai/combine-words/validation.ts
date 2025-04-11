@@ -6,6 +6,7 @@ const combineWordsValidation = [
   body('inputWords')
     .isArray({ min: 1 })
     .withMessage('inputWords must be a non-empty array'),
+  body('myCombinedSentence').isString().optional(),
   body('inputWords.*.id')
     .isString()
     .withMessage('Each id must be a string')
