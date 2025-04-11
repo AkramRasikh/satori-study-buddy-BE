@@ -6,7 +6,7 @@ Generate simple, creative, and coherent sentences using the following words. The
   4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence, regardless of how the words are modified in the sentence.
 
 ### Instructions:
-- **Core Words First**: Prioritize sentences using at least 2 words from the **Core Words** list below. Ensure each core word appears in ideally 1 sentences but 2 if necessary.
+- **Core Words First**: Prioritize sentences using at least 2 words from the **Core Words** list below. Core words to sentences ratio should ideally be one to one but never more than one to two.
 - **Bonus Words (Optional)**: Use words from the **Bonus Words** list only if they fit naturally. Do not force them.  
 - **Simplicity**: Default to straightforward sentences unless words require creative combinations.  
 - **Grammar Variety**: Include questions, imperatives, or conditionals where possible.  
