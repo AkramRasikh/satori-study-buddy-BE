@@ -113,10 +113,6 @@ export const breakdownSentence = async (req: Request, res: Response) => {
 export const breakdownAllSentence = async (req: Request, res: Response) => {
   const { language, title, sentences } = req.body;
 
-  console.log('## language', language);
-  console.log('## title', title);
-  console.log('## sentences', sentences);
-
   const openAIKey = process.env.DEEPSEEK_KEY;
   const prompt = `
   Break down the following ${language} sentences strictly into valid JSON output. Do not include explanations, preamble, or any additional text. 
