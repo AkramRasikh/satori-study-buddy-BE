@@ -141,8 +141,6 @@ export const breakdownAllSentence = async (req: Request, res: Response) => {
       openAIKey,
     });
 
-    console.log('## breakdown', breakdown);
-
     if (breakdown) {
       await Promise.all(
         breakdown.map(async (breakdownSentenceWidget) => {
