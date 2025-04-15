@@ -5,8 +5,14 @@ import { combineWordsValidation } from './combine-words/validation';
 import { baseRoute } from '../shared-express-utils/base-route';
 import { sentenceTTSValidation } from './sentence-tts/validation';
 import { sentenceTTS } from './sentence-tts/route';
-import { breakdownSentence } from './sentence-breakdown/route';
-import { breakdownSentenceValidation } from './sentence-breakdown/validation';
+import {
+  breakdownAllSentence,
+  breakdownSentence,
+} from './sentence-breakdown/route';
+import {
+  breakdownAllSentenceValidation,
+  breakdownSentenceValidation,
+} from './sentence-breakdown/validation';
 import {
   adhocExpressionTTS,
   adhocSentenceMinimalPairingWords,
@@ -47,6 +53,12 @@ const openAIRoutes = (app) => {
     baseRoute,
     breakdownSentence,
   ); // need to validate breakdown sentence
+  app.post(
+    '/breakdown-all-sentences',
+    breakdownAllSentenceValidation,
+    baseRoute,
+    breakdownAllSentence,
+  );
   app.post('/sentence-tts', sentenceTTSValidation, baseRoute, sentenceTTS);
   app.post(
     '/adhoc-sentence-tts',
