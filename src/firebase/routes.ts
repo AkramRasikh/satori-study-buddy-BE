@@ -30,8 +30,14 @@ import { updateSentenceReview } from './update-sentence-review/route';
 import { updateSentenceReviewValidation } from './update-sentence-review/validation';
 import { addAdhocSentenceValidation } from './add-adhoc-sentence/validation';
 import { addAdhocSentence } from './add-adhoc-sentence/route';
-import { updateSentenceReviewBulkValidation } from './update-sentence-bulk/validation';
-import { updateSentenceBulk } from './update-sentence-bulk/route';
+import {
+  updateSentenceReviewBulkAllValidation,
+  updateSentenceReviewBulkValidation,
+} from './update-sentence-bulk/validation';
+import {
+  updateSentenceBulk,
+  updateSentenceBulkAll,
+} from './update-sentence-bulk/route';
 import { baseRoute } from '../shared-express-utils/base-route';
 import { addWordContext } from './add-word-context/route';
 import { addWordContextValidation } from './add-word-context/validation';
@@ -68,6 +74,11 @@ const firebaseRoutes = (app: Express) => {
     '/sentence-review-bulk',
     updateSentenceReviewBulkValidation,
     updateSentenceBulk,
+  );
+  app.post(
+    '/remove-all-content-review',
+    updateSentenceReviewBulkAllValidation,
+    updateSentenceBulkAll,
   );
 
   app.post(

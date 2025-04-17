@@ -44,5 +44,12 @@ const updateSentenceReviewBulkValidation = [
     .isBoolean(),
   body(fieldToUpdatePrefix).optional().custom(updateFieldForContentValidation),
 ];
+const updateSentenceReviewBulkAllValidation = [
+  checkMandatoryLanguage,
+  body('topics').notEmpty().isArray(),
+];
 
-export { updateSentenceReviewBulkValidation };
+export {
+  updateSentenceReviewBulkValidation,
+  updateSentenceReviewBulkAllValidation,
+};
