@@ -79,17 +79,20 @@ const addWordLogic = async ({
         isGoogle,
       });
       const cleanedArray = filterOutNestedNulls(wordSnapShotArr);
+      const wordDataWithBreakdownDefinition = {
+        ...wordData,
+        definition: meaning
+          ? `${meaning}; ${wordData.definition}`
+          : wordData.definition,
+        reviewData,
+      };
       await db.ref(refPath).set([
         ...cleanedArray,
         {
-          ...wordData,
-          definition: meaning
-            ? `${meaning}; ${wordData.definition}`
-            : wordData.definition,
-          reviewData,
+          ...wordDataWithBreakdownDefinition,
         },
       ]);
-      return wordData;
+      return wordDataWithBreakdownDefinition;
     } else {
       throw new Error(`${word} already exists in ${language} word back`);
     }
