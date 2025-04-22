@@ -29,7 +29,6 @@ const getTranslationData = async ({
     ? await getGoogleTranslate({ word, language })
     : await chatGPTTranslator({
         word,
-        model: 'gpt-4',
         context: contextSentence,
         language,
       });

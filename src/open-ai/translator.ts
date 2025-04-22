@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import config from '../../config';
 import { japaneseformatTranslationPrompt } from './open-ai-translate-prompts/japanese';
 import { FirebaseCoreQueryParams } from '../firebase/types';
 import { languageKey } from '../eligible-languages';
@@ -7,7 +6,6 @@ import { chineseformatTranslationPrompt } from './open-ai-translate-prompts/chin
 
 interface chatGPTTranslatorParams {
   word: string;
-  model: string;
   language: string;
   context?: string;
 }
@@ -33,12 +31,13 @@ const getThisLanguagePrompt = ({
 
 const chatGPTTranslator = async ({
   word,
-  model,
   context,
   language,
 }: chatGPTTranslatorParams) => {
+  const deepseekKey = process.env.DEEPSEEK_KEY;
   const openai = new OpenAI({
-    apiKey: config.openAIKey,
+    apiKey: deepseekKey,
+    baseURL: 'https://api.deepseek.com/v1',
   });
 
   const formattedTranslationPrompt = getThisLanguagePrompt({
@@ -55,12 +54,16 @@ const chatGPTTranslator = async ({
           content: formattedTranslationPrompt,
         },
       ],
-      model,
+      model: 'deepseek-chat',
     });
 
     const content = completion.choices[0].message.content;
+    const cleanedContent = content
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
 
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(cleanedContent);
     return parsed;
   } catch (error) {
     const message = error?.message;
