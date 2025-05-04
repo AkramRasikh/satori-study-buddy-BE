@@ -241,7 +241,7 @@ export const adhocSentenceMinimalPairingWordsPrompt = ({
 export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
   targetLanguage,
   word,
-  pairingType = 'any', // "antonym" | "synonym" | "functional" | "rhyme/haiku" | "trivia" |"any"
+  pairingType = 'any', // "antonym" | "synonym" | "functional" | "rhyme/haiku" | "trivia" | "subjunctive" | "any"
 }) => `
   Generate a short natural phrase or short sentence in ${targetLanguage} that pairs:
   ${
@@ -251,6 +251,7 @@ export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
   }
   ${pairingType === 'antonym' ? '• An antonym' : ''}
   ${pairingType === 'synonym' ? '• A synonym' : ''}
+  ${pairingType === 'subjunctive' ? '• A subjunctive sentence' : ''}
   ${
     pairingType === 'trivia'
       ? '• A trivia fact that uses the word (even if the word is incidental to the word). This should still use easy to understand language'
@@ -277,7 +278,7 @@ export const adhocSentenceMinimalPairingWordsMeaningPrompt = ({
       "targetLang": "${targetLanguage} phrase",
       "baseLang": "English translation",
       "notes": "Optional explanation",
-      "pairingType": "["antonym" | "synonym" | "functional" | "rhyme" | "haiku" | "trivia" |"any"]"
+      "pairingType": "["antonym" | "synonym" | "functional" | "rhyme" | "haiku" | "trivia" | "subjunctive" |"any"]"
     }]
   }
 
