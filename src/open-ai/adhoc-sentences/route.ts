@@ -11,6 +11,7 @@ import googleTextToSpeechAPI from '../google-text-to-speech';
 import {
   adhocSentenceMinimalPairingWordsMeaningPrompt,
   adhocSentenceMinimalPairingWordsPrompt,
+  chineseCharacterSeperatePrompt,
   customWordPrompt,
   grammarContrastPrompt,
   howToExpressPrompt,
@@ -199,12 +200,17 @@ const adhocSentenceMinimalPairingWords = async (
   const deepseekKey = process.env.DEEPSEEK_KEY;
   const inputWord = req.body.inputWord;
   const language = req.body.language;
-  const isMeaning = req.body.isMeaning; // antonym, synonym, functional
+  const isMeaning = req.body.isMeaning; // antonym, synonym, functional, seperate (sort out placement)
   const isVisual = req.body.isVisual;
 
   try {
     const sentencePrompt = isVisual
       ? visualCharacterPairingPrompt({
+          language,
+          word: inputWord,
+        })
+      : isMeaning === 'seperate'
+      ? chineseCharacterSeperatePrompt({
           language,
           word: inputWord,
         })

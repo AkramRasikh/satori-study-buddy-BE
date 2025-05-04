@@ -353,7 +353,61 @@ export const customWordPrompt = ({
     "sentences": [{
       "targetLang": "学校で校長に会う",
       "baseLang": "Meet the principal at school",
-      "notes": "Visual relationship: Shared 校 character in different positions"
+      "notes": "Visual relationship/linguistic nuances/form etc, (any worthy notes here)"
+    }]
+  }
+`;
+
+export const chineseCharacterSeperatePrompt = ({
+  language,
+  word, // {id, word, definition}
+}) => `
+  Given the word ${word.word} in ${language}, which is composed of multiple characters (e.g., kanji or hanzi), generate a natural sentence in ${language} that meets the following:
+
+  The sentence must include the full word ${word.word}.
+
+  Each character in ${word.word} should also appear separately in the sentence, used in a way that reflects its individual meaning (as part of other words or phrases).
+
+  The sentence should be fluent, natural, and meaningful in ${language}.
+
+  Then, provide:
+
+  A gloss or literal translation of the sentence into English.
+
+  A short explanation of how each character contributes to the meaning of the full word.
+
+  Example:
+  Word: 自動車 (Japanese)
+  Sentence: 彼は自分で動かす車、つまり自動車を初めて買った。
+  Translation: "He bought his first car—a vehicle that moves by itself, in other words, an automobile."
+  Explanation:
+
+  自 appears in 自分 (oneself),
+
+  動 appears in 動かす (to move),
+
+  車 appears as 車 (vehicle),
+  All of which reinforce the meaning of 自動車, a self-moving vehicle.
+
+
+
+  ### Response Format (strict JSON):
+  {
+    "sentences": [{
+      "targetLang": "[phrase/sentence]",
+      "baseLang": "English translation",
+      "notes": "Optional explanation  (i.e nuances, etc)",
+      "pairingType": "seperate"
+    }]
+  }
+
+  ### Examples:
+  {
+    "sentences": [{
+      "targetLang": "学校で校長に会う",
+      "baseLang": "Meet the principal at school",
+      "notes": "Visual relationship between character/linguistic nuances/form etc, (any worthy notes here)",
+      "pairingType": "seperate"
     }]
   }
 `;
