@@ -324,3 +324,35 @@ export const visualCharacterPairingPrompt = ({
     }]
   }
 `;
+export const customWordPrompt = ({
+  language,
+  word, // {id, word, definition}
+  prompt,
+}) => `
+  Create a short sentence in ${language} pertaining to the "${word.word}" with the custom prompt in mind:
+  • ${prompt}
+
+
+  ### Requirements:
+  1. Prioritize visual character relationships
+  2. Keep the phrase/sentence natural in ${language}
+  3. Highlight character connections in notes
+
+  ### Response Format (strict JSON):
+  {
+    "sentences": [{
+      "targetLang": "[phrase/sentence]",
+      "baseLang": "English translation",
+      "notes": "Optional explanation  (i.e nuances, etc)",
+    }]
+  }
+
+  ### Examples:
+  {
+    "sentences": [{
+      "targetLang": "学校で校長に会う",
+      "baseLang": "Meet the principal at school",
+      "notes": "Visual relationship: Shared 校 character in different positions"
+    }]
+  }
+`;

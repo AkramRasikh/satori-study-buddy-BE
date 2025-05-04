@@ -15,11 +15,13 @@ import {
 } from './sentence-breakdown/validation';
 import {
   adhocExpressionTTS,
+  adhocSentenceCustomWord,
   adhocSentenceMinimalPairingWords,
   adhocSentenceTTS,
   grammarContrastTTS,
 } from './adhoc-sentences/route';
 import {
+  adhocCustomWordTTSValidation,
   adhocExpressionTTSValidation,
   adhocGrammarTTSValidation,
   adhocMinimalPairingWordTTSValidation,
@@ -83,6 +85,12 @@ const openAIRoutes = (app) => {
     adhocMinimalPairingWordTTSValidation,
     baseRoute,
     adhocSentenceMinimalPairingWords,
+  );
+  app.post(
+    '/custom-word-prompt',
+    adhocCustomWordTTSValidation,
+    baseRoute,
+    adhocSentenceCustomWord,
   );
 };
 

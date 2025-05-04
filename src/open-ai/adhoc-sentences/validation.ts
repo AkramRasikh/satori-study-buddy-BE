@@ -30,10 +30,18 @@ const adhocMinimalPairingWordTTSValidation = [
   body('isMeaning').isString().optional(),
   body('isVisual').isBoolean().optional(),
 ];
+const adhocCustomWordTTSValidation = [
+  checkMandatoryLanguage,
+  body('inputWord.id').isString().notEmpty(),
+  body('inputWord.word').isString().notEmpty(),
+  body('inputWord.definition').isString().optional(),
+  body('prompt').isString(),
+];
 
 export {
   adhocExpressionTTSValidation,
   adhocSentenceTTSValidation,
   adhocGrammarTTSValidation,
   adhocMinimalPairingWordTTSValidation,
+  adhocCustomWordTTSValidation,
 };

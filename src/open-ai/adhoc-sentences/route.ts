@@ -11,6 +11,7 @@ import googleTextToSpeechAPI from '../google-text-to-speech';
 import {
   adhocSentenceMinimalPairingWordsMeaningPrompt,
   adhocSentenceMinimalPairingWordsPrompt,
+  customWordPrompt,
   grammarContrastPrompt,
   howToExpressPrompt,
   howToSayPrompt,
@@ -266,10 +267,73 @@ const adhocSentenceMinimalPairingWords = async (
     res.status(500).json({ error });
   }
 };
+const adhocSentenceCustomWord = async (req: Request, res: Response) => {
+  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const inputWord = req.body.inputWord;
+  const language = req.body.language;
+  const prompt = req.body.prompt;
+
+  try {
+    const sentencePrompt = customWordPrompt({
+      language,
+      word: inputWord,
+      prompt,
+    });
+
+    const resultContent = await deepSeekChatAPI({
+      sentence: sentencePrompt,
+      model: 'deepseek-chat',
+      openAIKey: deepseekKey,
+    });
+    const sentencesFromResult = resultContent.sentences;
+
+    const sentencesWithIds = sentencesFromResult.map((sentence) => ({
+      id: uuidv4(),
+      topic: 'sentence-helper',
+      hasAudio: true,
+      ...sentence,
+      reviewData: getInitSentenceCard(),
+    }));
+
+    const sentencesToAddFromDB = await addSentencesBulkToDb({
+      language,
+      sentencesBulk: sentencesWithIds,
+    });
+
+    await Promise.all(
+      sentencesWithIds.map(async (item) => {
+        const id = item.id;
+        const text = item.targetLang;
+
+        return await googleTextToSpeechAPI({
+          id,
+          text,
+          language,
+        });
+      }),
+    );
+
+    await Promise.all(
+      sentencesToAddFromDB.map(async (sentence) => {
+        const sentenceId = sentence.id;
+        return await updateWordContext({
+          wordId: inputWord.id,
+          sentenceId,
+          language,
+        });
+      }),
+    );
+    res.status(200).json(sentencesToAddFromDB);
+  } catch (error) {
+    console.log('## /custom-word-prompt error', error);
+    res.status(500).json({ error });
+  }
+};
 
 export {
   adhocSentenceTTS,
   adhocExpressionTTS,
   grammarContrastTTS,
   adhocSentenceMinimalPairingWords,
+  adhocSentenceCustomWord,
 };
