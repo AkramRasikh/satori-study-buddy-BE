@@ -9,8 +9,6 @@ import { deleteWordValidation } from './delete-word/validation';
 import { deleteWord } from './delete-word/route';
 import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
-import { addWord } from './add-word/route';
-import { addWordValidation } from './add-word/validation';
 import { updateContentMetaData } from './update-content-review/route';
 import { updateContentMetaDataValidation } from './update-content-review/validation';
 import { updateSentence } from './update-sentence/route';
@@ -40,7 +38,6 @@ const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
   app.post('/delete-word', deleteWordValidation, deleteWord);
   app.post('/add-content', addContentValidation, addContent);
-  app.post('/add-word', addWordValidation, addWord);
   app.post(
     '/add-word-context',
     addWordContextValidation,
