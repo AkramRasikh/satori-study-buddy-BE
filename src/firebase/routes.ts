@@ -5,10 +5,6 @@ import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { updateWordValidation } from './update-word/validation';
 import { updateWord } from './update-word/route';
-import { addSnippet } from './add-snippet/route';
-import { addSnippetValidation } from './add-snippet/validation';
-import { deleteSnippet } from './delete-snippet/route';
-import { deleteSnippetValidation } from './delete-snippet/validation';
 import { deleteWordValidation } from './delete-word/validation';
 import { deleteWord } from './delete-word/route';
 import { addContent } from './add-content/route';
@@ -42,8 +38,6 @@ import { addWordContextValidation } from './add-word-context/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/update-word', updateWordValidation, updateWord);
-  app.post('/add-snippet', addSnippetValidation, addSnippet);
-  app.post('/delete-snippet', deleteSnippetValidation, deleteSnippet);
   app.post('/delete-word', deleteWordValidation, deleteWord);
   app.post('/add-content', addContentValidation, addContent);
   app.post('/add-word', addWordValidation, addWord);
