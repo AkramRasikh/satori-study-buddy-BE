@@ -3,8 +3,6 @@ import { addMyGeneratedContent } from './init';
 import { content, words, sentences } from './refs';
 import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
-import { deleteWordValidation } from './delete-word/validation';
-import { deleteWord } from './delete-word/route';
 import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
 import { updateContentMetaData } from './update-content-review/route';
@@ -33,7 +31,6 @@ import { addWordContext } from './add-word-context/route';
 import { addWordContextValidation } from './add-word-context/validation';
 
 const firebaseRoutes = (app: Express) => {
-  app.post('/delete-word', deleteWordValidation, deleteWord);
   app.post('/add-content', addContentValidation, addContent);
   app.post(
     '/add-word-context',
