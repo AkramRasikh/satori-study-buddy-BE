@@ -16,8 +16,6 @@ import {
 } from './delete-content/validation';
 import { updateSentenceReview } from './update-sentence-review/route';
 import { updateSentenceReviewValidation } from './update-sentence-review/validation';
-import { addAdhocSentenceValidation } from './add-adhoc-sentence/validation';
-import { addAdhocSentence } from './add-adhoc-sentence/route';
 import {
   updateSentenceReviewBulkAllValidation,
   updateSentenceReviewBulkValidation,
@@ -51,7 +49,6 @@ const firebaseRoutes = (app: Express) => {
     updateSentenceReviewValidation,
     updateSentenceReview,
   );
-  app.post('/add-adhoc-sentence', addAdhocSentenceValidation, addAdhocSentence);
   app.post(
     '/sentence-review-bulk',
     updateSentenceReviewBulkValidation,
