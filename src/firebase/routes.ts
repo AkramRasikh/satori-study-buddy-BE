@@ -1,7 +1,6 @@
 import { Request, Response, Express } from 'express';
 import { addMyGeneratedContent } from './init';
 import { content, words, sentences } from './refs';
-import { updateAdhocSentence } from './update-adhoc-sentence';
 import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
 import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
@@ -58,32 +57,6 @@ const firebaseRoutes = (app: Express) => {
     '/remove-all-content-review',
     updateSentenceReviewBulkAllValidation,
     updateSentenceBulkAll,
-  );
-
-  app.post(
-    '/update-adhoc-sentence',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const sentenceId = req.body?.sentenceId;
-      const language = req.body?.language;
-      const fieldToUpdate = req.body?.fieldToUpdate;
-
-      try {
-        const fieldToUpdateRes = await updateAdhocSentence({
-          sentenceId,
-          fieldToUpdate,
-          language,
-        });
-        if (fieldToUpdateRes) {
-          res.status(200).json(fieldToUpdateRes);
-        } else {
-          res.status(400).json({ message: 'Not found' });
-        }
-      } catch (error) {
-        res.status(400).json();
-        console.log('## /update-adhoc-sentence Err', { error });
-      }
-    },
   );
 
   app.post(
