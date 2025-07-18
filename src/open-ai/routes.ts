@@ -3,8 +3,6 @@ import chatGptTextAPI from './chat-gpt';
 import { combineWords } from './combine-words/route';
 import { combineWordsValidation } from './combine-words/validation';
 import { baseRoute } from '../shared-express-utils/base-route';
-import { sentenceTTSValidation } from './sentence-tts/validation';
-import { sentenceTTS } from './sentence-tts/route';
 import {
   breakdownAllSentence,
   breakdownSentence,
@@ -61,7 +59,6 @@ const openAIRoutes = (app) => {
     baseRoute,
     breakdownAllSentence,
   );
-  app.post('/sentence-tts', sentenceTTSValidation, baseRoute, sentenceTTS);
   app.post(
     '/adhoc-sentence-tts',
     adhocSentenceTTSValidation,
