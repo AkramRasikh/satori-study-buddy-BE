@@ -12,18 +12,18 @@ import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { words } from '../../firebase/refs';
 import { db } from '../../firebase/init';
 
+const isDueCheck = (sentence, todayDateObj) => {
+  return (
+    (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
+    new Date(sentence?.reviewData?.due) < todayDateObj
+  );
+};
+
 const combineWords = async (req: Request, res: Response) => {
   const deepseekKey = process.env.OPENAI_API_KEY;
   const inputWords = req.body.inputWords;
   const language = req.body.language;
   const myCombinedSentence = req.body?.myCombinedSentence;
-
-  const isDueCheck = (sentence, todayDateObj) => {
-    return (
-      (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
-      new Date(sentence?.reviewData?.due) < todayDateObj
-    );
-  };
 
   const getDueItems = (items) => {
     const now = new Date(); // Current time
