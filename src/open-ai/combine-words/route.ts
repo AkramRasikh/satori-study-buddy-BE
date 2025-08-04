@@ -57,7 +57,6 @@ const combineWords = async (req: Request, res: Response) => {
       model: 'gpt-4o-mini',
       openAIKey: deepseekKey,
     });
-    console.log('## resultContent', resultContent);
     const sentencesFromResult = resultContent?.sentence;
 
     const sentencesWithIds = [sentencesFromResult].map((sentence) => ({
