@@ -26,17 +26,22 @@ const combineWords = async (req: Request, res: Response) => {
   const myCombinedSentence = req.body?.myCombinedSentence;
 
   const getDueItems = (items) => {
-    const now = new Date(); // Current time
-    return items
-      .filter((item) => isDueCheck(item, now))
-      .slice(0, 5)
-      .map((word) => ({
-        id: word.id,
-        word: word.baseForm,
-        definition: word.definition,
-      }));
-  };
+    const now = new Date();
+    const dueItems = [];
 
+    for (let i = 0; i < items.length && dueItems.length < 5; i++) {
+      const item = items[i];
+      if (isDueCheck(item, now)) {
+        dueItems.push({
+          id: item.id,
+          word: item.baseForm,
+          definition: item.definition,
+        });
+      }
+    }
+
+    return dueItems;
+  };
   const wordsArray = await getContentTypeSnapshot({
     ref: words,
     language,
