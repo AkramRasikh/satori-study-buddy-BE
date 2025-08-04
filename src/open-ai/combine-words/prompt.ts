@@ -34,7 +34,7 @@ const combineWordsPrompt = ({
   const bonusWordsToUse =
     bonusWords.length > 0
       ? `
-### Bonus Words (Use Sparingly, If Natural):
+### Bonus Words (strong preference to be used, only if natural):
 ${bonusWords
   .map(
     (w) =>
