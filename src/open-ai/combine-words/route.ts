@@ -51,8 +51,6 @@ const combineWords = async (req: Request, res: Response) => {
     myCombinedSentence,
   });
 
-  console.log('## sentencePrompt', sentencePrompt);
-
   try {
     const resultContent = await deepSeekChatAPI({
       sentence: sentencePrompt,
@@ -62,11 +60,7 @@ const combineWords = async (req: Request, res: Response) => {
     console.log('## resultContent', resultContent);
     const sentencesFromResult = resultContent?.sentence;
 
-    res.status(200).json(sentencesFromResult);
-
-    return;
-
-    const sentencesWithIds = sentencesFromResult.map((sentence) => ({
+    const sentencesWithIds = [sentencesFromResult].map((sentence) => ({
       id: uuidv4(),
       topic: 'sentence-helper',
       hasAudio: true,
