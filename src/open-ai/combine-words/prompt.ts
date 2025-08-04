@@ -1,3 +1,13 @@
+export const combinedSentenceCoreInstructionsPrompt = `
+    ### Core Instructions:
+    - **Please write a short **natural-sounding** example dialogue using the core words below. 
+        The dialogue should be between two people and include **at least two exchanges** (i.e., a minimum of 2/3 sentence total, alternating speakers). 
+        Use questions, imperatives, natural filler words, and varied sentence types to make it conversational and engaging.
+    - Keep the dialogue concise but meaningful and ideally theatrical, ensuring that the context clearly demonstrates how the words are used naturally.
+    - **Word Forms**: Include modified words (e.g., "running" for "run") in \`matchedWordsSurface\` and \`matchedWordsId\`.  
+    - **Override Bad Definitions**: If a word’s definition seems unnatural, use it in a more logical way.  
+  `;
+
 const combineWordsPrompt = ({
   words,
   targetLanguage,
@@ -10,19 +20,9 @@ const combineWordsPrompt = ({
     1. \`baseLang\`: The English sentence.
     2. \`targetLang\`: The translated sentence in ${targetLanguage}.
     3. \`matchedWordsSurface\`: An array of the words (in their original script ${targetLanguage}) that appear in the sentence, even if their form is slightly altered (e.g., conjugated, pluralized, etc.).
-    4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence, regardless of how the words are modified in the sentence.
+    4. \`matchedWordsId\`: An array of the corresponding word IDs that were used in the sentence.
     4. \`notes\`: Explain any nuances that may be relevant to me as a learner
 `;
-
-  const coreInstructions = `
-    ### Core Instructions:
-    - **Please write a short **natural-sounding** example dialogue using the core words below. 
-        The dialogue should be between two people and include **at least two exchanges** (i.e., a minimum of 2/3 sentence total, alternating speakers). 
-        Use questions, imperatives, natural filler words, and varied sentence types to make it conversational and engaging.
-    - Keep the dialogue concise but meaningful and ideally theatrical, ensuring that the context clearly demonstrates how the words are used naturally.
-    - **Word Forms**: Include modified words (e.g., "running" for "run") in \`matchedWordsSurface\` and \`matchedWordsId\`.  
-    - **Override Bad Definitions**: If a word’s definition seems unnatural, use it in a more logical way.  
-  `;
 
   const coreWordsToUse = words
     .map(
@@ -46,7 +46,7 @@ ${bonusWords
 
   return `
     ${JSON.stringify(baseJSONReturnObj)}
-    ${JSON.stringify(coreInstructions)}
+    ${JSON.stringify(combinedSentenceCoreInstructionsPrompt)}
     ${
       myCombinedSentence
         ? `
