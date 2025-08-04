@@ -20,7 +20,7 @@ import {
 } from './prompt';
 
 const adhocSentenceTTS = async (req: Request, res: Response) => {
-  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const deepseekKey = process.env.OPENAI_API_KEY;
 
   const language = req.body.language;
   const sentence = req.body.sentence;
@@ -76,7 +76,7 @@ const adhocSentenceTTS = async (req: Request, res: Response) => {
   }
 };
 const adhocExpressionTTS = async (req: Request, res: Response) => {
-  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const deepseekKey = process.env.OPENAI_API_KEY;
 
   const language = req.body.language;
   const inquiry = req.body.inquiry;
@@ -133,7 +133,7 @@ const adhocExpressionTTS = async (req: Request, res: Response) => {
 };
 
 const grammarContrastTTS = async (req: Request, res: Response) => {
-  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const deepseekKey = process.env.OPENAI_API_KEY;
 
   const language = req.body.language;
   const baseSentence = req.body.baseSentence;
@@ -197,7 +197,7 @@ const adhocSentenceMinimalPairingWords = async (
   req: Request,
   res: Response,
 ) => {
-  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const deepseekKey = process.env.OPENAI_API_KEY;
   const inputWord = req.body.inputWord;
   const language = req.body.language;
   const isMeaning = req.body.isMeaning; // antonym, synonym, functional, seperate (sort out placement)
@@ -274,7 +274,7 @@ const adhocSentenceMinimalPairingWords = async (
   }
 };
 const adhocSentenceCustomWord = async (req: Request, res: Response) => {
-  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const deepseekKey = process.env.OPENAI_API_KEY;
   const inputWord = req.body.inputWord;
   const language = req.body.language;
   const prompt = req.body.prompt;

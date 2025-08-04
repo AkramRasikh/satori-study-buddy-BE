@@ -19,11 +19,16 @@ const chatGptTextAPI = async ({
     const completion = await openai.chat.completions.create({
       messages: [
         {
+          role: 'system',
+          content:
+            'You are a helpful assistant that generates natural and fluent Japanese sentences based on English instructions.',
+        },
+        {
           role: 'user',
           content: sentence,
         },
       ],
-      model,
+      model: 'gpt-4o-mini',
     });
 
     const content = completion.choices[0].message.content;
@@ -44,12 +49,15 @@ export const deepSeekChatAPI = async ({
 }: chatGptTextAPIParams) => {
   const openai = new OpenAI({
     apiKey: openAIKey,
-    baseURL: 'https://api.deepseek.com/v1',
+    // baseURL: 'https://api.deepseek.com/v1',
   });
+
+  const systemPrompt = `You are a bilingual tutor. You will be given Japanese words and asked to build a short sentence using them. Your job is to return a structured JSON object containing the Japanese sentence, its English translation, and helpful notes for learners.`;
 
   try {
     const completion = await openai.chat.completions.create({
       messages: [
+        { role: 'system', content: systemPrompt },
         {
           role: 'user',
           content: sentence,

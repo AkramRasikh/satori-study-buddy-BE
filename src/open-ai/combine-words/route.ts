@@ -13,26 +13,28 @@ import { words } from '../../firebase/refs';
 import { db } from '../../firebase/init';
 
 const combineWords = async (req: Request, res: Response) => {
-  const deepseekKey = process.env.DEEPSEEK_KEY;
+  const deepseekKey = process.env.OPENAI_API_KEY;
   const inputWords = req.body.inputWords;
   const language = req.body.language;
   const myCombinedSentence = req.body?.myCombinedSentence;
 
+  const isDueCheck = (sentence, todayDateObj) => {
+    return (
+      (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
+      new Date(sentence?.reviewData?.due) < todayDateObj
+    );
+  };
+
   const getDueItems = (items) => {
     const now = new Date(); // Current time
-
     return items
-      .filter((item) => {
-        // Check if reviewData exists and has a due date
-        if (!item.reviewData || !item.reviewData.due) return false;
-
-        // Convert due date string to Date object
-        const dueDate = new Date(item.reviewData.due);
-
-        // Return true if the due date is in the past (or now)
-        return dueDate <= now;
-      })
-      .slice(0, 25); // Take first 25 due items
+      .filter((item) => isDueCheck(item, now))
+      .slice(0, 5)
+      .map((word) => ({
+        id: word.id,
+        word: word.baseForm,
+        definition: word.definition,
+      }));
   };
 
   const wordsArray = await getContentTypeSnapshot({
@@ -48,14 +50,21 @@ const combineWords = async (req: Request, res: Response) => {
     bonusWords: first25,
     myCombinedSentence,
   });
+
+  console.log('## sentencePrompt', sentencePrompt);
+
   try {
     const resultContent = await deepSeekChatAPI({
       sentence: sentencePrompt,
-      model: 'deepseek-chat',
+      model: 'gpt-4o-mini',
       openAIKey: deepseekKey,
     });
     console.log('## resultContent', resultContent);
-    const sentencesFromResult = resultContent.sentences;
+    const sentencesFromResult = resultContent?.sentence;
+
+    res.status(200).json(sentencesFromResult);
+
+    return;
 
     const sentencesWithIds = sentencesFromResult.map((sentence) => ({
       id: uuidv4(),
