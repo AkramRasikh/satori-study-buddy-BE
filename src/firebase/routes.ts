@@ -24,17 +24,9 @@ import {
   updateSentenceBulkAll,
 } from './update-sentence-bulk/route';
 import { baseRoute } from '../shared-express-utils/base-route';
-import { addWordContext } from './add-word-context/route';
-import { addWordContextValidation } from './add-word-context/validation';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/add-content', addContentValidation, addContent);
-  app.post(
-    '/add-word-context',
-    addWordContextValidation,
-    baseRoute,
-    addWordContext,
-  );
   app.post(
     '/update-content',
     updateContentMetaDataValidation,
