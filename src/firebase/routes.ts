@@ -1,7 +1,4 @@
-import { Request, Response, Express } from 'express';
-import { addMyGeneratedContent } from './init';
-import { content, words, sentences } from './refs';
-import { checkMandatoryLanguage } from '../route-validation/check-mandatory-language';
+import { Express } from 'express';
 import { addContent } from './add-content/route';
 import { addContentValidation } from './add-content/validation';
 import { updateContentMetaData } from './update-content-review/route';
@@ -23,7 +20,6 @@ import {
   updateSentenceBulk,
   updateSentenceBulkAll,
 } from './update-sentence-bulk/route';
-import { baseRoute } from '../shared-express-utils/base-route';
 
 const firebaseRoutes = (app: Express) => {
   app.post('/add-content', addContentValidation, addContent);
@@ -49,30 +45,6 @@ const firebaseRoutes = (app: Express) => {
     '/remove-all-content-review',
     updateSentenceReviewBulkAllValidation,
     updateSentenceBulkAll,
-  );
-
-  app.post(
-    '/add-my-generated-content',
-    checkMandatoryLanguage,
-    async (req: Request, res: Response) => {
-      const ref = req.body?.ref;
-      const language = req.body?.language;
-      const contentEntry = req.body?.contentEntry;
-      const allowedRefs = [content, words, sentences];
-      if (!allowedRefs.includes(ref)) {
-        res.status(500).json({ error: `Wrong ref added ${ref}` });
-      }
-      try {
-        const data = await addMyGeneratedContent({
-          ref,
-          language,
-          contentEntry,
-        });
-        res.status(200).json(data);
-      } catch (error) {
-        res.status(500).json({ error });
-      }
-    },
   );
 };
 
