@@ -8,27 +8,6 @@ const updateSentenceKeys = {
   sentences: 'sentences',
 };
 
-const breakdownSentenceValidation = [
-  checkMandatoryLanguage,
-  body(updateSentenceKeys.id)
-    .notEmpty()
-    .isString()
-    .withMessage(
-      `Validation error passing ${updateSentenceKeys.id} for update sentence`,
-    ),
-  body(updateSentenceKeys.title)
-    .notEmpty()
-    .isString()
-    .withMessage(
-      `Validation error passing ${updateSentenceKeys.title} for update sentence`,
-    ),
-  body(updateSentenceKeys.targetLang)
-    .notEmpty()
-    .isString()
-    .withMessage(
-      `Validation error passing ${updateSentenceKeys.targetLang} for update sentence`,
-    ),
-];
 const breakdownAllSentenceValidation = [
   checkMandatoryLanguage,
   body(updateSentenceKeys.title)
@@ -52,4 +31,4 @@ const breakdownAllSentenceValidation = [
     .withMessage(`Validation error passing 'targetLang' for update sentence`),
 ];
 
-export { breakdownSentenceValidation, breakdownAllSentenceValidation };
+export { breakdownAllSentenceValidation };

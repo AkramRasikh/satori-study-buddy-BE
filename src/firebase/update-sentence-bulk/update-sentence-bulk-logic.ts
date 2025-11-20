@@ -9,6 +9,7 @@ const updateSentenceBulkLogic = async ({
   language,
   fieldToUpdate,
   removeReview,
+  sentenceIds,
 }) => {
   try {
     const refPath = getRefPath({ language, ref: content });
@@ -29,6 +30,9 @@ const updateSentenceBulkLogic = async ({
       const thisTopicContent = thisTopicData.content;
       const contentWithUpdatedReviewData = thisTopicContent.map(
         (sentenceWidget) => {
+          if (!sentenceIds.includes(sentenceWidget.id)) {
+            return sentenceWidget;
+          }
           if (removeReview) {
             if (sentenceWidget?.reviewData) {
               const { reviewData, ...rest } = sentenceWidget;
@@ -48,7 +52,7 @@ const updateSentenceBulkLogic = async ({
       const refObj = db.ref(refPath);
       const objectRef = refObj.child(key);
       await objectRef.update({ content: contentWithUpdatedReviewData });
-      return contentWithUpdatedReviewData;
+      return sentenceIds;
     } else {
       throw new Error("Couldn't find content to update");
     }

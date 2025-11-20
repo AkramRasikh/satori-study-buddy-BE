@@ -1,6 +1,3 @@
-import { combineAudio } from '../../mp3-utils/combine-audio';
-import { getFirebaseAudioURL } from '../../mp3-utils/get-audio-url';
-import narakeetAudio from '../../narakeet';
 import { getContentTypeSnapshot } from '../../utils/get-content-type-snapshot';
 import { getRefPath } from '../../utils/get-ref-path';
 import { db } from '../init';
@@ -16,12 +13,6 @@ interface VocabTypes {
   meaning: string;
 }
 
-interface SentenceBreakdownTypes {
-  sentenceStructure: string;
-  vocab: VocabTypes[];
-  meaning: string;
-}
-
 interface SentenceFieldToUpdateType {
   targetLang?: SentenceType['targetLang'];
   time?: SentenceType['time'];
@@ -31,62 +22,12 @@ interface SentenceFieldToUpdateType {
   meaning?: string;
 }
 
-interface UpdateSentenceLogicTypes {
-  id: string;
-  title: string;
-  language: string;
-  fieldToUpdate: SentenceFieldToUpdateType;
-  withAudio?: boolean;
-  sentence?: string;
-  voice?: string;
-}
-
 interface UpdateSentenceInContentTypes {
   id: string;
   title: string;
   language: string;
   fieldToUpdate: SentenceFieldToUpdateType;
 }
-
-interface UpdateSentenceAudioTypes {
-  id: string;
-  title: string;
-  language: string;
-  sentence: string;
-  voice?: string;
-  content: SentenceType[];
-}
-
-const updateSentenceAudio = async ({
-  id,
-  sentence,
-  voice,
-  language,
-  title,
-  content,
-}: UpdateSentenceAudioTypes) => {
-  const naraKeetRes = await narakeetAudio({
-    id,
-    sentence,
-    voice,
-    language,
-  });
-  if (naraKeetRes) {
-    const audioFiles = content.map((item: SentenceType) =>
-      getFirebaseAudioURL(item.id),
-    );
-    const successfullyRecombinedFiles = await combineAudio({
-      audioFiles,
-      mp3Name: title,
-      language,
-    });
-    if (successfullyRecombinedFiles) {
-      return true;
-    } else {
-      throw new Error('Issue combining audio');
-    }
-  }
-};
 
 const getPathToSentenceInContent = ({ contentKey, sentenceKey }) =>
   `${contentKey}/${contentRef}/${sentenceKey}`;
@@ -136,42 +77,4 @@ const updateSentenceInContent = async ({
   }
 };
 
-const updateSentenceLogic = async ({
-  id,
-  title,
-  fieldToUpdate,
-  sentence,
-  voice,
-  language,
-  withAudio,
-}: UpdateSentenceLogicTypes) => {
-  try {
-    const { updatedFields, content } = await updateSentenceInContent({
-      id,
-      title,
-      fieldToUpdate,
-      language,
-    });
-    if (withAudio && sentence) {
-      await updateSentenceAudio({
-        id,
-        sentence,
-        voice,
-        language,
-        title,
-        content,
-      });
-      return updatedFields;
-    } else {
-      return updatedFields;
-    }
-  } catch (error) {
-    throw new Error(error || 'Issue with updating sentence');
-  }
-};
-
-export {
-  updateSentenceInContent,
-  updateSentenceLogic,
-  getPathToSentenceInContent,
-};
+export { updateSentenceInContent, getPathToSentenceInContent };

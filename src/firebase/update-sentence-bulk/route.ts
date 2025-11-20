@@ -12,16 +12,18 @@ const updateSentenceBulk = async (req: Request, res: Response) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { language, title, fieldToUpdate, removeReview } = req.body;
+  const { language, title, fieldToUpdate, removeReview, sentenceIds } =
+    req.body;
 
   try {
-    const data = await updateSentenceBulkLogic({
+    const sentenceIdsUpdated = await updateSentenceBulkLogic({
       title,
       language,
       fieldToUpdate,
       removeReview,
+      sentenceIds,
     });
-    res.status(200).json({ content: data });
+    res.status(200).json(sentenceIdsUpdated);
   } catch (error: any) {
     res
       .status(400)

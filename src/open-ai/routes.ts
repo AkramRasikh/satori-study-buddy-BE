@@ -3,14 +3,8 @@ import chatGptTextAPI from './chat-gpt';
 import { combineWords } from './combine-words/route';
 import { combineWordsValidation } from './combine-words/validation';
 import { baseRoute } from '../shared-express-utils/base-route';
-import {
-  breakdownAllSentence,
-  breakdownSentence,
-} from './sentence-breakdown/route';
-import {
-  breakdownAllSentenceValidation,
-  breakdownSentenceValidation,
-} from './sentence-breakdown/validation';
+import { breakdownAllSentence } from './sentence-breakdown/route';
+import { breakdownAllSentenceValidation } from './sentence-breakdown/validation';
 import {
   adhocExpressionTTS,
   adhocSentenceCustomWord,
@@ -47,12 +41,6 @@ const openAIRoutes = (app) => {
   });
 
   app.post('/combine-words', combineWordsValidation, baseRoute, combineWords);
-  app.post(
-    '/breakdown-sentence',
-    breakdownSentenceValidation,
-    baseRoute,
-    breakdownSentence,
-  ); // need to validate breakdown sentence
   app.post(
     '/breakdown-all-sentences',
     breakdownAllSentenceValidation,
